@@ -6,7 +6,7 @@
 PY := ingest/.venv/bin/python
 SEASON ?= 2026
 
-.PHONY: refresh fetch migrate load players describe check
+.PHONY: refresh fetch migrate load players describe check test shapes-analyze
 
 refresh: fetch migrate load players	## full pipeline, in order
 
@@ -27,3 +27,9 @@ describe:				## print random pitches as English sentences
 
 check:					## row counts and data-quality sanity checks
 	$(PY) ingest/scripts/check.py
+
+shapes-analyze:			## read-only: velocity distributions per pitch type (Task 9)
+	$(PY) ingest/scripts/analyze_shapes.py --season $(SEASON)
+
+test:				## unit tests for the pure statistics
+	$(PY) -m pytest -q

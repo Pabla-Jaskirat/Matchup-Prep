@@ -212,19 +212,43 @@ RHP  SL   n=214,883   velo: p10 81.2  p25 83.6  p50 85.9  p75 88.4  p90 90.7
 
 Boundaries are percentiles of real pitches, so they're derived, not invented.
 
-**Step C — bimodality check (the interview answer).** Correlate velocity with
-horizontal break per pitch type, print a text histogram. For RHP sliders expect
-two clumps. README line:
+**Step C — bimodality check (the interview answer). MEASURED 2026-09-17 — the
+expected result did not happen, and the real one is better.**
 
-> "For RHP sliders the velocity distribution is bimodal (peaks near 82 and 88 mph)
-> and horizontal break correlates with velocity at r = -0.6 — the slow group sweeps,
-> the fast group doesn't. The velocity band separates them adequately for v1.
-> Movement-based clustering would separate them properly; that's the next step."
+The prediction was that RHP sliders would show two velocity peaks. They do not.
+**No `(hand, pitch_type)` group in the 2026 data is bimodal in velocity.** RHP SL is
+a clean single peak at 87 mph. Combining SL and ST (105,000 pitches) is still unimodal.
+
+Do not write the planned README sentence about bimodal sliders. It is not true of this
+data, and an informed reviewer would check.
+
+The evidence for movement clustering turns out to be stronger than bimodality would
+have been. RHP sliders and RHP sweepers overlap heavily in velocity but differ by
+**3.6x in mean horizontal break** (+0.31 ft vs +1.13 ft). Two pitches that a hitter
+experiences completely differently are, to a velocity band, nearly the same pitch.
+The only thing separating them in v1 is Statcast's own `pitch_type` label — a
+classifier output we are trusting rather than deriving. README line:
+
+> "Velocity bands cannot separate a slider from a sweeper: the two overlap in
+> velocity while differing 3.6x in horizontal break. v1 relies on Statcast's
+> pitch_type label to keep them apart, which means the shape definition is only
+> as good as that classifier. Clustering on movement would derive the distinction
+> instead of inheriting it. That is the next step."
+
+**Also measured: the banding rule produces the opposite of what was expected.**
+RHP SL has an IQR of 3.5; RHP CH has 4.3. **Sliders get fewer bands than changeups,
+not more.** The widest groups are RHP KC (6.2), RHP CU (5.6) and RHP FS (5.1) — the
+pitches thrown with the most varied intent. The Day 2 "say it out loud" checkpoint
+changes accordingly: explain why *curveballs and splitters* got three bands.
+
+Applying the rule mechanically gives 13 groups x 2 bands + 3 groups x 3 bands = 35
+shapes. RHP KC is the one to look at by hand: 9,476 pitches cannot support three
+bands above the 5,000 floor, or even two.
 
 **Gotcha:** `pfx_x` is signed from the catcher's view. Multiply by -1 for LHP
 before comparing anything across handedness.
 
-Expect ~40–55 shapes total.
+Measured: the rule yields **35 shapes** before hand adjustment.
 
 ---
 
@@ -323,7 +347,7 @@ printing 10 random pitches as English sentences.
 **Day 2 — Shapes exist.** `analyze_shapes.py` output reviewed, bands chosen by the
 Step B rule, `derive_shapes` + `assign_shapes` running. Ends with a query listing
 all ~50 shapes and their counts.
-→ *Say it:* why sliders got more bands than changeups.
+→ *Say it:* why curveballs and splitters got more bands than sliders.
 
 **Day 3 — The answer exists in SQL.** `aggregate` building all three stats tables.
 Ends with one query returning a hitter's worst five shapes with counts, plus a check

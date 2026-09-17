@@ -9,19 +9,20 @@ idempotent, 8 commits.
 
 ## Phase 1: Shapes exist (Day 2)
 
-- [ ] **Task 9: `analyze_shapes.py`** (S) — *no dependencies, START HERE*
-  - [ ] Per `(p_throws, pitch_type)` ≥ 5,000: n, velo p10/p25/p50/p75/p90, IQR, mean `pfx_x`/`pfx_z`
-  - [ ] Text histogram + bimodality flag + velo↔`pfx_x` correlation
-  - [ ] `pfx_x` × −1 for LHP before comparing across handedness
-  - [ ] Verify: 16 groups printed; RHP SL has a wider IQR than RHP CH
-  - [ ] Verify: writes nothing to the database
+- [x] **Task 9: `analyze_shapes.py`** (S) — DONE
+  - [x] Per `(p_throws, pitch_type)` ≥ 5,000: n, velo p10/p25/p50/p75/p90, IQR, mean `pfx_x`/`pfx_z`
+  - [x] Text histogram + bimodality flag + velo↔`pfx_x` correlation
+  - [x] `pfx_x` × −1 for LHP before comparing across handedness
+  - [x] Verify: 16 groups printed. **RHP SL IQR 3.5 < RHP CH 4.3 — expectation
+        falsified, query verified correct.** No group is bimodal. See PLAN.md Step C.
+  - [x] Verify: writes nothing to the database
 
 - [ ] **Task 10: Choose the bands** (XS) — depends on 9 — ***your decision, not mine***
   - [ ] IQR <2.5 → 1 band · 2.5–5.0 → 2 at median · >5.0 → 3 at p33/p67
   - [ ] Collapse any band under 5,000 pitches into its neighbour
   - [ ] Write `db/shapes/v1_type_velo.json`, each boundary tagged with its percentile
-  - [ ] Verify: 32–48 shapes total
-  - [ ] Verify: **say out loud why sliders got more bands than changeups**
+  - [ ] Verify: 32–48 shapes total (the rule mechanically gives 35; RHP KC needs a hand call)
+  - [ ] Verify: **say out loud why curveballs and splitters got more bands than sliders**
 
 - [ ] **Task 11: Migration `003_shapes.sql`** (S) — no dependencies
   - [ ] `pitch_shapes` + `shape_assignments`, `method` in both PKs

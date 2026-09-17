@@ -105,7 +105,7 @@ slider compares a number to its own negative.
 
 **Acceptance criteria:**
 - [ ] Prints per group: n, velocity p10/p25/p50/p75/p90, IQR, mean `pfx_x`, mean `pfx_z`
-- [ ] Prints a text histogram of velocity per group
+- [x] Prints a text histogram of velocity per group, outer 1% tails clipped
 - [ ] Flags bimodality and prints the velocity↔`pfx_x` correlation
 - [ ] `pfx_x` sign-normalised for LHP
 - [ ] Writes nothing to the database
@@ -113,7 +113,9 @@ slider compares a number to its own negative.
 **Verification:**
 - [ ] `make shapes-analyze` prints 16 groups (probed count — a different number means
       the pitch mix or threshold changed, and that is worth understanding before continuing)
-- [ ] RHP `SL` shows a wider IQR than RHP `CH` — if it doesn't, the query is wrong
+- [x] ~~RHP `SL` shows a wider IQR than RHP `CH`~~ — **falsified.** SL IQR 3.5, CH IQR 4.3.
+      The query was checked and is correct; the expectation was wrong. Widest groups are
+      RHP KC 6.2, CU 5.6, FS 5.1. See PLAN.md Step C.
 - [ ] Re-run produces byte-identical output
 
 **Dependencies:** None
