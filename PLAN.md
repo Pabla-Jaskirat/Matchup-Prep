@@ -54,7 +54,7 @@ cutting head-to-head history on purpose.
 | What's on screen | **Absolute rate, colored by league delta** | Coach sees what happens tonight AND whether it's a real weakness. Needs `league_shape_stats`. |
 | Location in shape? | **No** — detail-view dimension only | Adding a 3x3 grid multiplies ~50 buckets by 9, drops samples under threshold. Recreates the BvP problem. |
 | Switch-hitters | **`stand` in the aggregate key** | Statcast `stand` changes row to row for switch-hitters. Not a player property. |
-| Seasons | **2026 to-date**, add 2025 if samples thin (Day 3 decision) | Most relevant to a coach. Loader is idempotent, so adding is one command. |
+| Seasons | **2026 to-date only** | Measured 2026-09-17: `pitches` is 207 MB of a 500 MB free tier, ~300 MB once shape_assignments lands. A second season would exceed it. If Day 3 samples are thin, widen the velocity bands instead of adding data — fewer, bigger buckets, and simpler to explain. |
 | Shape method | `pitch_type` + velo band + `p_throws` | Defensible, fast. Movement clustering = documented next step. |
 | Refresh | Manual `make refresh` | A cron job you can't demo is decoration. |
 | Sample threshold | 75 pitches (higher for contact quality) | Enforced by storing counts next to rates. |
@@ -327,7 +327,8 @@ all ~50 shapes and their counts.
 
 **Day 3 — The answer exists in SQL.** `aggregate` building all three stats tables.
 Ends with one query returning a hitter's worst five shapes with counts, plus a check
-of how many cells fall under 75. **Decide whether to add 2025.**
+of how many cells fall under 75. **If too many are thin, widen the bands** (storage
+rules out a second season).
 → *Say it:* why 75, and what the league table is for.
 
 **Day 4 — It's a website.** Next.js, two API routes (`/api/pitchers/search`,
