@@ -16,7 +16,7 @@ Full plan: `tasks/plan.md` · 7-day plan: `PLAN.md`
   - [x] Connection strings in `.env` (direct + pooled), gitignored
   - [x] Verify: both connect, Postgres 18.6
 
-- [ ] **CHECKPOINT 1** — Postgres up, parquet on disk, row count sane
+- [x] **CHECKPOINT 1** — Postgres up, parquet on disk, row count sane
 
 ## Phase 2: Schema
 
@@ -37,26 +37,26 @@ Full plan: `tasks/plan.md` · 7-day plan: `PLAN.md`
 
 ## Phase 3: Load and see the data
 
-- [ ] **Task 6: load_pitches** (M) — depends on 2, 5
+- [x] **Task 6: load_pitches** (M) — depends on 2, 5
   - [x] Rename Statcast columns → schema names
   - [x] COPY into UNLOGGED staging, then upsert ON CONFLICT
-  - [ ] Verify: **re-run leaves `count(*)` unchanged** ← the important one
-  - [ ] Verify: no null `stand`; both L and R present
+  - [x] Verify: **re-run leaves `count(*)` unchanged** ← the important one
+  - [x] Verify: no null `stand`; both L and R present
 
-- [ ] **Task 7: describe_pitches** (S) — depends on 6
-  - [ ] Prints N pitches as English sentences
+- [x] **Task 7: describe_pitches** (S) — depends on 6
+  - [x] Prints N pitches as English sentences
   - [ ] Verify: read 10 aloud — **can you say what one row represents?**
 
-- [ ] **Task 8: Makefile + .gitignore** (XS) — depends on 2, 6
-  - [ ] `make fetch` / `migrate` / `load` / `refresh`
-  - [ ] Ignore `data/raw/`, `.venv`, `.env`, `node_modules`
-  - [ ] Verify: `git status` shows no parquet, no venv, no `.env`
+- [x] **Task 8: Makefile + .gitignore** (XS) — depends on 2, 6
+  - [x] `make fetch` / `migrate` / `load` / `refresh`
+  - [x] Ignore `data/raw/`, `.venv`, `.env`, `node_modules`
+  - [x] Verify: `git status` shows no parquet, no venv, no `.env`
 
 - [ ] **CHECKPOINT 3 — Day 1 done**
-  - [ ] ~700k rows in `pitches`
-  - [ ] Whole pipeline re-runs and changes nothing
+  - [x] ~700k rows in `pitches`
+  - [x] Whole pipeline re-runs and changes nothing
   - [ ] You can explain one row out loud
-  - [ ] Committed
+  - [x] Committed
 
 ## Deliberately NOT Day 1
 
