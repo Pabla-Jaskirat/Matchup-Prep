@@ -1,0 +1,15 @@
+# Secrets
+.env
+.env.local
+
+# Raw Statcast downloads — regenerable via `make fetch`, too big for git
+data/raw/
+
+# Python
+ingest/.venv/
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+.next/
