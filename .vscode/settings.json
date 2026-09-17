@@ -1,0 +1,19 @@
+{
+  // The venv holds ~12k files and data/raw holds regenerable parquet.
+  // Excluding them keeps search results and file watching fast.
+  "files.watcherExclude": {
+    "**/ingest/.venv/**": true,
+    "**/data/raw/**": true,
+    "**/node_modules/**": true,
+    "**/.next/**": true
+  },
+  "search.exclude": {
+    "**/ingest/.venv": true,
+    "**/data/raw": true,
+    "**/node_modules": true
+  },
+  "files.exclude": {
+    "**/__pycache__": true
+  },
+  "python.defaultInterpreterPath": "${workspaceFolder}/ingest/.venv/bin/python"
+}
