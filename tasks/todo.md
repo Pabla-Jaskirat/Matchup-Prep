@@ -17,12 +17,14 @@ idempotent, 8 commits.
         falsified, query verified correct.** No group is bimodal. See PLAN.md Step C.
   - [x] Verify: writes nothing to the database
 
-- [ ] **Task 10: Choose the bands** (XS) — depends on 9 — ***your decision, not mine***
-  - [ ] IQR <2.5 → 1 band · 2.5–5.0 → 2 at median · >5.0 → 3 at p33/p67
-  - [ ] Collapse any band under 5,000 pitches into its neighbour
-  - [ ] Write `db/shapes/v1_type_velo.json`, each boundary tagged with its percentile
-  - [ ] Verify: 32–48 shapes total (the rule mechanically gives 35; RHP KC needs a hand call)
+- [x] **Task 10: Choose the bands** (XS) — DONE — `make shapes-choose`
+  - [x] IQR <2.5 → 1 band · 2.5–5.0 → 2 at median · >5.0 → 3 at p33/p67
+  - [x] Collapse any band under 5,000 pitches into its neighbour
+  - [x] Write `db/shapes/v1_type_velo.json`, each boundary tagged with its percentile
+  - [x] Verify: **33 shapes**, in range. RHP KC needed no hand call — the collapse
+        rule cut it from 3 bands to 1 on its own. Thinnest band 6,407 (RHP FS under 85).
   - [ ] Verify: **say out loud why curveballs and splitters got more bands than sliders**
+        ← *still yours to do, out loud, before Day 3*
 
 - [ ] **Task 11: Migration `003_shapes.sql`** (S) — no dependencies
   - [ ] `pitch_shapes` + `shape_assignments`, `method` in both PKs

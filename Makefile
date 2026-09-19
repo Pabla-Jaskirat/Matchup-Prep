@@ -6,7 +6,7 @@
 PY := ingest/.venv/bin/python
 SEASON ?= 2026
 
-.PHONY: refresh fetch migrate load players describe check test shapes-analyze
+.PHONY: refresh fetch migrate load players describe check test shapes-analyze shapes-choose
 
 refresh: fetch migrate load players	## full pipeline, in order
 
@@ -30,6 +30,9 @@ check:					## row counts and data-quality sanity checks
 
 shapes-analyze:			## read-only: velocity distributions per pitch type (Task 9)
 	$(PY) ingest/scripts/analyze_shapes.py --season $(SEASON)
+
+shapes-choose:			## apply the banding rule -> db/shapes/v1_type_velo.json (Task 10)
+	$(PY) ingest/scripts/choose_bands.py --season $(SEASON)
 
 test:				## unit tests for the pure statistics
 	$(PY) -m pytest -q

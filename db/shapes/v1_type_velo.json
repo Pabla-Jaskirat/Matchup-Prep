@@ -1,0 +1,456 @@
+{
+  "method": "v1_type_velo",
+  "season": 2026,
+  "generated": "2026-09-18",
+  "rule": {
+    "min_group_pitches": 5000,
+    "one_band_below_iqr": 2.5,
+    "three_bands_above_iqr": 5.0,
+    "min_band_pitches": 5000,
+    "interval": "velo_min <= release_speed < velo_max; null is unbounded"
+  },
+  "shapes": 33,
+  "groups": [
+    {
+      "p_throws": "R",
+      "pitch_type": "FF",
+      "pitches": 151005,
+      "iqr": 3.3,
+      "bands_by_spread": 2,
+      "bands": [
+        {
+          "shape_id": "R-FF-1",
+          "label": "RHP Four-Seam under 95",
+          "velo_min": null,
+          "velo_max": 95.2,
+          "pitches": 73506,
+          "min_percentile": null,
+          "max_percentile": 50
+        },
+        {
+          "shape_id": "R-FF-2",
+          "label": "RHP Four-Seam 95+",
+          "velo_min": 95.2,
+          "velo_max": null,
+          "pitches": 77499,
+          "min_percentile": 50,
+          "max_percentile": null
+        }
+      ]
+    },
+    {
+      "p_throws": "R",
+      "pitch_type": "SI",
+      "pitches": 78032,
+      "iqr": 3.3,
+      "bands_by_spread": 2,
+      "bands": [
+        {
+          "shape_id": "R-SI-1",
+          "label": "RHP Sinker under 95",
+          "velo_min": null,
+          "velo_max": 94.6,
+          "pitches": 38968,
+          "min_percentile": null,
+          "max_percentile": 50
+        },
+        {
+          "shape_id": "R-SI-2",
+          "label": "RHP Sinker 95+",
+          "velo_min": 94.6,
+          "velo_max": null,
+          "pitches": 39064,
+          "min_percentile": 50,
+          "max_percentile": null
+        }
+      ]
+    },
+    {
+      "p_throws": "R",
+      "pitch_type": "SL",
+      "pitches": 63766,
+      "iqr": 3.5,
+      "bands_by_spread": 2,
+      "bands": [
+        {
+          "shape_id": "R-SL-1",
+          "label": "RHP Slider under 87",
+          "velo_min": null,
+          "velo_max": 87.0,
+          "pitches": 31260,
+          "min_percentile": null,
+          "max_percentile": 50
+        },
+        {
+          "shape_id": "R-SL-2",
+          "label": "RHP Slider 87+",
+          "velo_min": 87.0,
+          "velo_max": null,
+          "pitches": 32506,
+          "min_percentile": 50,
+          "max_percentile": null
+        }
+      ]
+    },
+    {
+      "p_throws": "L",
+      "pitch_type": "FF",
+      "pitches": 61353,
+      "iqr": 3.2,
+      "bands_by_spread": 2,
+      "bands": [
+        {
+          "shape_id": "L-FF-1",
+          "label": "LHP Four-Seam under 94",
+          "velo_min": null,
+          "velo_max": 93.6,
+          "pitches": 30500,
+          "min_percentile": null,
+          "max_percentile": 50
+        },
+        {
+          "shape_id": "L-FF-2",
+          "label": "LHP Four-Seam 94+",
+          "velo_min": 93.6,
+          "velo_max": null,
+          "pitches": 30853,
+          "min_percentile": 50,
+          "max_percentile": null
+        }
+      ]
+    },
+    {
+      "p_throws": "R",
+      "pitch_type": "CH",
+      "pitches": 49201,
+      "iqr": 4.3,
+      "bands_by_spread": 2,
+      "bands": [
+        {
+          "shape_id": "R-CH-1",
+          "label": "RHP Changeup under 87",
+          "velo_min": null,
+          "velo_max": 87.1,
+          "pitches": 24315,
+          "min_percentile": null,
+          "max_percentile": 50
+        },
+        {
+          "shape_id": "R-CH-2",
+          "label": "RHP Changeup 87+",
+          "velo_min": 87.1,
+          "velo_max": null,
+          "pitches": 24886,
+          "min_percentile": 50,
+          "max_percentile": null
+        }
+      ]
+    },
+    {
+      "p_throws": "R",
+      "pitch_type": "FC",
+      "pitches": 41820,
+      "iqr": 3.4,
+      "bands_by_spread": 2,
+      "bands": [
+        {
+          "shape_id": "R-FC-1",
+          "label": "RHP Cutter under 90",
+          "velo_min": null,
+          "velo_max": 90.1,
+          "pitches": 20419,
+          "min_percentile": null,
+          "max_percentile": 50
+        },
+        {
+          "shape_id": "R-FC-2",
+          "label": "RHP Cutter 90+",
+          "velo_min": 90.1,
+          "velo_max": null,
+          "pitches": 21401,
+          "min_percentile": 50,
+          "max_percentile": null
+        }
+      ]
+    },
+    {
+      "p_throws": "R",
+      "pitch_type": "ST",
+      "pitches": 41234,
+      "iqr": 3.6,
+      "bands_by_spread": 2,
+      "bands": [
+        {
+          "shape_id": "R-ST-1",
+          "label": "RHP Sweeper under 84",
+          "velo_min": null,
+          "velo_max": 83.6,
+          "pitches": 20396,
+          "min_percentile": null,
+          "max_percentile": 50
+        },
+        {
+          "shape_id": "R-ST-2",
+          "label": "RHP Sweeper 84+",
+          "velo_min": 83.6,
+          "velo_max": null,
+          "pitches": 20838,
+          "min_percentile": 50,
+          "max_percentile": null
+        }
+      ]
+    },
+    {
+      "p_throws": "L",
+      "pitch_type": "SI",
+      "pitches": 37098,
+      "iqr": 4.0,
+      "bands_by_spread": 2,
+      "bands": [
+        {
+          "shape_id": "L-SI-1",
+          "label": "LHP Sinker under 93",
+          "velo_min": null,
+          "velo_max": 93.4,
+          "pitches": 18289,
+          "min_percentile": null,
+          "max_percentile": 50
+        },
+        {
+          "shape_id": "L-SI-2",
+          "label": "LHP Sinker 93+",
+          "velo_min": 93.4,
+          "velo_max": null,
+          "pitches": 18809,
+          "min_percentile": 50,
+          "max_percentile": null
+        }
+      ]
+    },
+    {
+      "p_throws": "R",
+      "pitch_type": "CU",
+      "pitches": 29562,
+      "iqr": 5.6,
+      "bands_by_spread": 3,
+      "bands": [
+        {
+          "shape_id": "R-CU-1",
+          "label": "RHP Curveball under 79",
+          "velo_min": null,
+          "velo_max": 78.9,
+          "pitches": 9608,
+          "min_percentile": null,
+          "max_percentile": 33
+        },
+        {
+          "shape_id": "R-CU-2",
+          "label": "RHP Curveball 79-83",
+          "velo_min": 78.9,
+          "velo_max": 82.6,
+          "pitches": 10023,
+          "min_percentile": 33,
+          "max_percentile": 67
+        },
+        {
+          "shape_id": "R-CU-3",
+          "label": "RHP Curveball 83+",
+          "velo_min": 82.6,
+          "velo_max": null,
+          "pitches": 9931,
+          "min_percentile": 67,
+          "max_percentile": null
+        }
+      ]
+    },
+    {
+      "p_throws": "L",
+      "pitch_type": "CH",
+      "pitches": 28376,
+      "iqr": 4.4,
+      "bands_by_spread": 2,
+      "bands": [
+        {
+          "shape_id": "L-CH-1",
+          "label": "LHP Changeup under 85",
+          "velo_min": null,
+          "velo_max": 85.1,
+          "pitches": 13931,
+          "min_percentile": null,
+          "max_percentile": 50
+        },
+        {
+          "shape_id": "L-CH-2",
+          "label": "LHP Changeup 85+",
+          "velo_min": 85.1,
+          "velo_max": null,
+          "pitches": 14445,
+          "min_percentile": 50,
+          "max_percentile": null
+        }
+      ]
+    },
+    {
+      "p_throws": "L",
+      "pitch_type": "SL",
+      "pitches": 28294,
+      "iqr": 4.1,
+      "bands_by_spread": 2,
+      "bands": [
+        {
+          "shape_id": "L-SL-1",
+          "label": "LHP Slider under 86",
+          "velo_min": null,
+          "velo_max": 85.5,
+          "pitches": 14029,
+          "min_percentile": null,
+          "max_percentile": 50
+        },
+        {
+          "shape_id": "L-SL-2",
+          "label": "LHP Slider 86+",
+          "velo_min": 85.5,
+          "velo_max": null,
+          "pitches": 14265,
+          "min_percentile": 50,
+          "max_percentile": null
+        }
+      ]
+    },
+    {
+      "p_throws": "R",
+      "pitch_type": "FS",
+      "pitches": 19922,
+      "iqr": 5.1,
+      "bands_by_spread": 3,
+      "bands": [
+        {
+          "shape_id": "R-FS-1",
+          "label": "RHP Splitter under 85",
+          "velo_min": null,
+          "velo_max": 85.0,
+          "pitches": 6407,
+          "min_percentile": null,
+          "max_percentile": 33
+        },
+        {
+          "shape_id": "R-FS-2",
+          "label": "RHP Splitter 85-88",
+          "velo_min": 85.0,
+          "velo_max": 88.4,
+          "pitches": 6935,
+          "min_percentile": 33,
+          "max_percentile": 67
+        },
+        {
+          "shape_id": "R-FS-3",
+          "label": "RHP Splitter 88+",
+          "velo_min": 88.4,
+          "velo_max": null,
+          "pitches": 6580,
+          "min_percentile": 67,
+          "max_percentile": null
+        }
+      ]
+    },
+    {
+      "p_throws": "L",
+      "pitch_type": "ST",
+      "pitches": 15930,
+      "iqr": 3.7,
+      "bands_by_spread": 2,
+      "bands": [
+        {
+          "shape_id": "L-ST-1",
+          "label": "LHP Sweeper under 81",
+          "velo_min": null,
+          "velo_max": 81.1,
+          "pitches": 7787,
+          "min_percentile": null,
+          "max_percentile": 50
+        },
+        {
+          "shape_id": "L-ST-2",
+          "label": "LHP Sweeper 81+",
+          "velo_min": 81.1,
+          "velo_max": null,
+          "pitches": 8143,
+          "min_percentile": 50,
+          "max_percentile": null
+        }
+      ]
+    },
+    {
+      "p_throws": "L",
+      "pitch_type": "CU",
+      "pitches": 14707,
+      "iqr": 4.3,
+      "bands_by_spread": 2,
+      "bands": [
+        {
+          "shape_id": "L-CU-1",
+          "label": "LHP Curveball under 80",
+          "velo_min": null,
+          "velo_max": 79.7,
+          "pitches": 7335,
+          "min_percentile": null,
+          "max_percentile": 50
+        },
+        {
+          "shape_id": "L-CU-2",
+          "label": "LHP Curveball 80+",
+          "velo_min": 79.7,
+          "velo_max": null,
+          "pitches": 7372,
+          "min_percentile": 50,
+          "max_percentile": null
+        }
+      ]
+    },
+    {
+      "p_throws": "L",
+      "pitch_type": "FC",
+      "pitches": 14021,
+      "iqr": 3.4,
+      "bands_by_spread": 2,
+      "bands": [
+        {
+          "shape_id": "L-FC-1",
+          "label": "LHP Cutter under 88",
+          "velo_min": null,
+          "velo_max": 88.3,
+          "pitches": 6878,
+          "min_percentile": null,
+          "max_percentile": 50
+        },
+        {
+          "shape_id": "L-FC-2",
+          "label": "LHP Cutter 88+",
+          "velo_min": 88.3,
+          "velo_max": null,
+          "pitches": 7143,
+          "min_percentile": 50,
+          "max_percentile": null
+        }
+      ]
+    },
+    {
+      "p_throws": "R",
+      "pitch_type": "KC",
+      "pitches": 9476,
+      "iqr": 6.2,
+      "bands_by_spread": 3,
+      "bands": [
+        {
+          "shape_id": "R-KC-1",
+          "label": "RHP Knuckle-Curve",
+          "velo_min": null,
+          "velo_max": null,
+          "pitches": 9476,
+          "min_percentile": null,
+          "max_percentile": null
+        }
+      ]
+    }
+  ]
+}

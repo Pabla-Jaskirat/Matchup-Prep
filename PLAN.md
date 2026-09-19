@@ -241,14 +241,18 @@ not more.** The widest groups are RHP KC (6.2), RHP CU (5.6) and RHP FS (5.1) �
 pitches thrown with the most varied intent. The Day 2 "say it out loud" checkpoint
 changes accordingly: explain why *curveballs and splitters* got three bands.
 
-Applying the rule mechanically gives 13 groups x 2 bands + 3 groups x 3 bands = 35
-shapes. RHP KC is the one to look at by hand: 9,476 pitches cannot support three
-bands above the 5,000 floor, or even two.
+Applying the rule on spread alone gives 13 groups x 2 bands + 3 groups x 3 bands =
+35. The 5,000-pitch floor then overrules the spread for RHP KC: 9,476 pitches cannot
+support three bands of ~3,200, or even two of ~4,700, so it collapses back to a
+single shape. **Final: 33 shapes.** No hand adjustment was needed — the collapse
+rule made the call.
 
 **Gotcha:** `pfx_x` is signed from the catcher's view. Multiply by -1 for LHP
 before comparing anything across handedness.
 
-Measured: the rule yields **35 shapes** before hand adjustment.
+Measured 2026-09-18: the rule yields **33 shapes** across 16 groups
+(`db/shapes/v1_type_velo.json`). The thinnest is RHP Splitter under 85 at 6,407
+pitches — the first band to merge if Task 15 finds the hitter cells too thin.
 
 ---
 
