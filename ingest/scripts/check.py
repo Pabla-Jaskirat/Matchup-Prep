@@ -33,8 +33,11 @@ CHECKS = [
                               "pitches b WHERE b.batter_id = p.mlbam_id)",
                               lambda v: v == 0),
 
+    # 16 is the floor: one band per (hand, pitch_type) group that clears the
+    # 5,000-pitch threshold. Fewer means a group vanished; many more means the
+    # banding rule has started splitting groups the spread does not justify.
     ("shapes defined",        "SELECT count(*) FROM pitch_shapes "
-                              "WHERE method = 'v1_type_velo'", lambda v: 32 <= v <= 48),
+                              "WHERE method = 'v1_type_velo'", lambda v: 16 <= v <= 48),
     ("pct pitches assigned",  "SELECT round(100.0*count(a.*)/count(*), 1) "
                               "FROM pitches p LEFT JOIN shape_assignments a "
                               "ON a.method='v1_type_velo' AND a.game_pk=p.game_pk "
