@@ -241,7 +241,7 @@ match every lookup the app performs.
 
 **Acceptance criteria:**
 - [x] Three tables, each with `method` and `season` leading the primary key
-- [x] Raw counts stored alongside every rate, so the 75-pitch rule is enforceable at read time
+- [x] Raw counts stored alongside every rate, so the 50-pitch rule is enforceable at read time
 - [x] FKs to `pitch_shapes` — **composite `(method, shape_id)`, not the single-column FK
       PLAN.md sketched.** `shape_id` is text and is unique only within a method, so
       `REFERENCES pitch_shapes(shape_id)` could not have been created at all.
@@ -442,7 +442,7 @@ a usage floor) and, for each Jays hitter, their stat line per shape with the lea
 delta. The main screen renders the layout sketched in `PLAN.md`: the "tonight's edge"
 banner, then hitters with a per-shape marker each.
 
-The 75-pitch rule is applied **in the API**, which returns a discriminated result per
+The 50-pitch rule is applied **in the API**, which returns a discriminated result per
 cell — a value, or a reason it has none. If the rule lives in the component, the next
 component will forget it.
 
@@ -471,7 +471,7 @@ rate, league comparison in words, pitch count, and for thin shapes the sentence 
 why there is no number.
 
 The empty state is a feature, not a fallback. It reads "Not enough data — 41 pitches
-seen, below the 75 threshold," because that sentence is what tells a reviewer the
+seen, below the 50 threshold," because that sentence is what tells a reviewer the
 restraint was deliberate.
 
 **Acceptance criteria:**

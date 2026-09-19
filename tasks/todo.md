@@ -7,8 +7,10 @@ would change it. Update it whenever a task makes or overturns a decision.
 **Done:** Day 1 — 696,100 pitches, 2,525 players, migrations 001–002.
 Day 2 — shapes and assignments, migrations 003–004.
 Day 3 — stats tables, roster, aggregation, and the Task 15 cut from 33 shapes to 20.
+Day 4 — Next.js scaffold and a health route that reaches Neon.
 
 **Loose ends:** `requirements.txt` added 2026-09-18. No README until Task 22.
+**Day 4 started 2026-09-19:** the web app lives in `web/`; `make dev` runs it.
 
 ---
 
@@ -62,7 +64,7 @@ Day 3 — stats tables, roster, aggregation, and the Task 15 cut from 33 shapes 
 ## Phase 2: The answer exists in SQL (Day 3)
 
 - [x] **Task 13: Migration `005_stats.sql`** (S) — DONE
-  - [x] Three stats tables; counts stored beside every rate, so the 75-pitch rule
+  - [x] Three stats tables; counts stored beside every rate, so the 50-pitch rule
         is applied when the page renders and a coach can ask "out of how many?"
   - [x] `method, season` leads every PK — that is the slice `aggregate.py` rewrites
   - [x] `stand` in the hitter and league keys — a switch-hitter is two rows
@@ -105,16 +107,23 @@ Day 3 — stats tables, roster, aggregation, and the Task 15 cut from 33 shapes 
 - [ ] **CHECKPOINT B — Day 3 done** ← *the one that matters*
   - [ ] One query: pitcher id → 9 hitters × shapes, with counts and league deltas
   - [ ] It never touches `pitches`; under 100 ms
-  - [ ] **Say out loud:** why 75, and what the league table is for
+  - [ ] **Say out loud:** why 50 (it was 75 until Task 15), and what the league table is for
   - [ ] Committed
 
 ---
 
 ## Phase 3: It's a website (Days 4–5)
 
-- [ ] **Task 17: Next.js + `/api/health`** (M) — depends on 16
-  - [ ] Pooled connection string; `web/lib/db.ts` the only connection site
-  - [ ] Verify: `/api/health` returns the pitch count before any UI is written
+- [x] **Task 17: Next.js + `/api/health`** (M) — DONE — `make dev`, `make web-build`
+  - [x] Next 16 App Router + TypeScript in `web/`; `pg` pool, `max: 1` per instance
+  - [x] `web/lib/db.ts` is the only connection site; `DATABASE_URL_POOLED` only,
+        and the direct string is **not** a fallback — a test pins that
+  - [x] The credential stays in the one root `.env`; no second `web/.env.local`
+  - [x] Verify: `{"ok":true,"pitches":696100,...,"pooled":true}` — **3.0 s cold
+        (Neon waking), 120 ms warm.** The cold path is Task 21's to re-check.
+  - [x] Verify: `npm run build` clean, `/api/health` listed as dynamic, not static
+  - [x] Verify: `git status` shows no `.env.local` and no `node_modules`
+  - [x] 10 web tests added; `make test` now runs both suites
 
 - [ ] **Task 18: Pitcher search** (M) — depends on 17 — *first full vertical slice*
   - [ ] Trigram search, ≥200-pitch floor, capped at 10
@@ -122,14 +131,14 @@ Day 3 — stats tables, roster, aggregation, and the Task 15 cut from 33 shapes 
   - [ ] Verify: `EXPLAIN` shows the trigram index in use
 
 - [ ] **Task 19: Matchup API + main screen** (M) — depends on 18
-  - [ ] 75-pitch rule applied **in the API**, as `{kind:'value'}` | `{kind:'insufficient'}`
+  - [ ] 50-pitch rule applied **in the API**, as `{kind:'value'}` | `{kind:'insufficient'}`
   - [ ] Arsenal floor 3% of pitches — confirm it yields 3–5 shapes for real starters
   - [ ] "Tonight's edge" computed server-side
   - [ ] Verify: three real pitchers checked against hand-run SQL
 
 - [ ] **Task 20: Detail view, empty states, phone** (M) — depends on 19
   - [ ] League comparison in words, never a percentile; count on every rate
-  - [ ] "Not enough data — 41 pitches seen, below the 75 threshold."
+  - [ ] "Not enough data — 41 pitches seen, below the 50 threshold."
   - [ ] Verify: complete the flow on your actual phone
 
 - [ ] **CHECKPOINT C — Days 4–5 done**

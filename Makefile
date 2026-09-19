@@ -6,7 +6,7 @@
 PY := ingest/.venv/bin/python
 SEASON ?= 2026
 
-.PHONY: refresh fetch migrate load players describe check test shapes-analyze shapes-choose shapes roster aggregate verify coverage
+.PHONY: refresh fetch migrate load players describe check test web-test web-build dev shapes-analyze shapes-choose shapes roster aggregate verify coverage
 
 refresh: fetch migrate load players roster shapes aggregate	## full pipeline, in order
 
@@ -54,5 +54,14 @@ verify:				## re-count the Jays hitters in Python and compare to the SQL
 coverage:			## thin-cell audit: how much of the page is filled in (Task 15)
 	$(PY) ingest/scripts/check_coverage.py --season $(SEASON)
 
-test:				## unit tests for the pure statistics
+test: web-test			## unit tests: the pure statistics, then the web app
 	$(PY) -m pytest -q
+
+web-test:			## unit tests for web/lib (node's built-in runner)
+	cd web && npm test
+
+web-build:			## production build; fails on any TypeScript error
+	cd web && npm run build
+
+dev:				## run the Next.js app at localhost:3000
+	cd web && npm run dev

@@ -335,6 +335,47 @@ happen again silently.
 League-wide it would be ~300,000 rows for a view that is optional and first to
 cut. These are the only rows that can ever reach a screen.
 
+### 29. The app uses the pooled connection string, and the direct one is not a fallback ✅
+
+Every request to a serverless function is its own process. Without Neon's
+pooler, a page that fans out to a handful of queries opens more connections than
+the database will accept, and the failure appears under load rather than in
+development.
+
+`requireUrl()` reads `DATABASE_URL_POOLED` and nothing else. If it is missing the
+app fails loudly at the first query rather than quietly falling back to
+`DATABASE_URL` and working fine on one machine. A test pins that: passing only
+`DATABASE_URL` throws.
+
+**What it cost:** two variables to keep straight instead of one.
+
+### 30. One file opens connections; one file on disk holds the credential ✅
+
+`web/lib/db.ts` is the only place a `Pool` is constructed. Everything else calls
+`query()`.
+
+Locally it loads the repo-root `.env` — the same file ingestion already uses —
+rather than a second `web/.env.local`. Two files holding the same password is two
+chances to commit one. On Vercel the variable is set in the project and the
+dotenv call never runs.
+
+**What would change it:** if the web app ever needed a different database than
+ingestion, these would have to separate again.
+
+### 31. `/api/health` exists before any UI ✅
+
+It returns the pitch count, the hostname, and whether the host is pooled. A
+connection problem found through a blank health route takes two minutes to
+diagnose; the same problem found through a broken page takes an hour.
+
+It is `force-dynamic` — a health check answered at build time is not a health
+check — and on failure it returns the error's *name* only. Driver errors can
+carry the connection string in their message, so the message never crosses the
+boundary; it goes to the server log.
+
+**First run measured:** 3.0 s cold (Neon waking from idle), 120 ms warm. The cold
+path is what Task 21 has to verify on the deployed app.
+
 ---
 
 ## Open — still to defend
