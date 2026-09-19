@@ -6,9 +6,9 @@
 PY := ingest/.venv/bin/python
 SEASON ?= 2026
 
-.PHONY: refresh fetch migrate load players describe check test shapes-analyze shapes-choose shapes roster
+.PHONY: refresh fetch migrate load players describe check test shapes-analyze shapes-choose shapes roster aggregate verify
 
-refresh: fetch migrate load players roster shapes	## full pipeline, in order
+refresh: fetch migrate load players roster shapes aggregate	## full pipeline, in order
 
 fetch:					## download Statcast into data/raw (skips cached weeks)
 	$(PY) ingest/scripts/fetch.py --season $(SEASON)
@@ -44,6 +44,12 @@ shapes-derive:			## db/shapes/*.json -> pitch_shapes (validates the file first)
 
 shapes-assign:			## pitches -> shape_assignments (upsert; safe to re-run)
 	$(PY) ingest/scripts/assign_shapes.py --season $(SEASON)
+
+aggregate:			## recompute the three stats tables (full replace, re-runnable)
+	$(PY) ingest/scripts/aggregate.py --season $(SEASON)
+
+verify:				## re-count the Jays hitters in Python and compare to the SQL
+	$(PY) ingest/scripts/verify_aggregate.py --season $(SEASON)
 
 test:				## unit tests for the pure statistics
 	$(PY) -m pytest -q

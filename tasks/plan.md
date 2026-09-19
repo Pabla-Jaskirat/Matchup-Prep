@@ -272,18 +272,36 @@ Two things must be right:
 - **`stand` is part of the group-by.** A switch-hitter is two rows, not one.
 
 **Acceptance criteria:**
-- [ ] All three tables populated for `('v1_type_velo', 2026)`
-- [ ] `whiff_rate = whiffs / swings`, `chase_rate = chases / out_of_zone`, both NULL when the denominator is 0
-- [ ] Re-run produces identical row counts and identical values
-- [ ] `hitter_shape_stats` summed over hitters reconciles to `league_shape_stats` per `(stand, shape_id)`
+- [x] All three tables populated: **23,742** hitter rows, **66** league rows, **3,834**
+      zone rows. The zone table is restricted to the Jays hitter pool — league-wide it
+      would be ~300,000 rows for a view that is optional and first to cut.
+- [x] Both rates NULL when the denominator is 0, never 0.0 — a hitter who never swung
+      has no whiff rate, and printing 0% would read as "he never misses"
+- [x] Re-run is **byte-identical**: same row counts and the same md5 over the whole table
+- [x] Reconciles exactly: 0 league rows disagree with the sum of their hitter rows
 
 **Verification:**
-- [ ] The reconciliation above runs as a SQL assertion in `check.py` and passes
-- [ ] At least one switch-hitter appears with both `stand = 'L'` and `stand = 'R'`
-- [ ] Manual: one hitter's total `pitches_seen` across all shapes ≈ their row count in `pitches`
+- [x] Reconciliation is now a `check.py` assertion, alongside an impossible-rates check
+      (whiffs > swings, chases > out_of_zone, any rate > 1)
+- [x] Brandon Valenzuela appears with both `stand = 'L'` and `stand = 'R'`
+- [x] Guerrero: 2,053 `pitches_seen` across shapes vs 2,091 rows in `pitches` (98.2%);
+      the difference is pitch types with no shape
+- [x] **Stronger than planned:** `verify_aggregate.py` pulls each Jays hitter's raw
+      pitches back out and re-counts them with an independent Python implementation,
+      comparing every field. **14 hitters, 447 rows, 0 mismatches.** The first run
+      found 42 real disagreements — see below.
+
+**What the cross-check caught.** The first comparison disagreed on 42 of 447 rows,
+always by one unit in the last decimal place, always with SQL higher. Postgres rounds
+a half away from zero; Python's `round()` rounds it to the nearest even digit, so
+73.05 is 73.1 in SQL and 73.0 in Python. The stored values were right and the
+reference implementation was wrong; it now uses `Decimal` with `ROUND_HALF_UP`, and
+two tests pin the behaviour. A difference that small is exactly the kind that reads
+as noise and is actually two implementations disagreeing.
 
 **Dependencies:** 12, 13
-**Files:** `ingest/scripts/aggregate.py`, `ingest/scripts/check.py`, `Makefile`
+**Files:** `ingest/scripts/aggregate.py`, `ingest/scripts/verify_aggregate.py`,
+`ingest/scripts/check.py`, `Makefile`
 **Scope:** M
 
 ---

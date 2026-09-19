@@ -75,11 +75,16 @@ Day 2 — 33 shapes, 683,797 pitches assigned, migrations 003–004, 75 tests.
   - [x] Verify: re-run reports the same 28/14 and changes nothing
   - [x] `check.py` now asserts pool size 9–20 and that no Jays hitter is unseen
 
-- [ ] **Task 14: `aggregate.py`** (M) — depends on 12, 13
-  - [ ] Chase denominator is `FILTER (WHERE in_zone IS FALSE)` — NULL is not out-of-zone
-  - [ ] `stand` in the group-by — a switch-hitter is two rows
-  - [ ] Verify: hitter rows sum to league rows per `(stand, shape_id)` — added to `check.py`
-  - [ ] Verify: re-run produces identical values
+- [x] **Task 14: `aggregate.py`** (M) — DONE — `make aggregate`, `make verify`
+  - [x] Chase denominator is `FILTER (WHERE in_zone IS FALSE)` — NULL is not out-of-zone
+  - [x] `stand` in the group-by — Brandon Valenzuela appears with both sides
+  - [x] 23,742 hitter rows, 66 league rows, 3,834 zone rows (Jays pool only); 8 seconds
+  - [x] Verify: 0 league rows disagree with the sum of their hitters — now in `check.py`
+  - [x] Verify: re-run is byte-identical (same md5 over the whole table)
+  - [x] Verify: `verify_aggregate.py` re-counts all 14 Jays hitters in Python and
+        compares every field — **447 rows, 0 mismatches.** It found 42 real
+        disagreements first: Postgres rounds halves away from zero, Python rounds
+        to even. The database was right; the reference is now `Decimal`/`ROUND_HALF_UP`.
 
 - [ ] **Task 15: Thin-cell audit** (S) — depends on 14, 16
   - [ ] Median usable shapes per Jays hitter against a 4-pitch arsenal

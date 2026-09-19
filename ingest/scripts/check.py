@@ -44,6 +44,24 @@ CHECKS = [
                               "AND p.release_speed IS NOT NULL", lambda v: v >= 97),
     # The one that would catch a band edit gone wrong: every assigned pitch
     # must sit inside the band it was assigned to, on speed AND hand AND type.
+    # The strongest assertion in this file: every league row must equal the
+    # sum of the hitter rows behind it. A group-by that dropped or duplicated
+    # a dimension shows up here and almost nowhere else.
+    ("league reconciles",     "SELECT count(*) FROM (SELECT l.pitches_seen, l.swings, "
+                              "l.whiffs, l.out_of_zone, l.chases, l.batted_balls, "
+                              "sum(h.pitches_seen) sp, sum(h.swings) ss, sum(h.whiffs) sw, "
+                              "sum(h.out_of_zone) so, sum(h.chases) sc, "
+                              "sum(h.batted_balls) sb FROM league_shape_stats l "
+                              "JOIN hitter_shape_stats h ON h.method=l.method AND "
+                              "h.season=l.season AND h.stand=l.stand AND "
+                              "h.shape_id=l.shape_id GROUP BY 1,2,3,4,5,6) x WHERE "
+                              "(pitches_seen,swings,whiffs,out_of_zone,chases,batted_balls) "
+                              "IS DISTINCT FROM (sp,ss,sw,so,sc,sb)", lambda v: v == 0),
+    ("impossible rates",      "SELECT count(*) FROM hitter_shape_stats WHERE "
+                              "whiff_rate > 1 OR chase_rate > 1 OR whiffs > swings "
+                              "OR chases > out_of_zone OR swings > pitches_seen",
+                              lambda v: v == 0),
+
     ("misassigned pitches",   "SELECT count(*) FROM shape_assignments a "
                               "JOIN pitches p USING (game_pk, at_bat_number, pitch_number) "
                               "JOIN pitch_shapes s ON s.method=a.method "
