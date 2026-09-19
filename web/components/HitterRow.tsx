@@ -1,3 +1,4 @@
+import Headshot from "./Headshot";
 import HitterDetail from "./HitterDetail";
 import { shortLabel } from "@/lib/labels";
 import type { Cell } from "@/lib/matchup";
@@ -32,13 +33,16 @@ export default function HitterRow({
   return (
     <li className="hitter">
       <div className="hitter-head">
-        <span className="hitter-name">{hitter.name}</span>
-        <span className="hitter-meta">
-          {hitter.position}
-          {hitter.stand ? ` · bats ${hitter.stand}` : ""}
-          {" · "}
-          {usable} of {arsenal.length} with enough history
-        </span>
+        <Headshot id={hitter.id} size={48} />
+        <div className="hitter-id">
+          <span className="hitter-name">{hitter.name}</span>
+          <span className="hitter-meta">
+            {hitter.position}
+            {hitter.stand ? ` · bats ${hitter.stand}` : ""}
+            {" · "}
+            {usable} of {arsenal.length} with enough history
+          </span>
+        </div>
       </div>
 
       <ul className="chips">

@@ -684,6 +684,45 @@ figure is **9,446**; the original excluded two pitches that carry a type but no
 release speed. `make check` now asserts that assigned + unshaped equals every
 typed pitch, so the footnote cannot silently under-report.
 
+### 51. Headshots come straight from MLB's CDN, with no error handling ✅
+
+`https://midfield.mlbstatic.com/v1/people/<mlbam_id>/spots/120`. All fourteen
+Blue Jays hitters resolve, as do the pitchers.
+
+**Measured, and it decided the design:** a nonexistent id returns **200 with
+MLB's own grey silhouette**, not a 404. So there is no broken-image state to
+catch, which means no `onError`, which means no client component — the
+headshot stays a plain server-rendered `<img>`.
+
+`width` and `height` are in the markup rather than only in CSS, so the box is
+reserved before the image loads. Cumulative layout shift measured **0** with
+fifteen images on the page.
+
+`alt` is empty on purpose. Every headshot sits beside the player's name in
+text; giving it an alt would make a screen reader announce the name twice.
+Accessibility still 100.
+
+**What it costs:** the images are hotlinked. If MLB changes the path or blocks
+hotlinking, every face becomes a broken image at once. Nothing else breaks —
+the page is entirely readable without them. Caching them locally would remove
+the dependency and add a build step and a storage question; not worth it for
+fourteen files that MLB serves from a CDN already.
+
+### 52. A screenshot is not a measurement ❌ *(prediction)*
+
+Chrome's older `--headless --screenshot --window-size=390` produced a matchup
+page with text clipped off the right edge, which looked exactly like a
+responsive-layout bug and nearly sent me to fix one.
+
+`document.scrollWidth` measured through a real viewport: **390, equal to the
+client width. No overflow at all.** The clipping was an artifact of how that
+screenshot mode sizes the layout viewport.
+
+The tooling is now puppeteer-core driving the installed Chrome, which reports
+scrollWidth and names every element extending past the viewport. Kept in the
+scratchpad, not the repo — it is a measuring instrument, not part of the
+build.
+
 ---
 
 ## Open — still to defend

@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 
+import Headshot from "./Headshot";
 import { MIN_QUERY_LENGTH, type Pitcher } from "@/lib/search";
 
 type State =
@@ -125,6 +126,7 @@ export default function PitcherSearch({
                 onMouseEnter={() => setActive(i)}
                 onClick={() => onSelect(p)}
               >
+                <Headshot id={p.id} size={36} />
                 <span className="result-name">{p.name}</span>
                 <span className="result-meta">
                   {p.throws === "L" ? "LHP" : p.throws === "R" ? "RHP" : "—"} ·{" "}

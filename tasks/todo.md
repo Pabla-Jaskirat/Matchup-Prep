@@ -192,6 +192,8 @@ driver is ever upgraded past v8.
         can name the pitches it cannot rate instead of reporting an anonymous
         percentage. Imanaga's splitter is 34% of his arsenal. 219 rows;
         `make check` asserts assigned + unshaped = every typed pitch.
+  - [x] Follow-up 2026-09-19: **headshots** on hitter rows, the pitcher header
+        and the search results. CLS still 0, accessibility still 100.
   - [ ] Verify: **complete the whole flow on your actual phone** — search,
         pick, expand a hitter
 

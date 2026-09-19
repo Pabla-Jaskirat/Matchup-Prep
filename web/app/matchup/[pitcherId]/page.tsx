@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import Headshot from "@/components/Headshot";
 import HitterRow from "@/components/HitterRow";
 import { shortLabel } from "@/lib/labels";
 import { getMatchup } from "@/lib/matchup-data";
@@ -37,14 +38,19 @@ export default async function MatchupPage({
         ← Pick another pitcher
       </Link>
 
-      <h1>
-        {pitcher.name} <span className="hand">{hand}</span>
-      </h1>
-      <p className="tagline">
-        {pitcher.pitches.toLocaleString()} pitches in {matchup.season} ·{" "}
-        {arsenal.length} pitch{arsenal.length === 1 ? "" : "es"} he throws at least 3% of
-        the time
-      </p>
+      <header className="pitcher-head">
+        <Headshot id={pitcher.id} size={96} className="headshot-lg" />
+        <div>
+          <h1>
+            {pitcher.name} <span className="hand">{hand}</span>
+          </h1>
+          <p className="tagline">
+            {pitcher.pitches.toLocaleString()} pitches in {matchup.season} ·{" "}
+            {arsenal.length} pitch{arsenal.length === 1 ? "" : "es"} he throws at least
+            3% of the time
+          </p>
+        </div>
+      </header>
 
       {edge && (
         <section className="edge">
