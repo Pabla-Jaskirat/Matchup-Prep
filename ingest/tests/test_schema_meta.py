@@ -76,3 +76,11 @@ def test_an_assignment_is_keyed_by_the_pitch_it_describes():
     sql = (MIGRATIONS / "003_shapes.sql").read_text()
     assert sm.primary_key(sql, "shape_assignments") == [
         "method", "game_pk", "at_bat_number", "pitch_number"]
+
+
+def test_a_group_cannot_acquire_two_open_bottom_bands():
+    # Every group's slowest band has velo_min NULL, and Postgres' default rule
+    # treats two NULLs as different values -- so without NULLS NOT DISTINCT the
+    # uniqueness constraint would permit exactly the duplicate it exists to stop.
+    sql = "\n".join(p.read_text() for p in sorted(MIGRATIONS.glob("*.sql")))
+    assert "UNIQUE NULLS NOT DISTINCT (method, p_throws, pitch_type, velo_min)" in sql

@@ -2,8 +2,11 @@
 
 Plan: `tasks/plan.md` · 7-day context: `PLAN.md` · Day 1 archive: `tasks/day1-todo.md`
 
-**Done:** Day 1 — 696,100 pitches, 2,525 players, migrations 001–002, `make refresh`
-idempotent, 8 commits.
+**Done:** Day 1 — 696,100 pitches, 2,525 players, migrations 001–002.
+Day 2 — 33 shapes, 683,797 pitches assigned, migrations 003–004, 75 tests.
+
+**Loose ends:** `requirements.txt` added 2026-09-18. `players.team` still 100% NULL
+until Task 16. No README until Task 22.
 
 ---
 
@@ -40,6 +43,9 @@ idempotent, 8 commits.
   - [x] Verify: re-run wrote the same 683,797 rows; counts unchanged
   - [x] Verify: all 33 per-shape DB counts equal the JSON exactly — the SQL predicate
         and the Python banding independently agree
+  - [x] Verify: 0 of 683,797 assigned pitches sit outside their own band (now in `make check`)
+  - [x] Follow-up: `004_shape_band_unique.sql` adds the `UNIQUE … NULLS NOT DISTINCT`
+        constraint that Task 11 was supposed to include and I left out
 
 - [x] **CHECKPOINT A — Day 2 done**
   - [x] Query lists every shape with its count
@@ -53,7 +59,7 @@ idempotent, 8 commits.
 
 ## Phase 2: The answer exists in SQL (Day 3)
 
-- [ ] **Task 13: Migration `004_stats.sql`** (S)
+- [ ] **Task 13: Migration `005_stats.sql`** (S)
   - [ ] Three stats tables; counts stored beside every rate
 
 - [ ] **Task 16: Blue Jays roster** (S) — *no dependencies, do it whenever*

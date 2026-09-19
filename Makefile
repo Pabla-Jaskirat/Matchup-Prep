@@ -8,7 +8,7 @@ SEASON ?= 2026
 
 .PHONY: refresh fetch migrate load players describe check test shapes-analyze shapes-choose shapes
 
-refresh: fetch migrate load players	## full pipeline, in order
+refresh: fetch migrate load players shapes	## full pipeline, in order
 
 fetch:					## download Statcast into data/raw (skips cached weeks)
 	$(PY) ingest/scripts/fetch.py --season $(SEASON)

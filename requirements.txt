@@ -1,0 +1,17 @@
+# Python 3.12. Create the environment the Makefile expects:
+#
+#   python3 -m venv ingest/.venv
+#   ingest/.venv/bin/pip install -r requirements.txt
+#
+# Versions are pinned to what the 2026 ingest actually ran against, so a
+# reviewer cloning this repo reproduces the numbers rather than whatever
+# pandas ships next month.
+
+pybaseball==2.2.7        # Statcast download (fetch.py)
+pandas==3.0.5
+numpy==2.5.3
+pyarrow==25.0.1          # parquet cache in data/raw
+psycopg2-binary==2.9.13  # Postgres driver
+python-dotenv==1.2.3     # reads .env; the connection string never enters the repo
+requests==2.34.2         # MLB StatsAPI (build_players.py)
+pytest==9.1.1

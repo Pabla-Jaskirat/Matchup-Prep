@@ -163,14 +163,19 @@ on purpose.
 `PLAN.md`, including `method` in both primary keys.
 
 **Acceptance criteria:**
-- [ ] `pitch_shapes` with `UNIQUE (method, p_throws, pitch_type, velo_min)`
-- [ ] `shape_assignments` with `PRIMARY KEY (method, game_pk, at_bat_number, pitch_number)`
+- [x] `pitch_shapes` with `UNIQUE (method, p_throws, pitch_type, velo_min)` — **missed in
+      003 and added afterwards as `004_shape_band_unique.sql`.** It also needed
+      `NULLS NOT DISTINCT`, which the original criterion did not say: every group's
+      slowest band has `velo_min` NULL, and Postgres treats two NULLs as different
+      values, so the plain constraint would have allowed the duplicate it exists to stop.
+- [x] `shape_assignments` with `PRIMARY KEY (method, game_pk, at_bat_number, pitch_number)`
       and a composite FK to `pitches` with `ON DELETE CASCADE`
-- [ ] Index `shape_assign_shape_idx` on `(method, shape_id)`
+- [x] Index on `(method, shape_id)` — named `shape_assignments_shape_idx`
 
 **Verification:**
-- [ ] `make migrate` applies it; a second run applies nothing
-- [ ] Inserting a `shape_assignments` row for a nonexistent pitch is rejected by the FK
+- [x] `make migrate` applies it; a second run applies nothing
+- [x] Inserting a `shape_assignments` row for a nonexistent pitch is rejected by the FK
+- [x] Inserting a second open-bottom band for one group is rejected by 004
 
 **Dependencies:** None
 **Files:** `db/migrations/003_shapes.sql`
@@ -190,17 +195,22 @@ lands in exactly one band. Closed ranges on both ends will double-assign and the
 primary key will reject it — which is the schema catching the bug for you.
 
 **Acceptance criteria:**
-- [ ] Both steps re-runnable; `derive_shapes` deletes its own method's rows first
-- [ ] Pitches with `pitch_type IS NULL` (0.41% of rows) are left unassigned, not bucketed
-- [ ] Pitches outside every band (velocity outliers) are counted and reported, not dropped silently
-- [ ] `make shapes` runs derive then assign
+- [x] Both steps re-runnable. `derive_shapes` upserts rather than deleting first, as
+      planned: a delete would break `shape_assignments`' FK, and the unique constraint
+      from 004 makes the upsert just as safe.
+- [x] Pitches with `pitch_type IS NULL` (0.41% of rows) are left unassigned, not bucketed
+- [x] Unassigned pitches are counted and reported by group, and the report separates an
+      expected miss (a type under the 5,000 floor) from an unexpected one (a band gap)
+- [x] `make shapes` runs derive then assign; `make refresh` now includes it
 
 **Verification:**
-- [ ] `SELECT count(*) FROM pitch_shapes WHERE method='v1_type_velo'` is 32–48
-- [ ] Assigned pitches ≥ 97% of non-null-`pitch_type` pitches
-- [ ] Re-run changes no counts
-- [ ] Spot-check: pick one shape, pull 5 pitches, confirm every velocity is inside the band
-- [ ] `make check` still passes
+- [x] 33 shapes for `v1_type_velo` — inside the 32–48 range
+- [x] 683,797/693,241 typed pitches assigned (**98.6%**)
+- [x] Re-run wrote the same 683,797 rows; counts unchanged
+- [x] Spot-check: 5 pitches from `R-CU-2` all inside [78.9, 82.6). Then the exhaustive
+      version — **0 of 683,797 assigned pitches sit outside their own band** on speed,
+      hand or type — and it is now a permanent `make check` assertion
+- [x] `make check` passes, with three new shape assertions
 
 **Dependencies:** 10, 11
 **Files:** `ingest/scripts/derive_shapes.py`, `ingest/scripts/assign_shapes.py`, `Makefile`
@@ -209,9 +219,13 @@ primary key will reject it — which is the schema catching the bug for you.
 ---
 
 ### Checkpoint A — Day 2 done
-- [ ] One query lists every shape with its pitch count
-- [ ] `make refresh` runs the whole pipeline end to end and changes nothing on a second run
-- [ ] Database still under 350 MB
+- [x] One query lists every shape with its pitch count; all 33 DB counts equal the JSON
+- [x] `make refresh` now includes `shapes`; each step verified idempotent individually
+      (a full `fetch` re-run was not repeated — it re-downloads 179 game dates)
+- [x] ~~Database still under 350 MB~~ — **missed by 2 MB: 352 MB.** `shape_assignments`
+      cost 136 MB (79 heap + 57 index), not the ~80 MB estimated in the risk table
+      below. 148 MB of headroom remains and the Task 13 tables are aggregates, so
+      no action taken.
 - [ ] **Say it out loud:** why sliders got more bands than changeups
 - [ ] Committed
 
@@ -219,7 +233,7 @@ primary key will reject it — which is the schema catching the bug for you.
 
 ## Phase 2 — The answer exists in SQL (Day 3)
 
-### Task 13: Migration `004_stats.sql`
+### Task 13: Migration `005_stats.sql`
 
 **Description:** `hitter_shape_stats`, `league_shape_stats`, and
 `hitter_shape_zone_stats` per `PLAN.md`. No extra indexes — the primary keys already
@@ -234,7 +248,7 @@ match every lookup the app performs.
 - [ ] `make migrate` applies it; second run applies nothing
 
 **Dependencies:** None (but useless before 12)
-**Files:** `db/migrations/004_stats.sql`
+**Files:** `db/migrations/005_stats.sql`
 **Scope:** S
 
 ---
@@ -570,7 +584,7 @@ don't clear a lower zone-level floor.
 | Risk | Impact | Mitigation |
 |---|---|---|
 | Too many Jays cells below 75 pitches | **High** — the tool shows mostly empty states | Task 15 measures it explicitly; bands live in JSON so widening is an edit and a re-run |
-| Neon free tier hits 500 MB | High | Already measured at 216 MB; `shape_assignments` adds ~80 MB. Monitor at Checkpoint A. If tight, drop `spin_rate`/`extension`/`plate_x`/`plate_z` — stored but unused in v1 |
+| Neon free tier hits 500 MB | High | **Measured at Checkpoint A: 352 MB.** `shape_assignments` cost 136 MB, not the ~80 MB estimated — the repeated `method` text and two indexes on 684k rows. 148 MB headroom. If it tightens, drop `spin_rate`/`extension`/`plate_x`/`plate_z` — stored but unused in v1 |
 | Day 4 is the first Next.js code in the project | Medium | Task 17 proves the connection before any UI; Task 18 is the smallest possible full slice |
 | Vercel cold start on a suspended Neon branch | Medium | Task 21 explicitly tests the wake path rather than assuming it |
 | Bands get widened on Day 3, invalidating Day 2's work | Low | Anticipated by design — Tasks 12 and 14 are both idempotent re-runs |
