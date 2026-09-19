@@ -1,0 +1,149 @@
+/* Built narrow-first: a coach opens this on a phone in a clubhouse. */
+
+:root {
+  color-scheme: light dark;
+  --bg: #fbfbfa;
+  --fg: #16181d;
+  --muted: #5b6270;
+  --line: #dcdfe4;
+  --card: #ffffff;
+  --accent: #134a8e; /* Blue Jays blue */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14161a;
+    --fg: #f2f3f5;
+    --muted: #9aa3b0;
+    --line: #2b2f37;
+    --card: #1c1f25;
+    --accent: #7fb2ee;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+
+.page {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+}
+
+h1 {
+  font-size: 1.35rem;
+  margin: 0 0 0.25rem;
+}
+
+.tagline {
+  margin: 0 0 1.75rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  font-size: 1rem; /* 16px or iOS zooms the page on focus */
+  color: var(--fg);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.status {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  min-height: 1.2rem;
+}
+
+.results {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--card);
+}
+
+.result {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.6rem;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  min-height: 44px; /* thumb-sized */
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.results li:last-child .result {
+  border-bottom: 0;
+}
+
+.result-active,
+.result:focus-visible {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  outline: none;
+}
+
+.result-name {
+  font-weight: 600;
+}
+
+.result-meta {
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.chosen {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+}
+
+.chosen h2 {
+  margin: 0 0 0.2rem;
+  font-size: 1.05rem;
+}
+
+.chosen p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}

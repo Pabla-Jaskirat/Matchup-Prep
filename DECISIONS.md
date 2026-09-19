@@ -376,6 +376,59 @@ boundary; it goes to the server log.
 **First run measured:** 3.0 s cold (Neon waking from idle), 120 ms warm. The cold
 path is what Task 21 has to verify on the deployed app.
 
+### 32. Search is substring matching, not fuzzy matching ✅
+
+Typing `sku` finds Skubal because those three letters are in his name. Typing
+`scoobal` finds nothing.
+
+Trigram *similarity* could have matched the typo, and the temptation was real —
+it demos well. But a coach who mistypes and gets confidently handed the wrong
+pitcher has been actively misled, and there is no way to tell from the screen.
+Similarity is still used, but only to order names that already matched.
+
+**What it cost:** no typo tolerance.
+**What would change it:** a coach telling me they type fast and mistype often.
+
+### 33. Accents are stripped on both sides, in a generated column ✅
+
+Statcast spells names with their accents — `Jesús Luzardo`, `Cristopher Sánchez`
+— and nobody types them. Migration 007 stores `search_name`, an unaccented
+lowercase copy, and puts the trigram index there.
+
+`unaccent()` is STABLE rather than IMMUTABLE because it resolves its dictionary
+through `search_path`, and a generated column requires IMMUTABLE. The wrapper
+names the dictionary explicitly, which makes the immutability claim honest
+rather than a lie to the planner.
+
+**Verified:** `sanchez` finds `Cristopher Sánchez`; `nunez` and `Núñez` return
+the same six names.
+
+### 34. A pitcher needs 200 pitches to appear in search ✅
+
+Otherwise typing two letters returns position players who threw one mop-up
+inning. There is no arsenal to show for a man who threw eleven pitches all year.
+
+**Measured:** 635 pitchers clear it in 2026, and `make check` now asserts that
+count stays in range. Aaron Judge, who has pitched, does not appear.
+
+### 35. The typed query is escaped before it reaches LIKE ✅
+
+`%` and `_` are LIKE wildcards. Without escaping, a single `%` returns the whole
+table, and `%` typed into a search box is not hypothetical. `escapeLike()` is
+pure and tested, including the case that matters: the backslash is escaped
+first, or the escaping escapes its own output.
+
+**Verified:** `%%` and `__` both return nothing.
+
+### 36. The pitch count is a correlated subquery, not a join ✅
+
+Counting every pitcher's pitches means grouping 696,100 rows. Counting only the
+names that already matched three typed letters means one index lookup each.
+
+**Measured:** 0.76 ms execution, `Bitmap Index Scan on players_search_trgm_idx`
+in the plan. Worst realistic case — a two-letter query matching ~600 names —
+is 57 ms warm.
+
 ---
 
 ## Open — still to defend

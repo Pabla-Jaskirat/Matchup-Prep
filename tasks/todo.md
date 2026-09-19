@@ -125,10 +125,23 @@ Day 4 — Next.js scaffold and a health route that reaches Neon.
   - [x] Verify: `git status` shows no `.env.local` and no `node_modules`
   - [x] 10 web tests added; `make test` now runs both suites
 
-- [ ] **Task 18: Pitcher search** (M) — depends on 17 — *first full vertical slice*
-  - [ ] Trigram search, ≥200-pitch floor, capped at 10
-  - [ ] Verify: "sku" finds Skubal; "zzz" is an empty state, not a crash
-  - [ ] Verify: `EXPLAIN` shows the trigram index in use
+- [x] **Task 18: Pitcher search** (M) — DONE — *first full vertical slice*
+  - [x] Migration **`007_player_search.sql`**: `search_name` generated column
+        (unaccented, lowercased) + trigram index. 001's index was on `full_name`,
+        which cannot match `sanchez` to `Cristopher Sánchez`.
+  - [x] Substring match, not fuzzy — `scoobal` finds nothing on purpose.
+        Similarity only orders names that already matched.
+  - [x] ≥200 pitches in 2026, capped at 10; **635 pitchers qualify**
+  - [x] Verify: "sku" → Tarik Skubal · "sanchez" → Cristopher Sánchez ·
+        "zzz" → empty 200 · "" → empty without touching the database ·
+        `%%` and `__` → empty, not the whole table
+  - [x] Verify: `EXPLAIN (ANALYZE)` shows `Bitmap Index Scan on
+        players_search_trgm_idx`; **0.76 ms**, 57 ms for a two-letter query
+  - [x] Keyboard alone: ↓/↑ move, Enter takes the highlighted or top result,
+        Esc closes; `role="combobox"` + `aria-activedescendant`
+  - [x] Built narrow-first: 44 px targets, 16 px input (below that iOS zooms)
+  - [ ] Verify: **open it at 390 px yourself** — `make dev`, then your phone
+        on the same wi-fi at the Network address Next prints
 
 - [ ] **Task 19: Matchup API + main screen** (M) — depends on 18
   - [ ] 50-pitch rule applied **in the API**, as `{kind:'value'}` | `{kind:'insufficient'}`

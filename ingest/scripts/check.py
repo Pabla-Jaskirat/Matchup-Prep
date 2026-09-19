@@ -65,6 +65,12 @@ CHECKS = [
                               "OR chases > out_of_zone OR swings > pitches_seen",
                               lambda v: v == 0),
 
+    # What the search box can actually offer. 635 in 2026; a collapse here
+    # means either the season filter or the 200-pitch floor has drifted.
+    ("searchable pitchers",   "SELECT count(*) FROM (SELECT pitcher_id FROM pitches "
+                              "WHERE season = 2026 GROUP BY 1 HAVING count(*) >= 200) x",
+                              lambda v: 400 <= v <= 900),
+
     ("misassigned pitches",   "SELECT count(*) FROM shape_assignments a "
                               "JOIN pitches p USING (game_pk, at_bat_number, pitch_number) "
                               "JOIN pitch_shapes s ON s.method=a.method "
