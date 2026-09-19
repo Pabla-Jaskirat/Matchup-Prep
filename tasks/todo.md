@@ -1,6 +1,8 @@
 # Matchup Prep — TODO (Days 2–7)
 
 Plan: `tasks/plan.md` · 7-day context: `PLAN.md` · Day 1 archive: `tasks/day1-todo.md`
+**Decision log: `DECISIONS.md`** — every judgment call, what it cost, and what
+would change it. Update it whenever a task makes or overturns a decision.
 
 **Done:** Day 1 — 696,100 pitches, 2,525 players, migrations 001–002.
 Day 2 — shapes and assignments, migrations 003–004.
