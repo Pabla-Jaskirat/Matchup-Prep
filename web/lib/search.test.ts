@@ -60,3 +60,16 @@ test("the floors are the ones the plan specified", () => {
   assert.equal(MIN_PITCHES, 200);
   assert.equal(RESULT_LIMIT, 10);
 });
+
+// --- labels ---------------------------------------------------------------
+
+import { shortLabel } from "./labels.ts";
+
+test("shortLabel drops the handedness prefix the header already shows", () => {
+  assert.equal(shortLabel("RHP Splitter 85-88"), "Splitter 85-88");
+  assert.equal(shortLabel("LHP Four-Seam"), "Four-Seam");
+});
+
+test("shortLabel leaves a label that has no prefix alone", () => {
+  assert.equal(shortLabel("Four-Seam"), "Four-Seam");
+});

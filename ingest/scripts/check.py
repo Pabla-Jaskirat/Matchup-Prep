@@ -60,6 +60,15 @@ CHECKS = [
                               "h.shape_id=l.shape_id GROUP BY 1,2,3,4,5,6) x WHERE "
                               "(pitches_seen,swings,whiffs,out_of_zone,chases,batted_balls) "
                               "IS DISTINCT FROM (sp,ss,sw,so,sc,sb)", lambda v: v == 0),
+    # The arsenal side must account for exactly the same pitches the hitter
+    # side does. A drift here means one of the two aggregates was rebuilt and
+    # the other was not.
+    ("pitcher shapes total",  "SELECT (SELECT coalesce(sum(pitches),0) FROM "
+                              "pitcher_shape_stats WHERE method='v1_type_velo' "
+                              "AND season=2026) - (SELECT count(*) FROM "
+                              "shape_assignments WHERE method='v1_type_velo')",
+                              lambda v: v == 0),
+
     ("impossible rates",      "SELECT count(*) FROM hitter_shape_stats WHERE "
                               "whiff_rate > 1 OR chase_rate > 1 OR whiffs > swings "
                               "OR chases > out_of_zone OR swings > pitches_seen",

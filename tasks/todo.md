@@ -143,11 +143,25 @@ Day 4 — Next.js scaffold and a health route that reaches Neon.
   - [ ] Verify: **open it at 390 px yourself** — `make dev`, then your phone
         on the same wi-fi at the Network address Next prints
 
-- [ ] **Task 19: Matchup API + main screen** (M) — depends on 18
-  - [ ] 50-pitch rule applied **in the API**, as `{kind:'value'}` | `{kind:'insufficient'}`
-  - [ ] Arsenal floor 3% of pitches — confirm it yields 3–5 shapes for real starters
-  - [ ] "Tonight's edge" computed server-side
-  - [ ] Verify: three real pitchers checked against hand-run SQL
+- [x] **Task 19: Matchup API + main screen** (M) — DONE — `/matchup/<id>`
+  - [x] Migration **`008_pitcher_shapes.sql`** + a fourth aggregate:
+        `shape_assignments` has no pitcher_id, so the arsenal could not be
+        answered without scanning `pitches`. 5,379 rows.
+  - [x] 50-pitch rule in `lib/matchup.ts`, as a discriminated union the
+        component cannot render past without handling
+  - [x] Arsenal floor 3% — **measured: Sánchez 3, Gausman 4, Skubal 5,
+        Wheeler 7.** PLAN.md predicted 3–5; the top end was wrong. Kept.
+  - [x] "Tonight's edge" server-side — Gausman: his slider, for 5 of 14
+  - [x] **Changed the definition of "worst":** relative to the hitter's own
+        arsenal, not absolute vs league. The median displayable Jays cell is
+        3.9 points *better* than league, so the absolute version left the page
+        blank and said nothing about Guerrero. League is still the chip colour.
+  - [x] Verify: `verify_matchup.py` re-derives everything from raw `pitches` —
+        **171 assertions across three pitchers, 0 problems** (`make verify-matchup`)
+  - [x] Verify: no route touches `pitches`; 4 aggregate queries, **80 ms API /
+        160 ms page warm** against a 300 ms budget (pool `max` 1 → 5)
+  - [x] Verify: unknown id → 404 with a usable message; `abc` → 400
+  - [ ] Verify: **nine hitters without sideways scroll at 390px — yours to check**
 
 - [ ] **Task 20: Detail view, empty states, phone** (M) — depends on 19
   - [ ] League comparison in words, never a percentile; count on every rate

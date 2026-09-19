@@ -66,8 +66,12 @@ export function getPool(): Pool {
   const connectionString = requireUrl(process.env);
   globalForPg.matchupPool = new Pool({
     connectionString,
-    // One connection per serverless instance; the pooler does the real pooling.
-    max: 1,
+    // A handful, not one. The matchup page issues four independent queries
+    // through Promise.all; with max:1 they queued behind each other and the
+    // page paid four sequential round trips to us-east-1 instead of one.
+    // Neon's pooler is what protects Postgres from the connection count, so
+    // the job here is only to let one request's own queries overlap.
+    max: 5,
     idleTimeoutMillis: 10_000,
     connectionTimeoutMillis: 10_000,
   });

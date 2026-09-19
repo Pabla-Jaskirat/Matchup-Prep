@@ -429,13 +429,105 @@ names that already matched three typed letters means one index lookup each.
 in the plan. Worst realistic case — a two-letter query matching ~600 names —
 is 57 ms warm.
 
+### 37. The arsenal became a fourth aggregate table ✅
+
+`shape_assignments` is keyed by the pitch's natural key and carries no
+pitcher_id, so "what does tonight's starter throw?" could not be answered
+without joining 683,797 assignment rows to `pitches` on every page load —
+breaking the one rule 005 exists to enforce.
+
+Migration 008 adds `pitcher_shape_stats`: one row per pitcher per shape, 5,379
+rows. `season_pitches` is repeated on every row and counts *everything* he
+threw, shaped or not, because the arsenal floor is a share and the honest
+denominator is the real workload. A pitcher whose splitter fell under the
+league floor should see his other shares shrink, not be told he throws 8%
+splitters when he throws 6%.
+
+**What it cost:** a fourth table to keep in step. `make check` now asserts its
+total equals the assignment count exactly.
+
+### 38. The 3% arsenal floor yields 3 to 7 shapes, not 3 to 5 ❌ *(prediction)*
+
+PLAN.md's open question was whether 3% gives "3–5 shapes for real starters."
+Measured: **Sánchez 3, Gausman 4, Skubal 5, Wheeler 7.** The prediction was
+low at the top end.
+
+Kept anyway. Wheeler genuinely throws seven distinct pitches; collapsing them
+to five would be hiding a fact about him to protect a layout. The layout was
+changed instead — chips that wrap, not table columns.
+
+**The floor earned its keep elsewhere:** Gausman's splitter splits across two
+velocity bands (under 85 at 28.8%, 85–88 at 9.4%). That is the Task 15
+velocity banding paying for itself on a real arsenal.
+
+### 39. "Worst pitch" is relative to the hitter, not absolute ✅ 🤔
+
+PLAN.md defined tonight's edge as "the shape with the most weak hitters,"
+where weak meant *below league*. Measured on the real data, that definition
+nearly empties the page.
+
+Of the 100 Jays hitter-shape cells thick enough to display, the median sits
+**3.9 percentage points better than league** on whiff rate. At a ±5-point
+margin that is 13% worse, 42% better, 45% typical. These are good major-league
+hitters, and the cells thick enough to show are the pitches they see most.
+
+So the marker is his own worst pitch *of tonight's arsenal*. This is also the
+only definition that answers the question for Guerrero, who beats league on
+every shape he has data for: his worst pitch is only his least-good one, and
+"which one do we throw him" still has an answer.
+
+The league comparison is still on the page — it is the colour of each chip,
+and the words are "misses more / about the same / misses less than league."
+Both facts are shown; only one is used to rank.
+
+**What would change it:** a coach saying he only wants pitches where a hitter
+is genuinely below average, and is happy with a mostly empty page.
+
+### 40. The page is a server component calling the same function as the API ✅
+
+`getMatchup()` lives in `lib/matchup-data.ts` and both the route and the page
+call it. The page does not fetch its own API over HTTP.
+
+Two entry points, one implementation. If the page had its own copy of those
+queries, the 50-pitch rule would eventually be applied in one and not the
+other — which is exactly the failure the discriminated `Cell` union exists to
+prevent at the component level.
+
+### 41. The connection pool allows five connections, not one ✅ *(revised)*
+
+Decision 30 set `max: 1` on the reasoning that the Neon pooler does the real
+pooling. True, but it also serialised the matchup page's four independent
+queries: `Promise.all` queued them behind a single connection and the page
+paid four sequential round trips to us-east-1.
+
+**Measured:** 280 ms → 80 ms warm for the API, 160 ms for the rendered page,
+against a 300 ms budget. The pooler is still what protects Postgres from the
+connection count; `max` only governs whether one request's own queries may
+overlap.
+
+### 42. Verified against SQL run off the raw pitches ✅
+
+`verify_matchup.py` pulls the API's JSON and re-derives every arsenal, every
+cell's counts, every whiff rate and every league verdict directly from
+`pitches` and `shape_assignments` — the tables the app deliberately never
+reads.
+
+**171 assertions across Gausman, Skubal and Sánchez, 0 problems.** Agreement
+means the aggregates, the arsenal floor, the 50-pitch rule, the switch-hitter
+stand selection and the league comparison all survived the trip to JSON.
+
 ---
 
 ## Open — still to defend
 
 - **The 50-pitch floor.** Thinner than ideal. Justified only by showing counts.
-- **The 3% arsenal floor.** Chosen, not measured. Needs confirming that it yields
-  3–5 shapes for real starters (Task 19).
+- **The 3% arsenal floor.** Now measured: 3–7 shapes, median 5. Still a chosen
+  number, but no longer an unexamined one.
+- **The ±5-point league margin.** Chosen to be a fifth of a ~25% league whiff
+  rate. Not derived from anything.
+- **Whiff rate is the only metric that ranks.** Chase rate and xwOBA are stored
+  and shown but do not decide the marker. Whiff survives a 50-pitch sample;
+  xwOBA on contact does not.
 - **Inheriting Statcast's pitch classifier.** The slider/sweeper overlap is the
   concrete example of where it fails.
 - **Sean Keys and two other hitters** will show almost nothing. The page must say

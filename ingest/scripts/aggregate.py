@@ -31,8 +31,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 import db
 
-# Shared by all three inserts: pitches of one method and season, each already
-# carrying its shape.
+# Shared by the hitter, league and zone inserts: pitches of one method and
+# season, each already carrying its shape.
 SOURCE = """
 FROM pitches p
 JOIN shape_assignments a USING (game_pk, at_bat_number, pitch_number)
@@ -97,7 +97,29 @@ SELECT %(method)s, p.season, p.batter_id, p.stand, a.shape_id, p.zone,
 GROUP BY p.season, p.batter_id, p.stand, a.shape_id, p.zone
 """
 
+# The arsenal side: what each pitcher actually throws.
+#
+# It cannot reuse SOURCE -- SOURCE ends in a WHERE clause, and this needs a
+# third join for the season total.
+#
+# season_pitches is every pitch he threw in the season, shaped or not, because
+# the arsenal floor is a share and the honest denominator is the real workload.
+PITCHER = """
+INSERT INTO pitcher_shape_stats
+    (method, season, pitcher_id, shape_id, pitches, season_pitches)
+SELECT %(method)s, p.season, p.pitcher_id, a.shape_id,
+       count(*), max(t.season_pitches)
+FROM pitches p
+JOIN shape_assignments a USING (game_pk, at_bat_number, pitch_number)
+JOIN (SELECT pitcher_id, count(*) AS season_pitches
+      FROM pitches WHERE season = %(season)s GROUP BY 1) t
+  ON t.pitcher_id = p.pitcher_id
+WHERE a.method = %(method)s AND p.season = %(season)s
+GROUP BY p.season, p.pitcher_id, a.shape_id
+"""
+
 TABLES = [("hitter_shape_stats", HITTER),
+          ("pitcher_shape_stats", PITCHER),
           ("league_shape_stats", LEAGUE),
           ("hitter_shape_zone_stats", ZONE)]
 
