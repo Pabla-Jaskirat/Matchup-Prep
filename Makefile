@@ -6,9 +6,9 @@
 PY := ingest/.venv/bin/python
 SEASON ?= 2026
 
-.PHONY: refresh fetch migrate load players describe check test shapes-analyze shapes-choose shapes
+.PHONY: refresh fetch migrate load players describe check test shapes-analyze shapes-choose shapes roster
 
-refresh: fetch migrate load players shapes	## full pipeline, in order
+refresh: fetch migrate load players roster shapes	## full pipeline, in order
 
 fetch:					## download Statcast into data/raw (skips cached weeks)
 	$(PY) ingest/scripts/fetch.py --season $(SEASON)
@@ -21,6 +21,9 @@ load:					## parquet -> pitches (upsert on natural key)
 
 players:				## fill player names from MLB StatsAPI
 	$(PY) ingest/scripts/build_players.py
+
+roster:				## Blue Jays active roster -> players.team / players.position
+	$(PY) ingest/scripts/build_roster.py
 
 describe:				## print random pitches as English sentences
 	$(PY) ingest/scripts/describe_pitches.py --n 10

@@ -328,15 +328,21 @@ Store `team` and `position` on `players` via migration `005`, rather than hardco
 list of names. A hardcoded list is a thing a reviewer notices.
 
 **Acceptance criteria:**
-- [ ] Migration `005_roster.sql` adds `position text` to `players`
-- [ ] `build_roster.py` upserts the 28 roster entries, setting `team = 'TOR'` and position
-- [ ] Re-runnable; a player leaving the roster is handled (clear `team` for TOR players no longer listed)
-- [ ] `make roster` exists and is wired into `make refresh`
+- [x] Migration **`006_roster.sql`** (005 went to the stats tables) adds `position text`
+      to `players`, plus an index on `(team, position)` — the main screen's first query
+- [x] `build_roster.py` upserts all 28 roster entries with `team = 'TOR'` and position
+- [x] Re-runnable in both directions: a call-up is upserted, and anyone still recorded
+      as a Blue Jay but no longer listed has `team` and `position` cleared. It also
+      refuses to act on an empty roster response rather than clearing the whole team.
+- [x] `make roster` exists and runs in `make refresh`, after `players`
 
 **Verification:**
-- [ ] ~14 non-pitchers with `team = 'TOR'`
-- [ ] Every one of them has pitches in `pitches` — if a roster player has zero, say why (recent call-up) rather than ignoring it
-- [ ] `check.py` asserts the Jays hitter pool is between 9 and 20
+- [x] **Exactly 14** non-pitchers with `team = 'TOR'`
+- [x] All 14 have pitches on file, from Sean Keys (235) to Kazuma Okamoto (2,518).
+      Two *pitchers* have none — Brendan Cellucci and José Rodríguez, both recent
+      additions — which is expected and does not affect the hitter pool.
+- [x] `check.py` asserts the pool is 9–20, and separately that no Jays hitter has
+      zero pitches on file
 
 **Dependencies:** None
 **Files:** `db/migrations/005_roster.sql`, `ingest/scripts/build_roster.py`, `Makefile`, `ingest/scripts/check.py`

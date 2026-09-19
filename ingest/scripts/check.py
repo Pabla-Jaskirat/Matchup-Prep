@@ -23,6 +23,16 @@ CHECKS = [
                               "pitches) p LEFT JOIN players pl ON pl.mlbam_id = "
                               "p.pitcher_id WHERE pl.mlbam_id IS NULL", lambda v: v == 0),
 
+    # The hitter pool is what the main screen iterates over. If build_roster
+    # silently stopped working, this is where it surfaces.
+    ("jays hitters",          "SELECT count(*) FROM players "
+                              "WHERE team = 'TOR' AND position <> 'P'",
+                              lambda v: 9 <= v <= 20),
+    ("jays hitters unseen",   "SELECT count(*) FROM players p WHERE p.team='TOR' "
+                              "AND p.position <> 'P' AND NOT EXISTS (SELECT 1 FROM "
+                              "pitches b WHERE b.batter_id = p.mlbam_id)",
+                              lambda v: v == 0),
+
     ("shapes defined",        "SELECT count(*) FROM pitch_shapes "
                               "WHERE method = 'v1_type_velo'", lambda v: 32 <= v <= 48),
     ("pct pitches assigned",  "SELECT round(100.0*count(a.*)/count(*), 1) "

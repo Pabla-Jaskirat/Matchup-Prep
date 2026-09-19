@@ -5,8 +5,7 @@ Plan: `tasks/plan.md` · 7-day context: `PLAN.md` · Day 1 archive: `tasks/day1-
 **Done:** Day 1 — 696,100 pitches, 2,525 players, migrations 001–002.
 Day 2 — 33 shapes, 683,797 pitches assigned, migrations 003–004, 75 tests.
 
-**Loose ends:** `requirements.txt` added 2026-09-18. `players.team` still 100% NULL
-until Task 16. No README until Task 22.
+**Loose ends:** `requirements.txt` added 2026-09-18. No README until Task 22.
 
 ---
 
@@ -67,10 +66,14 @@ until Task 16. No README until Task 22.
   - [x] FK to `pitch_shapes` is composite `(method, shape_id)`; PLAN.md's sketched
         single-column `shape_id integer` FK was not creatable
 
-- [ ] **Task 16: Blue Jays roster** (S) — *no dependencies, do it whenever*
-  - [ ] `players.team` is currently **100% NULL** — StatsAPI returned `currentTeam: null`
-  - [ ] Migration `005_roster.sql` adds `position`; `build_roster.py` uses `/teams/141/roster`
-  - [ ] Verify: ~14 non-pitchers with `team='TOR'`, each with pitches on file
+- [x] **Task 16: Blue Jays roster** (S) — DONE — `make roster`
+  - [x] `players.team` was **100% NULL** — `/people` returns `currentTeam: null` without
+        hydration. Fixed at the source: the roster endpoint, where team is the question.
+  - [x] Migration **`006_roster.sql`** adds `position` + index on `(team, position)`
+  - [x] Verify: **exactly 14** non-pitchers with `team='TOR'`, every one with pitches
+        on file (235 to 2,518). Two pitchers have none; expected, they are recent adds.
+  - [x] Verify: re-run reports the same 28/14 and changes nothing
+  - [x] `check.py` now asserts pool size 9–20 and that no Jays hitter is unseen
 
 - [ ] **Task 14: `aggregate.py`** (M) — depends on 12, 13
   - [ ] Chase denominator is `FILTER (WHERE in_zone IS FALSE)` — NULL is not out-of-zone
