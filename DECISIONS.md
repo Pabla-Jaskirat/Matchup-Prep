@@ -875,6 +875,36 @@ it is the difference between a tool and a random number generator.
 score 0.312 and 16 score 0.315 — the extra granularity carries *no* extra
 information, and the merged version is marginally ahead.
 
+### 60. Hand + pitch type is the right level, tested from both directions ✅
+
+Dropping the speed band means a shape is the pitcher's hand plus whatever
+Statcast calls the pitch. That is worth saying plainly, and worth testing
+rather than defending — so the same split-half test ran on four groupings,
+coarse to fine.
+
+Reliability and spread pull against each other: coarse groups are measured
+precisely but blur real differences, fine groups capture more real difference
+but measure each one worse. What matters is how much *true* difference
+survives, which with reliability ρ is `sd × √ρ`.
+
+| grouping | observed spread | **real spread** |
+|---|---|---|
+| fastball / breaking / offspeed, with hand (6) | 6.3 pts | 4.5 |
+| pitch type only, hand ignored (8) | 6.7 pts | 4.5 |
+| **hand + pitch type (16)** | 7.2 pts | **5.0** |
+| hand + pitch type + speed (20) | 7.2 pts | 4.9 |
+
+**Hand + type wins, and it wins from both sides.** Coarser blurs real
+differences; finer measures noise. Ignoring handedness costs half a point,
+so handedness is carrying real weight — a left-hander's slider and a
+right-hander's slider break opposite ways relative to the batter, and the
+data agrees that matters.
+
+**What is inherited, stated plainly:** Statcast's classifier decides what is a
+slider and what is a sweeper. That work is not mine. What is mine is the
+handedness split, the sample floors, the league baseline, and the choice to
+stop at this level after measuring that going finer does not help.
+
 ---
 
 ## Open — still to defend
@@ -893,6 +923,8 @@ information, and the merged version is marginally ahead.
   and shown but do not decide the marker. Whiff survives a 50-pitch sample;
   xwOBA on contact does not.
 - **Inheriting Statcast's pitch classifier.** The slider/sweeper overlap is the
-  concrete example of where it fails.
+  concrete example of where it fails. Measured (#60): the classifier's fine
+  labels do beat three coarse buckets, so the inherited work is doing real
+  work — but it is still inherited, and the README must say so.
 - **Sean Keys and two other hitters** will show almost nothing. The page must say
   so clearly rather than look broken.

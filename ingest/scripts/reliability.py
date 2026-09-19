@@ -53,10 +53,20 @@ WHERE p.season = %(season)s AND a.method = %(method)s
 GROUP BY 1, 2, 3, 4
 """
 
+# Four ways of grouping the same pitches, coarse to fine. The point is to find
+# where the signal stops improving, not to assume it keeps improving.
+FAMILY = ("CASE WHEN a.shape_id ~ '-(FF|SI|FC)-' THEN 'fastball' "
+          "WHEN a.shape_id ~ '-(SL|ST|CU|KC|SV)-' THEN 'breaking' "
+          "ELSE 'offspeed' END")
+TYPE_ONLY = "split_part(a.shape_id,'-',2)"
+HAND_TYPE = "split_part(a.shape_id,'-',1) || '-' || split_part(a.shape_id,'-',2)"
+
 KEYS = {
-    "hand + type + speed (20)": "a.shape_id",
-    "hand + type only    (16)":
-        "split_part(a.shape_id,'-',1) || '-' || split_part(a.shape_id,'-',2)",
+    "fastball/breaking/offspeed, with hand (6)":
+        "split_part(a.shape_id,'-',1) || '-' || " + FAMILY,
+    "pitch type only, hand ignored     (8)": TYPE_ONLY,
+    "hand + type                      (16)": HAND_TYPE,
+    "hand + type + speed              (20)": "a.shape_id",
 }
 
 
@@ -127,8 +137,16 @@ def main() -> None:
               f"   full-sample r = {2*r_raw/(1+r_raw):.3f}")
         print(f"   hitter+pitch removed  half-to-half r = {r_res:.3f}"
               f"   full-sample r = {2*r_res/(1+r_res):.3f}")
-        print(f"   residual spread: sd {sd:.3f} "
-              f"({sd*100:.1f} percentage points of whiff rate)")
+        # Reliability and spread pull against each other: coarser groups are
+        # measured more precisely but blur real differences, finer groups
+        # capture more real difference but measure each one worse. What
+        # matters is how much TRUE difference survives, and with reliability
+        # rho the true variance is rho x the observed variance.
+        full_res = 2 * r_res / (1 + r_res) if r_res > -1 else 0.0
+        true_sd = sd * (full_res ** 0.5)
+        print(f"   residual spread: sd {sd*100:.1f} pts observed, "
+              f"{true_sd*100:.1f} pts real  <- how much genuine "
+              f"hitter-by-pitch difference this grouping captures")
 
     conn.close()
 
