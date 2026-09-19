@@ -610,6 +610,43 @@ LHP Curveball misses by 0.7.
 **What would change it:** nothing in the data. This is worth knowing so the
 asymmetry can be explained rather than defended.
 
+### 49. Measured what "more lefty data" would actually buy ✅
+
+Decision 48 said the missing left-handed bands were a threshold artifact. The
+obvious follow-up is whether moving the thresholds would help. Simulated both,
+read-only, against the Task 15 metric.
+
+**Letting the rare left-handed pitch types in** (group floor 5,000 → 1,000, so
+LHP splitters and knuckle-curves get shapes): 20 shapes → 25, and *nothing
+measurable changes*. Typical arsenal 5, typical usable 3.0, three hitters
+blank — identical in both. The reason is the hitter side: the Blue Jay who has
+seen the most left-handed splitters this season has seen **six**, against a
+floor of 50. Five new columns, permanently empty.
+
+**Lowering the band cutoff** (IQR > 5.0 → 4.0, which bands LHP changeups,
+curveballs and sliders):
+
+| vs LHP | cutoff 5.0 | cutoff 4.0 |
+|---|---|---|
+| typical arsenal | 5 | 6 |
+| typical usable | **3.0** | **2.0** |
+| share filled | **60%** | **33%** |
+| hitters blank | 3 | **4** |
+
+That is the Task 15 failure reproducing exactly: splitting a group in three
+divides every hitter's sample by three. More shapes, less knowledge.
+
+**So the 5.0 line is not merely defensible, it is the better of the two
+measured options.** This strengthens #48: the asymmetry looks arbitrary, and
+moving it makes the product worse.
+
+**What it leaves open.** Four high-volume left-handers throw a pitch the model
+cannot see: Imanaga's splitter is **33.7%** of everything he throws, Freeland's
+knuckle-curve 21.4%, Ray's 11.4%. Imanaga's page lists three pitches and a
+footnote saying 33.7% is unclassified. The gap is disclosed, but as an
+anonymous percentage rather than "his splitter, and we have no baseline for
+it."
+
 ---
 
 ## Open — still to defend
@@ -621,6 +658,10 @@ asymmetry can be explained rather than defended.
   rate. Not derived from anything.
 - **The 5.0 IQR banding cutoff.** RHP Curveball clears it by 0.6, LHP Curveball
   misses by 0.7. That single line is why no left-handed pitch has a speed band.
+  Now measured (#49): moving it to 4.0 makes coverage worse, so the line stays.
+- **Imanaga's splitter.** 33.7% of his arsenal, invisible to the model because
+  left-handed splitters are too rare league-wide to measure. The footnote
+  discloses the share but does not name the pitch.
 - **Whiff rate is the only metric that ranks.** Chase rate and xwOBA are stored
   and shown but do not decide the marker. Whiff survives a 50-pitch sample;
   xwOBA on contact does not.
