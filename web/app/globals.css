@@ -285,6 +285,7 @@ h2 {
 .chip-value {
   color: var(--muted);
   font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 
 /* No opacity here. It used to carry 0.8, which dropped "on 68 swings" to a
@@ -292,6 +293,8 @@ h2 {
    to stop a thin sample being read as a fact. */
 .chip-count {
   color: inherit;
+  display: block;
+  font-size: 0.75rem;
 }
 
 /* Worse for the hitter, i.e. better for us. Colour is never the only signal:
@@ -594,4 +597,68 @@ h2 {
 .result-name {
   flex: 1 1 auto;
   min-width: 0;
+}
+
+/* ---- the whiff bar ---- */
+
+/* One scale for every chip (0 to 50%, see lib/bar.ts), so two bars on the
+   same card can be compared by eye. The tick is the league rate for that
+   pitch, which is what turns a number into a judgement. */
+.bar {
+  position: relative;
+  display: block;
+  height: 6px;
+  margin: 0.3rem 0 0.35rem;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--fg) 9%, transparent);
+  overflow: hidden;
+}
+
+.bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 3px;
+  background: var(--muted);
+}
+
+.bar-tick {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--fg);
+  opacity: 0.55;
+}
+
+/* The tick has to stay visible when it sits at either end of the track. */
+.bar {
+  overflow: visible;
+}
+
+.bar-fill {
+  max-width: 100%;
+}
+
+.chip-worse .bar-fill {
+  background: #c2410c;
+}
+
+.chip-better .bar-fill {
+  background: #15803d;
+}
+
+.chip-typical .bar-fill {
+  background: color-mix(in srgb, var(--fg) 45%, transparent);
+}
+
+/* No data: a hatched track, so the chip keeps the same height as its
+   neighbours and the row does not go ragged. */
+.bar-empty {
+  background: repeating-linear-gradient(
+    45deg,
+    color-mix(in srgb, var(--fg) 8%, transparent) 0 4px,
+    transparent 4px 8px
+  );
 }

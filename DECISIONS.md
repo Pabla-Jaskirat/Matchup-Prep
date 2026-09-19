@@ -723,6 +723,36 @@ scrollWidth and names every element extending past the viewport. Kept in the
 scratchpad, not the repo — it is a measuring instrument, not part of the
 build.
 
+### 53. One fixed bar scale, chosen from the data ✅
+
+Every chip carries a whiff-rate bar with a tick at the league rate for that
+pitch. The bar is what makes a card scannable: a coach sees which bar is
+longest before reading any number.
+
+**One scale for every chip, 0 to 50%.** A per-chip scale would stretch each
+bar to its own value and make a 12% rate and a 40% rate look identical —
+worse than drawing no bar at all.
+
+The 50% comes from measuring, not from taste: across the 100 displayable Blue
+Jays cells, whiff rates run **0.029 to 0.480**, and league rates by shape run
+0.132 to 0.418. Everything fits with nothing clipped. It still clamps, because
+a scale fitted to one season should not be able to draw outside its own box in
+the next.
+
+**The bar is `aria-hidden`.** The rate and the swing count sit directly under
+it in text, so a screen reader gets "48% miss, on 102 swings" rather than a
+description of a rectangle. Accessibility stays 100 and layout shift stays 0.
+
+The tick is the part that matters. Without it a bar is a number with no
+judgement attached; with it, "his bar runs past the tick" *is* the comparison
+to the league, without a word of prose.
+
+### 54. Chip text is two fixed lines, not one wrapping sentence ✅
+
+"23% miss on 71 swings" wrapped mid-phrase at phone width and left every card
+ragged. Now the rate leads its own line and the sample sits under it. Same
+information, same honesty about sample size, and the grid holds its shape.
+
 ---
 
 ## Open — still to defend

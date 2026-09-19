@@ -1,4 +1,5 @@
 import Headshot from "./Headshot";
+import { barGeometry } from "@/lib/bar";
 import HitterDetail from "./HitterDetail";
 import { shortLabel } from "@/lib/labels";
 import type { Cell } from "@/lib/matchup";
@@ -69,10 +70,17 @@ function Chip({ label, cell, attack }: { label: string; cell: Cell; attack: bool
     return (
       <li className="chip chip-thin">
         <span className="chip-label">{label}</span>
-        <span className="chip-value">{cell?.pitches_seen ?? 0} seen — not enough</span>
+        <span className="bar bar-empty" aria-hidden="true" />
+        <span className="chip-value">not enough</span>
+        <span className="chip-count">{cell?.pitches_seen ?? 0} pitches seen</span>
       </li>
     );
   }
+
+  // The bar is decorative: the rate and the swing count sit right under it in
+  // text, so a screen reader gets the number rather than a description of a
+  // rectangle.
+  const { fill, tick } = barGeometry(cell.whiff_rate, cell.league.whiff_rate);
 
   return (
     <li className={`chip chip-${cell.verdict ?? "typical"}${attack ? " chip-attack" : ""}`}>
@@ -80,10 +88,15 @@ function Chip({ label, cell, attack }: { label: string; cell: Cell; attack: bool
         {label}
         {attack && <span className="chip-flag"> ← go here</span>}
       </span>
-      <span className="chip-value">
-        {pct(cell.whiff_rate)} miss
-        <span className="chip-count"> on {cell.swings} swings</span>
+      <span className="bar" aria-hidden="true">
+        {fill !== null && <span className="bar-fill" style={{ width: `${fill}%` }} />}
+        {tick !== null && <span className="bar-tick" style={{ left: `${tick}%` }} />}
       </span>
+      {/* Two fixed lines rather than one wrapping sentence: "23% miss on 71
+          swings" broke across the chip at phone width and left every card
+          ragged. The rate leads, the sample sits under it. */}
+      <span className="chip-value">{pct(cell.whiff_rate)} miss</span>
+      <span className="chip-count">on {cell.swings} swings</span>
     </li>
   );
 }

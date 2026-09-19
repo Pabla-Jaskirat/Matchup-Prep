@@ -194,6 +194,9 @@ driver is ever upgraded past v8.
         `make check` asserts assigned + unshaped = every typed pitch.
   - [x] Follow-up 2026-09-19: **headshots** on hitter rows, the pitcher header
         and the search results. CLS still 0, accessibility still 100.
+  - [x] Follow-up 2026-09-19: **whiff bars** on every chip, one fixed 0-50%
+        scale (measured: cells run 0.029-0.480) with a tick at the league
+        rate. Decorative, so the numbers stay the accessible content.
   - [ ] Verify: **complete the whole flow on your actual phone** — search,
         pick, expand a hitter
 
