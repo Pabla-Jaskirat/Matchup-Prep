@@ -569,6 +569,47 @@ Opacity removed.
 **Measured after:** accessibility **100** on both the search and matchup
 pages, performance 98, cumulative layout shift **0**.
 
+### 48. No left-handed shape has a velocity band, and it is not about lefties ✅
+
+Every banded shape in the database is right-handed: RHP Curveball and RHP
+Splitter, three bands each. That looks like a claim about left-handers. It is
+not one.
+
+**Lefties are not tighter.** Same pitch type, both hands, IQR in mph:
+
+| pitch | RHP | LHP |
+|---|---|---|
+| Sinker | 3.3 | **4.0** |
+| Slider | 3.5 | **4.1** |
+| Sweeper | 3.6 | 3.7 |
+| Changeup | 4.3 | 4.4 |
+| Cutter | 3.4 | 3.4 |
+| Four-seam | 3.3 | 3.2 |
+| Curveball | **5.6** | 4.3 |
+
+Six of seven are a tie or wider on the left side.
+
+**What actually happened, in two parts:**
+
+1. Two of the three wide groups are pitches left-handers barely throw. LHP
+   splitters: 2,242 pitches from 30 pitchers. LHP knuckle-curves: 1,279 from
+   10. Both sit under the 5,000-pitch floor, so those pitch types have no
+   left-handed shape at all — there is nothing there to band.
+
+2. The curveball is the only genuine handedness difference, and it is small.
+   RHP 5.6 against LHP 4.3, across a cutoff of 5.0. The *full* range is nearly
+   identical: RHP p5–p95 is 74–86, LHP is 73–85. The gap lives only in the
+   middle half and is 1.3 mph.
+
+**So this is a threshold artifact, not a baseball truth.** At a cutoff of 4.0
+instead of 5.0, lefty curveballs, changeups and sliders would all be banded
+too. The 5.0 line is defensible — Task 15 measured that the narrower groupings
+tie on coverage — but it is a line, and RHP Curveball clears it by 0.6 while
+LHP Curveball misses by 0.7.
+
+**What would change it:** nothing in the data. This is worth knowing so the
+asymmetry can be explained rather than defended.
+
 ---
 
 ## Open — still to defend
@@ -578,6 +619,8 @@ pages, performance 98, cumulative layout shift **0**.
   number, but no longer an unexamined one.
 - **The ±5-point league margin.** Chosen to be a fifth of a ~25% league whiff
   rate. Not derived from anything.
+- **The 5.0 IQR banding cutoff.** RHP Curveball clears it by 0.6, LHP Curveball
+  misses by 0.7. That single line is why no left-handed pitch has a speed band.
 - **Whiff rate is the only metric that ranks.** Chase rate and xwOBA are stored
   and shown but do not decide the marker. Whiff survives a 50-pitch sample;
   xwOBA on contact does not.

@@ -34,7 +34,12 @@ driver is ever upgraded past v8.
   - [x] Verify: **33 shapes**, in range. RHP KC needed no hand call — the collapse
         rule cut it from 3 bands to 1 on its own. Thinnest band 6,407 (RHP FS under 85).
   - [ ] Verify: **say out loud why curveballs and splitters got more bands than sliders**
-        ← *still yours to do, out loud, before Day 3*
+        ← *still yours to do, out loud*
+  - [x] Follow-up 2026-09-19: measured why no LHP shape has a band. Not a fact
+        about lefties — they are *wider* than righties on sinkers and sliders.
+        LHP splitters (2,242) and knuckle-curves (1,279) are under the 5,000
+        floor so they have no shape at all, and LHP Curveball misses the 5.0
+        cutoff by 0.7 while RHP Curveball clears it by 0.6. See DECISIONS #48.
 
 - [x] **Task 11: Migration `003_shapes.sql`** (S) — DONE
   - [x] `pitch_shapes` + `shape_assignments`, `method` leads both PKs
