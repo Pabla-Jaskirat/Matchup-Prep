@@ -121,6 +121,27 @@ def test_the_checked_in_shape_file_is_valid():
     ds.validate(ds.read_file())
 
 
-def test_the_checked_in_shape_file_holds_33_shapes():
-    # The count the README and the interview answer both quote.
-    assert len(ds.rows_from(ds.read_file())) == 33
+def test_the_checked_in_shape_file_holds_20_shapes():
+    # The count the README and the interview answer both quote. It was 33
+    # until the Task 15 coverage audit: splitting a group halves every
+    # hitter's sample, and the middle-spread splits were not separating
+    # anything worth that price.
+    assert len(ds.rows_from(ds.read_file())) == 20
+
+
+# --- shapes the file no longer defines --------------------------------------
+
+def test_a_shape_dropped_from_the_file_is_identified():
+    # Widening the bands in Task 15 turned 33 shapes into 20. Upserting alone
+    # would have left the other 13 in the database with their assignments
+    # still attached, and every league total would have been double-counted.
+    assert ds.stale_shape_ids(in_file={"R-CU-1"}, in_db={"R-CU-1", "R-FF-2"}) \
+        == {"R-FF-2"}
+
+
+def test_nothing_is_stale_when_the_file_is_unchanged():
+    assert ds.stale_shape_ids(in_file={"R-CU-1"}, in_db={"R-CU-1"}) == set()
+
+
+def test_a_newly_added_shape_is_not_stale():
+    assert ds.stale_shape_ids(in_file={"R-CU-1", "R-CU-2"}, in_db={"R-CU-1"}) == set()

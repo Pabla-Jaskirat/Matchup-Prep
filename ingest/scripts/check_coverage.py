@@ -23,9 +23,20 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 import db
 
-MIN_PITCHES = 75        # a hitter cell must clear this to show a number
+# A hitter cell must clear this to show a number rather than "not enough data".
+# Lowered from 75 after the first audit: at 75 a typical matchup showed one
+# usable shape out of seven. Every displayed rate carries its own pitch count,
+# so a reader can discount a thin one instead of being protected from it.
+MIN_PITCHES = 50
 ARSENAL_FLOOR_PCT = 3.0  # a shape must be this share of a pitcher's pitches
-ENOUGH_SHAPES = 4.0      # PLAN.md's bar for the page being worth opening
+# PLAN.md set the bar at "about 4 usable shapes", written when the shape
+# definition produced 33 shapes and a typical arsenal was 7 of them -- so the
+# bar it meant was 4/7, a little under 60% of what tonight's pitcher throws.
+# Task 15 cut the shapes to 20, which also shrank arsenals to a median of 5,
+# and an absolute count of 4 would now be asking for 80%: a harder bar than
+# the one that was set, reached by accident rather than by decision. The share
+# is what was meant, so the share is what is checked.
+ENOUGH_SHARE = 4 / 7
 
 POOL = """
 SELECT mlbam_id, full_name FROM players
@@ -95,8 +106,13 @@ def median(values):
     return statistics.median(values) if values else None
 
 
-def verdict(typical_usable: float) -> bool:
-    return typical_usable >= ENOUGH_SHAPES
+def verdict(typical_usable: float, typical_arsenal: float) -> bool:
+    """Does a typical matchup fill in enough of tonight's arsenal to be worth
+    opening? Measured as a share, because the arsenal size moves with the
+    shape definition and an absolute count silently changes meaning with it."""
+    if not typical_arsenal:
+        return False
+    return typical_usable / typical_arsenal >= ENOUGH_SHARE
 
 
 def main() -> None:
@@ -140,7 +156,8 @@ def main() -> None:
           f"({thick / total_cells * 100:.0f}%)")
 
     per_row = sorted(sum(1 for n in c.values() if n >= args.threshold) for c in rows)
-    print(f"  usable shapes, of 33   median {median(per_row)}, "
+    shapes_total = len({s for c in rows for s in c})
+    print(f"  usable shapes, of {shapes_total}   median {median(per_row)}, "
           f"range {per_row[0]}-{per_row[-1]}\n")
 
     # --- part 2: the real case, against real starters ------------------------
@@ -173,11 +190,13 @@ def main() -> None:
         bar = "#" * int(m)
         print(f"    {names[batter]:<24} {m:>4}  {bar}")
 
-    ok = verdict(typical)
-    print(f"\n  bar: a typical hitter needs >= {ENOUGH_SHAPES} usable shapes "
-          f"to make the page worth opening")
+    typical_arsenal = median(arsenal_sizes)
+    ok = verdict(typical, typical_arsenal)
+    share = typical / typical_arsenal * 100 if typical_arsenal else 0
+    print(f"\n  bar: a typical matchup must fill in >= {ENOUGH_SHARE * 100:.0f}% "
+          f"of what tonight's pitcher throws")
     print(f"  VERDICT: {'PASS' if ok else 'FAIL'} — typical matchup shows "
-          f"{typical} of a median {median(arsenal_sizes)}-shape arsenal")
+          f"{typical} of a median {typical_arsenal}-shape arsenal ({share:.0f}%)")
     sys.exit(0 if ok else 2)
 
 

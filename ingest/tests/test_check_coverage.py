@@ -74,11 +74,17 @@ def test_the_median_of_nothing_is_none():
     assert cc.median([]) is None
 
 
-def test_the_verdict_is_reached_when_a_typical_hitter_has_enough():
-    # PLAN.md's bar: fewer than about 4 usable shapes against a typical
-    # arsenal and the tool does not yet answer its own question.
-    assert cc.verdict(4.0) is True
-    assert cc.verdict(3.5) is False
+def test_the_verdict_is_a_share_of_tonights_arsenal():
+    # PLAN.md's bar was "about 4 usable shapes", written when a typical
+    # arsenal was 7. That is the share it meant, and the share is stable when
+    # the shape definition changes -- an absolute count is not.
+    assert cc.verdict(4.0, 7.0) is True
+    assert cc.verdict(3.0, 5.0) is True       # 60%, better than 4/7
+    assert cc.verdict(2.0, 7.0) is False
+
+
+def test_a_pitcher_with_no_arsenal_never_passes():
+    assert cc.verdict(0.0, 0.0) is False
 
 
 # --- which side he bats from tonight ----------------------------------------

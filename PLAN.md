@@ -256,9 +256,54 @@ rule made the call.
 **Gotcha:** `pfx_x` is signed from the catcher's view. Multiply by -1 for LHP
 before comparing anything across handedness.
 
-Measured 2026-09-18: the rule yields **33 shapes** across 16 groups
-(`db/shapes/v1_type_velo.json`). The thinnest is RHP Splitter under 85 at 6,407
-pitches — the first band to merge if Task 15 finds the hitter cells too thin.
+### The Task 15 decision — 33 shapes became 20
+
+**Measured 2026-09-18.** With 33 shapes and a 75-pitch display floor, a typical
+Blue Jays hitter facing a typical starter had **one usable number out of a
+seven-shape arsenal**. Only 14% of the 447 hitter-shape cells cleared 75 pitches,
+and four of the fourteen hitters showed nothing at all. The page did not answer
+its own question.
+
+The cause is arithmetic, not data quality: the fourteen hitters saw 17,657
+pitches all season. Split 33 ways that is ~40 per shape, and splitting a group
+in two halves every hitter's sample in it.
+
+Four options were measured, not argued about (median usable shapes per matchup,
+Jays pool, arsenal floor 3%):
+
+| grouping | shapes | arsenal | usable | hitters with nothing |
+|---|---|---|---|---|
+| 33 shapes, bands everywhere | 33 | 7 | 2.0 | 2 of 14 |
+| **3 bands where IQR > 5.0, else whole** | **20** | **5** | **3.0** | **1 of 14** |
+| 2 bands where IQR > 5.0 | 18 | 5 | 3.0 | 1 of 14 |
+| no velocity bands at all | 16 | 5 | 3.0 | 1 of 14 |
+
+The last three tie. **That is the finding.** Velocity bands on the widest groups
+are free: they cost nothing in coverage and keep real information. The bands
+that were cut were not separating anything — RHP sliders span 3.5 mph, so a
+"slow" one is 85 and a "fast" one is 88, which is the same pitch. RHP curveballs
+span 5.6, and a 73 and an 87 are genuinely different pitches to stand in against.
+
+**Decision: 3 bands where IQR > 5.0, one band otherwise, and a 50-pitch display
+floor.** Result: 20 shapes, and a typical matchup fills in 3 of 5 — 60% of what
+tonight's pitcher throws, against a bar of 57%.
+
+Two honest notes:
+
+- The 50-pitch floor is weaker than the 75 originally chosen. It is defensible
+  only because every displayed rate carries its own pitch count, so a reader can
+  discount a thin one rather than being shielded from it.
+- PLAN.md's bar was written as "about 4 usable shapes" when arsenals were 7 —
+  i.e. 4/7. Cutting the shapes also shrank arsenals to 5, so an absolute 4 would
+  now demand 80%: a harder bar reached by accident. `check_coverage.py` checks
+  the share, which is what was meant and is stable when the shape count changes.
+- Sean Keys (231 pitches all season) still shows nothing against a typical
+  starter. No banding fixes 231 pitches. The page says so.
+
+Measured 2026-09-18: the first version of the rule yielded **33 shapes** across 16 groups
+(`db/shapes/v1_type_velo.json`). Task 15 found the hitter cells too thin and cut
+it to **20**; the file now holds 20 and the thinnest band is RHP Splitter under
+85 at 6,407 pitches.
 
 ---
 

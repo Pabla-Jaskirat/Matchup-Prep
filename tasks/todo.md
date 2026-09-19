@@ -3,7 +3,8 @@
 Plan: `tasks/plan.md` · 7-day context: `PLAN.md` · Day 1 archive: `tasks/day1-todo.md`
 
 **Done:** Day 1 — 696,100 pitches, 2,525 players, migrations 001–002.
-Day 2 — 33 shapes, 683,797 pitches assigned, migrations 003–004, 75 tests.
+Day 2 — shapes and assignments, migrations 003–004.
+Day 3 — stats tables, roster, aggregation, and the Task 15 cut from 33 shapes to 20.
 
 **Loose ends:** `requirements.txt` added 2026-09-18. No README until Task 22.
 
@@ -86,10 +87,18 @@ Day 2 — 33 shapes, 683,797 pitches assigned, migrations 003–004, 75 tests.
         disagreements first: Postgres rounds halves away from zero, Python rounds
         to even. The database was right; the reference is now `Decimal`/`ROUND_HALF_UP`.
 
-- [ ] **Task 15: Thin-cell audit** (S) — depends on 14, 16
-  - [ ] Median usable shapes per Jays hitter against a 4-pitch arsenal
-  - [ ] Decision written into `PLAN.md`: bands kept, or widened and why
-  - [ ] If widened: re-run 12 and 14
+- [x] **Task 15: Thin-cell audit** (S) — DONE — `make coverage`
+  - [x] First run **failed**: 1 usable shape of a 7-shape arsenal, 4 of 14 hitters blank
+  - [x] Four groupings measured; the three narrower ones tie, so velocity bands on
+        the widest groups are free — same coverage, more information kept
+  - [x] **Decision (yours): 3 bands where IQR > 5.0, one band otherwise, floor 50.**
+        33 shapes → **20**. Typical matchup now fills 3 of 5 (60%) against a 57% bar.
+  - [x] Re-ran 12 and 14: 683,797 still assigned (98.6%), 15,467 hitter rows,
+        `verify_aggregate` still 0 mismatches, `make check` still all green
+  - [x] Decision written into `PLAN.md` with the table it came from
+  - [x] Gap found and fixed: `derive_shapes` only upserted, so 13 dropped shapes
+        would have lingered with their assignments attached and double-counted
+        every league total. It now removes what the file no longer defines.
 
 - [ ] **CHECKPOINT B — Day 3 done** ← *the one that matters*
   - [ ] One query: pitcher id → 9 hitters × shapes, with counts and league deltas

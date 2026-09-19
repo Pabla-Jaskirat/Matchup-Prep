@@ -17,8 +17,11 @@ def test_a_tight_group_gets_one_band():
     assert cb.band_count(2.0) == 1
 
 
-def test_a_moderate_group_gets_two_bands():
-    assert cb.band_count(3.5) == 2
+def test_a_moderate_group_is_left_whole():
+    # RHP sliders, IQR 3.5: a "slow" one is 85 and a "fast" one is 88, which
+    # is the same pitch. Splitting halves every hitter's sample and separates
+    # nothing. Measured in the Task 15 audit, not assumed.
+    assert cb.band_count(3.5) == 1
 
 
 def test_a_wide_group_gets_three_bands():
@@ -26,14 +29,9 @@ def test_a_wide_group_gets_three_bands():
     assert cb.band_count(5.6) == 3
 
 
-def test_the_lower_threshold_is_inclusive():
-    # The rule is written "< 2.5 -> 1 band", so 2.5 itself earns two.
-    assert cb.band_count(2.5) == 2
-
-
-def test_the_upper_threshold_is_inclusive():
-    # "> 5.0 -> 3 bands", so 5.0 itself stays at two.
-    assert cb.band_count(5.0) == 2
+def test_the_threshold_is_inclusive():
+    # "> 5.0 -> 3 bands", so a group sitting exactly on 5.0 stays whole.
+    assert cb.band_count(5.0) == 1
 
 
 # --- where the cuts go ------------------------------------------------------
@@ -43,6 +41,8 @@ def test_one_band_has_no_cuts():
 
 
 def test_two_bands_split_at_the_median():
+    # No group takes two bands under the current rule, but collapse_under_floor
+    # can produce a two-band result from three, so the shape stays defined.
     assert cb.cut_percentiles(2) == [50]
 
 

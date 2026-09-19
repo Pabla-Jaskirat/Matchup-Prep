@@ -9,14 +9,26 @@ The rule, in full:
 
   1. A (hand, pitch_type) group needs 5,000 league pitches to exist at all.
   2. Its velocity IQR -- the width of the middle half -- picks the band count:
-     under 2.5 mph -> 1 band, 2.5 to 5.0 -> 2 bands at the median,
-     over 5.0 -> 3 bands at p33 and p67.
+     5.0 mph or less -> 1 band, over 5.0 -> 3 bands at p33 and p67.
   3. Any band holding fewer than 5,000 pitches is merged into its smaller
      neighbour, repeatedly, until every surviving band clears the floor.
 
 Spread earns bands; the sample floor can overrule the spread. RHP knuckle-curves
 have the widest spread in the data (6.2 mph) and still end up as a single shape,
 because 9,476 pitches cannot support three bands of ~3,200.
+
+**Revised 2026-09-18 after the Task 15 coverage audit.** The first version also
+split every group between 2.5 and 5.0 mph into two bands, which produced 33
+shapes -- and a page where a typical matchup had one usable number out of a
+seven-shape arsenal, because splitting a group halves each hitter's sample.
+
+Measured: dropping those middle splits raises a typical matchup from 2 usable
+shapes to 3, and the coverage is identical to abandoning velocity bands
+altogether. So the bands that survive are free: they keep real information at
+no measurable cost. The ones that were cut were not separating anything. RHP
+sliders span 3.5 mph, so a "slow" one is 85 and a "fast" one is 88 -- the same
+pitch. RHP curveballs span 5.6, and a 73 and an 87 are genuinely different
+pitches to stand in against.
 """
 
 import argparse
@@ -31,7 +43,8 @@ import numpy as np
 
 from analyze_shapes import MIN_GROUP_PITCHES, PITCH_NAMES, load, velocity_stats
 
-ONE_BAND_BELOW_IQR = 2.5
+# A group is split only when its middle half spans more than this. Below it,
+# the slow and fast versions of the pitch are the same pitch.
 THREE_BANDS_ABOVE_IQR = 5.0
 MIN_BAND_PITCHES = 5_000
 
@@ -41,11 +54,7 @@ OUT = Path(__file__).resolve().parents[2] / "db" / "shapes" / f"{METHOD}.json"
 
 def band_count(iqr: float) -> int:
     """How many velocity slices this group's spread justifies."""
-    if iqr < ONE_BAND_BELOW_IQR:
-        return 1
-    if iqr > THREE_BANDS_ABOVE_IQR:
-        return 3
-    return 2
+    return 3 if iqr > THREE_BANDS_ABOVE_IQR else 1
 
 
 def cut_percentiles(n_bands: int) -> list[int]:
@@ -145,7 +154,6 @@ def build(df, season: int) -> dict:
         "generated": date.today().isoformat(),
         "rule": {
             "min_group_pitches": MIN_GROUP_PITCHES,
-            "one_band_below_iqr": ONE_BAND_BELOW_IQR,
             "three_bands_above_iqr": THREE_BANDS_ABOVE_IQR,
             "min_band_pitches": MIN_BAND_PITCHES,
             "interval": "velo_min <= release_speed < velo_max; null is unbounded",

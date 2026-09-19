@@ -71,6 +71,17 @@ def validate(doc: dict) -> None:
             seen.add(b["shape_id"])
 
 
+def stale_shape_ids(in_file: set[str], in_db: set[str]) -> set[str]:
+    """Shapes the database still holds that the file no longer defines.
+
+    The file is the definition, so these have to go. Removing one cascades to
+    its assignments and its stats rows -- which is correct, and recoverable by
+    re-running assign_shapes and aggregate.py, but it is destructive enough to
+    be printed rather than done quietly.
+    """
+    return in_db - in_file
+
+
 def rows_from(doc: dict) -> list[tuple]:
     rows = [
         (doc["method"], b["shape_id"], b["label"], g["p_throws"], g["pitch_type"],
@@ -93,7 +104,17 @@ def main() -> None:
     conn = db.connect()
     conn.autocommit = False
     cur = conn.cursor()
+    cur.execute("SELECT shape_id FROM pitch_shapes WHERE method = %s", (args.method,))
+    stale = stale_shape_ids({r[1] for r in rows}, {r[0] for r in cur.fetchall()})
+
     cur.executemany(UPSERT, rows)
+    if stale:
+        cur.execute("DELETE FROM pitch_shapes WHERE method = %s "
+                    "AND shape_id = ANY(%s)", (args.method, sorted(stale)))
+        print(f"removed {len(stale)} shapes no longer in the file: "
+              f"{', '.join(sorted(stale))}\n"
+              "  their assignments and stats rows cascaded away with them; "
+              "re-run assign_shapes and aggregate.py")
     conn.commit()
 
     cur.execute("SELECT count(*) FROM pitch_shapes WHERE method = %s", (args.method,))
