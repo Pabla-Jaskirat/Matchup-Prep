@@ -31,16 +31,23 @@ idempotent, 8 commits.
   - [x] Verify: second `make migrate` applies nothing (`0 applied, 3 already present`)
   - [x] Verify: live constraints match the file; both FKs cascade; DB still 216 MB
 
-- [ ] **Task 12: `derive_shapes` + `assign_shapes`** (M) — depends on 10, 11
-  - [ ] Half-open bands (`velo_min <= speed < velo_max`) — closed bands double-assign
-  - [ ] Null `pitch_type` left unassigned; velocity outliers counted, not dropped silently
-  - [ ] Verify: ≥97% of typed pitches assigned
-  - [ ] Verify: **re-run changes no counts**
+- [x] **Task 12: `derive_shapes` + `assign_shapes`** (M) — DONE — `make shapes`
+  - [x] Half-open bands in SQL; an overlap would make Postgres reject the statement
+        outright rather than silently keep the last matching row
+  - [x] Shape file validated before load — gap, overlap, bounded outer band, duplicate id
+  - [x] Verify: **683,797/693,241 typed pitches assigned (98.6%)**. All 9,444 misses are
+        pitch types under the 5,000 floor (L FS 2,242 is the largest). No unexpected misses.
+  - [x] Verify: re-run wrote the same 683,797 rows; counts unchanged
+  - [x] Verify: all 33 per-shape DB counts equal the JSON exactly — the SQL predicate
+        and the Python banding independently agree
 
-- [ ] **CHECKPOINT A — Day 2 done**
-  - [ ] Query lists every shape with its count
-  - [ ] Database under 350 MB
-  - [ ] Committed
+- [x] **CHECKPOINT A — Day 2 done**
+  - [x] Query lists every shape with its count
+  - [ ] Database under 350 MB — **missed by 2 MB: 352 MB.** `shape_assignments` is
+        136 MB (79 heap + 57 index). 148 MB of headroom left on Neon's 500 MB and
+        Task 13's tables are aggregates, so no action taken. Lever if it ever bites:
+        the repeated `method` text per row.
+  - [x] Committed
 
 ---
 
