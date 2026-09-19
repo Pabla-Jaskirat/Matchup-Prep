@@ -26,9 +26,10 @@ idempotent, 8 commits.
   - [ ] Verify: **say out loud why curveballs and splitters got more bands than sliders**
         ← *still yours to do, out loud, before Day 3*
 
-- [ ] **Task 11: Migration `003_shapes.sql`** (S) — no dependencies
-  - [ ] `pitch_shapes` + `shape_assignments`, `method` in both PKs
-  - [ ] Verify: second `make migrate` applies nothing
+- [x] **Task 11: Migration `003_shapes.sql`** (S) — DONE
+  - [x] `pitch_shapes` + `shape_assignments`, `method` leads both PKs
+  - [x] Verify: second `make migrate` applies nothing (`0 applied, 3 already present`)
+  - [x] Verify: live constraints match the file; both FKs cascade; DB still 216 MB
 
 - [ ] **Task 12: `derive_shapes` + `assign_shapes`** (M) — depends on 10, 11
   - [ ] Half-open bands (`velo_min <= speed < velo_max`) — closed bands double-assign
