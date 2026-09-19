@@ -191,6 +191,12 @@ CREATE TABLE hitter_shape_zone_stats (   -- heatmap; Day 6, first to cut
 
 No extra indexes needed on stats tables — the PKs cover every app lookup.
 
+**Built 2026-09-18 as `005_stats.sql`, with two corrections to the sketch above.**
+`shape_id` is text (`'R-CU-2'`), not integer, and it is unique only within a
+`method` — so the foreign key is composite, `(method, shape_id)`. The
+single-column `REFERENCES pitch_shapes(shape_id)` written above could not have
+been created. `batter_id` also references `players`.
+
 ---
 
 ## Shapes: deriving boundaries from data

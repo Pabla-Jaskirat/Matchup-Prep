@@ -240,12 +240,16 @@ primary key will reject it — which is the schema catching the bug for you.
 match every lookup the app performs.
 
 **Acceptance criteria:**
-- [ ] Three tables, each with `method` and `season` leading the primary key
-- [ ] Raw counts stored alongside every rate, so the 75-pitch rule is enforceable at read time
-- [ ] FKs to `pitch_shapes`
+- [x] Three tables, each with `method` and `season` leading the primary key
+- [x] Raw counts stored alongside every rate, so the 75-pitch rule is enforceable at read time
+- [x] FKs to `pitch_shapes` — **composite `(method, shape_id)`, not the single-column FK
+      PLAN.md sketched.** `shape_id` is text and is unique only within a method, so
+      `REFERENCES pitch_shapes(shape_id)` could not have been created at all.
+      `batter_id` also gained an FK to `players`.
 
 **Verification:**
-- [ ] `make migrate` applies it; second run applies nothing
+- [x] `make migrate` applies it; second run applies nothing (`0 applied, 5 already present`)
+- [x] Live keys and FKs on all three tables match the file; database still 352 MB (empty tables)
 
 **Dependencies:** None (but useless before 12)
 **Files:** `db/migrations/005_stats.sql`

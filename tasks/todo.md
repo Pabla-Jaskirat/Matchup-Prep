@@ -59,8 +59,13 @@ until Task 16. No README until Task 22.
 
 ## Phase 2: The answer exists in SQL (Day 3)
 
-- [ ] **Task 13: Migration `005_stats.sql`** (S)
-  - [ ] Three stats tables; counts stored beside every rate
+- [x] **Task 13: Migration `005_stats.sql`** (S) — DONE
+  - [x] Three stats tables; counts stored beside every rate, so the 75-pitch rule
+        is applied when the page renders and a coach can ask "out of how many?"
+  - [x] `method, season` leads every PK — that is the slice `aggregate.py` rewrites
+  - [x] `stand` in the hitter and league keys — a switch-hitter is two rows
+  - [x] FK to `pitch_shapes` is composite `(method, shape_id)`; PLAN.md's sketched
+        single-column `shape_id integer` FK was not creatable
 
 - [ ] **Task 16: Blue Jays roster** (S) — *no dependencies, do it whenever*
   - [ ] `players.team` is currently **100% NULL** — StatsAPI returned `currentTeam: null`

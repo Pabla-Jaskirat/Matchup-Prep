@@ -84,3 +84,77 @@ def test_a_group_cannot_acquire_two_open_bottom_bands():
     # uniqueness constraint would permit exactly the duplicate it exists to stop.
     sql = "\n".join(p.read_text() for p in sorted(MIGRATIONS.glob("*.sql")))
     assert "UNIQUE NULLS NOT DISTINCT (method, p_throws, pitch_type, velo_min)" in sql
+
+
+# --- parsing columns and foreign keys ---------------------------------------
+
+def test_it_lists_the_columns_of_a_table():
+    sql = "CREATE TABLE t (\n  a text NOT NULL,\n  b smallint,\n  PRIMARY KEY (a)\n);"
+    assert sm.columns(sql, "t") == ["a", "b"]
+
+
+def test_a_table_constraint_is_not_mistaken_for_a_column():
+    sql = ("CREATE TABLE t (\n  a text,\n  PRIMARY KEY (a),\n"
+           "  FOREIGN KEY (a) REFERENCES u (a),\n"
+           "  CONSTRAINT c CHECK (a <> ''),\n  UNIQUE (a)\n);")
+    assert sm.columns(sql, "t") == ["a"]
+
+
+def test_a_numeric_precision_does_not_split_a_column():
+    # numeric(5,4) contains a comma, which a naive split on commas would treat
+    # as a column boundary.
+    sql = "CREATE TABLE t (\n  rate numeric(5,4),\n  n integer\n);"
+    assert sm.columns(sql, "t") == ["rate", "n"]
+
+
+def test_it_reads_a_composite_foreign_key():
+    sql = ("CREATE TABLE t (\n  m text, s text,\n"
+           "  FOREIGN KEY (m, s) REFERENCES pitch_shapes (method, shape_id)\n);")
+    assert sm.foreign_keys(sql, "t") == [(["m", "s"], "pitch_shapes",
+                                          ["method", "shape_id"])]
+
+
+# --- the stats tables -------------------------------------------------------
+
+STATS = ["hitter_shape_stats", "league_shape_stats", "hitter_shape_zone_stats"]
+
+
+def test_migration_005_creates_the_three_stats_tables():
+    sql = (MIGRATIONS / "005_stats.sql").read_text()
+    assert sm.tables(sql) == STATS
+
+
+def test_every_stats_table_is_keyed_by_method_then_season():
+    # aggregate.py recomputes one (method, season) slice at a time, so that
+    # slice has to be the leading edge of the key it deletes and rewrites.
+    sql = (MIGRATIONS / "005_stats.sql").read_text()
+    for table in STATS:
+        assert sm.primary_key(sql, table)[:2] == ["method", "season"], table
+
+
+def test_a_hitter_is_keyed_by_the_side_he_batted_from():
+    # A switch-hitter is two rows. stand is a property of the pitch, not the
+    # player, so it cannot be looked up later -- it has to be in the key.
+    sql = (MIGRATIONS / "005_stats.sql").read_text()
+    assert "stand" in sm.primary_key(sql, "hitter_shape_stats")
+    assert "stand" in sm.primary_key(sql, "league_shape_stats")
+
+
+def test_every_rate_is_stored_with_the_counts_behind_it():
+    # The 75-pitch rule is applied at read time, so a rate with no denominator
+    # on the row is a rate the app cannot decide whether to trust.
+    sql = (MIGRATIONS / "005_stats.sql").read_text()
+    for table in ("hitter_shape_stats", "league_shape_stats"):
+        cols = sm.columns(sql, table)
+        assert {"pitches_seen", "swings", "whiffs"} <= set(cols), table
+        assert {"out_of_zone", "chases", "batted_balls"} <= set(cols), table
+
+
+def test_the_stats_tables_reference_a_shape_by_method_and_id_together():
+    # PLAN.md sketched `shape_id integer REFERENCES pitch_shapes(shape_id)`.
+    # shape_id is text and is only unique within a method, so a single-column
+    # FK would not even be creatable -- the reference must be composite.
+    sql = (MIGRATIONS / "005_stats.sql").read_text()
+    for table in STATS:
+        assert (["method", "shape_id"], "pitch_shapes",
+                ["method", "shape_id"]) in sm.foreign_keys(sql, table), table
