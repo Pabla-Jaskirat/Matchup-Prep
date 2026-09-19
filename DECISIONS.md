@@ -829,6 +829,52 @@ column in the JSON, and the two cases are labelled differently on the chart:
 `.slice(-1)` gives "Jr.". Surnames are now computed once in Python, suffix
 list and all.
 
+### 59. The premise, tested rather than asserted ✅ — `make reliability`
+
+The question was fair: if a shape is only hand plus pitch type, is the tool
+saying anything a coach does not already know?
+
+**Test 1 — are the numbers repeatable?** Every pitch is assigned to half A or
+half B by a hash of its natural key, and each hitter's whiff rate is computed
+twice from pitches that never touch.
+
+| grouping | half-to-half r | full-sample r |
+|---|---|---|
+| shape (hand + type + speed) | 0.707 | 0.828 |
+| shape (hand + type only) | 0.705 | 0.827 |
+| batter versus pitcher | **cannot be computed** |  |
+
+That last row is the project in one line. It is not a poor score — **no
+hitter-pitcher pair in baseball has enough swings to run the test at all.** The
+most swings any hitter took against any one pitcher all season is **34**.
+Against a shape it is **399**.
+
+**Test 2 — does the shape add anything, or is it just "this hitter whiffs a
+lot"?** For each cell, subtract the hitter's own overall rate *and* how hard
+that pitch is for everybody, then split-half what is left:
+
+| | half-to-half r | full-sample r |
+|---|---|---|
+| raw whiff rate | 0.707 | 0.828 |
+| **hitter and pitch removed** | **0.312** | **0.475** |
+
+Residual spread: **7.2 percentage points** of whiff rate.
+
+So there is genuine hitter-by-pitch interaction, and it repeats. The page is
+not saying "Kirk is a good hitter"; it is saying "Kirk is a good hitter *and
+specifically worse on this one*", which is the only version a coach can act
+on.
+
+**It also sets the honesty bar.** 0.475 is real but not overwhelming: roughly
+half of what a cell shows is signal and half is noise. That is precisely why
+the 50-pitch floor exists and why every rate is printed beside its counts.
+Had this come back at 0.9 the sample-size discipline would be theatre; at 0.48
+it is the difference between a tool and a random number generator.
+
+**And it settles the velocity bands.** Stripped of hitter and pitch, 20 shapes
+score 0.312 and 16 score 0.315 — the extra granularity carries *no* extra
+information, and the merged version is marginally ahead.
+
 ---
 
 ## Open — still to defend

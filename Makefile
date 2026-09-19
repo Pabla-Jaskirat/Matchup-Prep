@@ -6,7 +6,7 @@
 PY := ingest/.venv/bin/python
 SEASON ?= 2026
 
-.PHONY: refresh fetch migrate load players describe check test web-test web-build dev verify-matchup explainer shapes-analyze shapes-choose shapes roster aggregate verify coverage
+.PHONY: refresh fetch migrate load players describe check test web-test web-build dev verify-matchup explainer reliability shapes-analyze shapes-choose shapes roster aggregate verify coverage
 
 refresh: fetch migrate load players roster shapes aggregate explainer	## full pipeline, in order
 
@@ -56,6 +56,9 @@ verify-matchup:			## check the matchup API against raw-pitch SQL (needs `make de
 
 explainer:			## freeze the how-it-works numbers into web/data/explainer.json
 	$(PY) ingest/scripts/build_explainer.py --season $(SEASON)
+
+reliability:			## split-half test: do these numbers say anything true?
+	$(PY) ingest/scripts/reliability.py --season $(SEASON)
 
 coverage:			## thin-cell audit: how much of the page is filled in (Task 15)
 	$(PY) ingest/scripts/check_coverage.py --season $(SEASON)
