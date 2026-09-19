@@ -753,6 +753,41 @@ to the league, without a word of prose.
 ragged. Now the rate leads its own line and the sample sits under it. Same
 information, same honesty about sample size, and the grid holds its shape.
 
+### 55. The legend became a key, and the detail became a grid ✅
+
+Two blocks of prose were doing work a reader had to grind through.
+
+**The legend** was four lines every reader met before the first hitter. It is
+now six swatches on one line each: colour, tick, the `← go here` marker, and
+the hatched "no number" state. A key is read once and then skipped, which is
+what a legend is for.
+
+**The detail view** was four sentences per pitch. On Skenes — a six-pitch
+arsenal — that was twenty-four sentences before a coach reached the bottom.
+Each metric is now one row: name, a bar with the league marked on it, the
+number, and the counts under it. Chases and contact got bars too, on their own
+measured scales (chase 0.071–0.629 → a 0.70 scale; xwOBA 0.140–0.497 → 0.60;
+sharing the whiff scale would have clipped both).
+
+**The league comparison is still words**, which was Task 20's acceptance
+criterion and is still the right call — but one short phrase beside a bar
+rather than a clause buried in a sentence.
+
+### 56. Two bugs the screenshots caught ✅
+
+Neither would have failed a test, because both were sentences.
+
+- The legend read **"his own worst pitch of the five."** Five was hard-coded.
+  Skenes throws six. Now it says "his worst of tonight's" and the count lives
+  where it is computed.
+- The banner read **"RHP Slider is the pitch 5 of our hitters handle worst"**,
+  which parses wrong on first read and never says how many hitters there are.
+  Now: **"5 of our 14 hitters handle Sinker worse than anything else he
+  throws."**
+
+The lesson is narrow and worth keeping: numbers written into prose are not
+covered by the tests that cover the numbers.
+
 ---
 
 ## Open — still to defend

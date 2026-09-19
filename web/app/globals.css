@@ -662,3 +662,131 @@ h2 {
     transparent 4px 8px
   );
 }
+
+/* ---- the key ---- */
+
+.key {
+  list-style: none;
+  margin: 0 0 1.25rem;
+  padding: 0.6rem 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.key li {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.key-swatch {
+  width: 14px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.key-worse {
+  background: #c2410c;
+}
+
+.key-better {
+  background: #15803d;
+}
+
+.key-typical {
+  background: color-mix(in srgb, var(--fg) 45%, transparent);
+}
+
+.key-thin {
+  background: repeating-linear-gradient(
+    45deg,
+    color-mix(in srgb, var(--fg) 20%, transparent) 0 3px,
+    transparent 3px 6px
+  );
+  border: 1px dashed var(--line);
+}
+
+.key-tick {
+  width: 2px;
+  height: 12px;
+  background: var(--fg);
+  opacity: 0.55;
+  flex-shrink: 0;
+}
+
+.key-flag {
+  color: var(--accent);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ---- the stat grid inside "why" ---- */
+
+.stats {
+  display: grid;
+  grid-template-columns: minmax(6.5rem, auto) 1fr;
+  gap: 0.35rem 0.75rem;
+  margin: 0;
+  align-items: baseline;
+}
+
+.stats dt {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.stats dd {
+  margin: 0;
+  min-width: 0;
+}
+
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stat-row .bar {
+  flex: 1 1 auto;
+  margin: 0;
+  min-width: 3rem;
+}
+
+.stat-value {
+  font-size: 0.85rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  min-width: 2.6rem;
+  text-align: right;
+}
+
+.stat-note {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.1rem;
+}
+
+.stat-seen {
+  grid-column: 1 / -1;
+  font-size: 0.72rem;
+  color: var(--muted);
+  padding-top: 0.15rem;
+}
+
+/* Inside the detail the bars carry the verdict colour too. */
+.bar-worse .bar-fill {
+  background: #c2410c;
+}
+
+.bar-better .bar-fill {
+  background: #15803d;
+}

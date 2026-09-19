@@ -13,6 +13,14 @@
 
 export const BAR_MAX = 0.5;
 
+/** Chase rates run wider than whiff rates: 0.071 to 0.629 across the same 100
+ *  cells, with league rates by shape from 0.206 to 0.384. */
+export const CHASE_BAR_MAX = 0.7;
+
+/** xwOBA on contact, 0.140 to 0.497 measured. .600 keeps a good hitter's bar
+ *  short of the end rather than pinned to it. */
+export const WOBA_BAR_MAX = 0.6;
+
 const clamp = (v: number) => Math.min(100, Math.max(0, v));
 
 export function barGeometry(

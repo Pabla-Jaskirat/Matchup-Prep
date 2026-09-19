@@ -3,9 +3,9 @@ import { notFound } from "next/navigation";
 
 import Headshot from "@/components/Headshot";
 import HitterRow from "@/components/HitterRow";
+import Legend from "@/components/Legend";
 import { shortLabel } from "@/lib/labels";
 import { getMatchup } from "@/lib/matchup-data";
-import { MIN_PITCHES } from "@/lib/matchup";
 import { missingSentence } from "@/lib/missing";
 
 export const dynamic = "force-dynamic";
@@ -56,8 +56,9 @@ export default async function MatchupPage({
         <section className="edge">
           <h2>Tonight’s edge</h2>
           <p>
-            <strong>{edge.label}</strong> is the pitch {edge.hitters} of our hitters
-            handle worst — measured against what he throws, not against each other.
+            <strong>{edge.hitters} of our {hitters.length} hitters</strong> handle{" "}
+            <strong>{shortLabel(edge.label)}</strong> worse than anything else he
+            throws.
           </p>
         </section>
       )}
@@ -76,11 +77,10 @@ export default async function MatchupPage({
 
       <h2 className="hitters-heading">Our hitters</h2>
       <p className="legend">
-        Each number is how often that hitter swings and misses at that pitch, from
-        anyone who throws it. Colour compares him to the league;{" "}
-        <strong>← go here</strong> marks his own worst pitch of the five. Fewer than{" "}
-        {MIN_PITCHES} pitches seen and we say so instead of guessing.
+        How often each hitter swings and misses at that pitch — against anyone who
+        throws it, not just him.
       </p>
+      <Legend />
 
       <ul className="hitters">
         {hitters.map((h) => (
