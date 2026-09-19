@@ -69,6 +69,17 @@ CHECKS = [
                               "shape_assignments WHERE method='v1_type_velo')",
                               lambda v: v == 0),
 
+    # Every typed pitch is either assigned a shape or recorded as unshaped.
+    # If this drifts, the footnote is under-reporting what the model cannot see.
+    ("typed pitches accounted", "SELECT (SELECT count(*) FROM pitches WHERE "
+                              "season=2026 AND pitch_type IS NOT NULL) - "
+                              "(SELECT count(*) FROM shape_assignments a JOIN "
+                              "pitches p USING (game_pk, at_bat_number, pitch_number) "
+                              "WHERE a.method='v1_type_velo' AND p.season=2026) - "
+                              "(SELECT coalesce(sum(pitches),0) FROM "
+                              "pitcher_unshaped_stats WHERE method='v1_type_velo' "
+                              "AND season=2026)", lambda v: v == 0),
+
     ("impossible rates",      "SELECT count(*) FROM hitter_shape_stats WHERE "
                               "whiff_rate > 1 OR chase_rate > 1 OR whiffs > swings "
                               "OR chases > out_of_zone OR swings > pitches_seen",

@@ -19,6 +19,7 @@ import {
   standForHand,
   tonightsEdge,
 } from "@/lib/matchup";
+import { type Missing, type UnshapedRow, missingArsenal } from "@/lib/missing.ts";
 
 const SEASON = 2026;
 const METHOD = "v1_type_velo";
@@ -67,6 +68,14 @@ JOIN players pl ON pl.mlbam_id = h.batter_id
 WHERE h.method = $1 AND h.season = $2 AND pl.team = 'TOR' AND pl.position <> 'P'
 `;
 
+// What he throws that has no shape, and the league counts that explain why.
+const UNSHAPED = `
+SELECT pitch_type, pitch_name, pitches, season_pitches,
+       league_pitches, league_pitchers
+FROM pitcher_unshaped_stats
+WHERE pitcher_id = $1 AND method = $2 AND season = $3
+`;
+
 const LEAGUE = `
 SELECT stand, shape_id, whiff_rate, chase_rate, avg_est_woba
 FROM league_shape_stats WHERE method = $1 AND season = $2
@@ -98,6 +107,8 @@ export type Matchup = {
   arsenal: (ArsenalEntry & ShapeMeta)[];
   unclassified_share: number;
   hitters: HitterLine[];
+  /** Pitches he throws often enough to plan for that the model cannot rate. */
+  missing: Missing[];
   edge: { shape_id: string; hitters: number; label: string } | null;
   ms: number;
 };
@@ -110,7 +121,8 @@ export async function getMatchup(pitcherId: number): Promise<Matchup | MatchupEr
   if (!Number.isInteger(pitcherId) || pitcherId <= 0) {
     return { error: "That pitcher id is not a number.", status: 400 };
   }
-    const [pitcherRows, arsenalRows, hitterRows, statRows, leagueRows] = await Promise.all([
+  const [pitcherRows, arsenalRows, hitterRows, statRows, leagueRows, unshapedRows] =
+    await Promise.all([
     query<{ id: number; name: string; throws: "L" | "R" | null; season_pitches: string }>(
       PITCHER,
       [pitcherId, METHOD, SEASON],
@@ -119,6 +131,7 @@ export async function getMatchup(pitcherId: number): Promise<Matchup | MatchupEr
     query<{ id: number; name: string; position: string }>(HITTERS),
     query<Record<string, string | number | null>>(HITTER_STATS, [METHOD, SEASON]),
     query<Record<string, string | number | null>>(LEAGUE, [METHOD, SEASON]),
+    query<Record<string, string | number | null>>(UNSHAPED, [pitcherId, METHOD, SEASON]),
   ]);
 
   const pitcher = pitcherRows[0];
@@ -223,6 +236,16 @@ export async function getMatchup(pitcherId: number): Promise<Matchup | MatchupEr
       100 - arsenalRows.reduce((sum, r) => sum + Number(r.pitches), 0) /
         Number(pitcher.season_pitches) * 100,
     hitters,
+    missing: missingArsenal(
+      unshapedRows.map((r) => ({
+        pitch_type: String(r.pitch_type),
+        pitch_name: String(r.pitch_name),
+        pitches: Number(r.pitches),
+        season_pitches: Number(r.season_pitches),
+        league_pitches: Number(r.league_pitches),
+        league_pitchers: Number(r.league_pitchers),
+      })) satisfies UnshapedRow[],
+    ),
     edge: edge
       ? { ...edge, label: arsenal.find((a) => a.shape_id === edge.shape_id)?.label ?? edge.shape_id }
       : null,

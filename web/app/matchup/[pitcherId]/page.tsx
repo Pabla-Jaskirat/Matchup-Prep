@@ -5,6 +5,7 @@ import HitterRow from "@/components/HitterRow";
 import { shortLabel } from "@/lib/labels";
 import { getMatchup } from "@/lib/matchup-data";
 import { MIN_PITCHES } from "@/lib/matchup";
+import { missingSentence } from "@/lib/missing";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +28,7 @@ export default async function MatchupPage({
     );
   }
 
-  const { pitcher, arsenal, hitters, edge } = matchup;
+  const { pitcher, arsenal, hitters, edge, missing } = matchup;
   const hand = pitcher.throws === "L" ? "LHP" : "RHP";
 
   return (
@@ -81,9 +82,19 @@ export default async function MatchupPage({
         ))}
       </ul>
 
+      {missing.length > 0 && (
+        <section className="missing">
+          <h2>What we can’t show you</h2>
+          {missing.map((m) => (
+            <p key={m.pitch_type}>{missingSentence(m, pitcher.throws)}</p>
+          ))}
+        </section>
+      )}
+
       <p className="footnote">
-        Built from {matchup.season} Statcast. {matchup.unclassified_share.toFixed(1)}% of
-        his pitches are not in any shape — pitch types too rare league-wide to measure.
+        Built from {matchup.season} Statcast.{" "}
+        {matchup.unclassified_share.toFixed(1)}% of his pitches sit outside the
+        {" "}shapes above.
       </p>
     </main>
   );

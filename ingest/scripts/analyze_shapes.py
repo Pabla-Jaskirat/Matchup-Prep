@@ -54,7 +54,11 @@ PITCH_NAMES = {
     "FF": "Four-Seam", "SI": "Sinker", "FC": "Cutter", "SL": "Slider",
     "ST": "Sweeper", "CU": "Curveball", "KC": "Knuckle-Curve", "CH": "Changeup",
     "FS": "Splitter", "SV": "Slurve", "FO": "Forkball", "EP": "Eephus",
-    "KN": "Knuckleball", "SC": "Screwball",
+    "KN": "Knuckleball", "SC": "Screwball", "CS": "Slow Curve",
+    # Legacy and non-pitch codes. None clears the 5,000-pitch floor, so they
+    # never become shapes -- but 009 names them in the "what we cannot see"
+    # footnote, and a bare "FA" there would mean nothing to a reader.
+    "FA": "Fastball", "PO": "Pitchout", "UN": "Unknown",
 }
 
 

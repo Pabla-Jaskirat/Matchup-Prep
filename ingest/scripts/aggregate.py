@@ -30,6 +30,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 import db
+from psycopg2.extensions import AsIs
+from analyze_shapes import PITCH_NAMES
 
 # Shared by the hitter, league and zone inserts: pitches of one method and
 # season, each already carrying its shape.
@@ -118,7 +120,37 @@ WHERE a.method = %(method)s AND p.season = %(season)s
 GROUP BY p.season, p.pitcher_id, a.shape_id
 """
 
+# The gap: typed pitches that no shape claimed, because their (hand, type)
+# never reached the 5,000-pitch league floor. Stored with the league counts
+# that explain why, so the page can give a reason instead of a percentage.
+#
+# %(names)s is a VALUES list built from PITCH_NAMES, which keeps the display
+# name in one place rather than duplicating the map in TypeScript.
+UNSHAPED = """
+INSERT INTO pitcher_unshaped_stats
+    (method, season, pitcher_id, pitch_type, pitch_name, pitches,
+     season_pitches, league_pitches, league_pitchers)
+SELECT %(method)s, p.season, p.pitcher_id, p.pitch_type,
+       coalesce(n.pitch_name, p.pitch_type),
+       count(*), max(t.season_pitches), max(lg.league_pitches),
+       max(lg.league_pitchers)
+FROM pitches p
+LEFT JOIN shape_assignments a USING (game_pk, at_bat_number, pitch_number)
+JOIN (SELECT pitcher_id, count(*) AS season_pitches
+      FROM pitches WHERE season = %(season)s GROUP BY 1) t
+  ON t.pitcher_id = p.pitcher_id
+JOIN (SELECT p_throws, pitch_type, count(*) AS league_pitches,
+             count(DISTINCT pitcher_id) AS league_pitchers
+      FROM pitches WHERE season = %(season)s AND pitch_type IS NOT NULL
+      GROUP BY 1, 2) lg
+  ON lg.p_throws = p.p_throws AND lg.pitch_type = p.pitch_type
+LEFT JOIN (VALUES %(names)s) AS n(code, pitch_name) ON n.code = p.pitch_type
+WHERE p.season = %(season)s AND p.pitch_type IS NOT NULL AND a.shape_id IS NULL
+GROUP BY p.season, p.pitcher_id, p.pitch_type, n.pitch_name
+"""
+
 TABLES = [("hitter_shape_stats", HITTER),
+          ("pitcher_unshaped_stats", UNSHAPED),
           ("pitcher_shape_stats", PITCHER),
           ("league_shape_stats", LEAGUE),
           ("hitter_shape_zone_stats", ZONE)]
@@ -187,7 +219,12 @@ def main() -> None:
     ap.add_argument("--season", type=int, default=2026)
     ap.add_argument("--method", default="v1_type_velo")
     args = ap.parse_args()
-    params = {"season": args.season, "method": args.method}
+    params = {
+        "season": args.season,
+        "method": args.method,
+        # Psycopg needs this pre-rendered: it is SQL syntax, not a value.
+        "names": AsIs(", ".join(f"('{c}', '{n}')" for c, n in PITCH_NAMES.items())),
+    }
 
     conn = db.connect()
     conn.autocommit = False

@@ -647,6 +647,43 @@ footnote saying 33.7% is unclassified. The gap is disclosed, but as an
 anonymous percentage rather than "his splitter, and we have no baseline for
 it."
 
+### 50. The gap is data too: a fifth aggregate for what the model cannot see ✅
+
+Imanaga's page listed three pitches and a footnote reading "33.7% of his
+pitches are not in any shape." That disclosed the gap and explained nothing —
+a reader cannot tell whether 33.7% is a rounding artifact or a third of the
+man's arsenal.
+
+Migration 009 adds `pitcher_unshaped_stats`: every typed pitch no shape
+claimed, grouped by pitcher and pitch type, **with the league counts that are
+the explanation.** 219 rows. The page now says:
+
+> Splitter — 34% of what he throws. Only 30 left-handers threw one all season,
+> 2,242 pitches in total, which is too few to measure what a typical hitter
+> does against it. So there is no baseline to compare him to, and we would
+> rather say that than guess.
+
+`league_pitches` and `league_pitchers` are stored precisely because they turn
+a rule into a reason a reader can check.
+
+The same 3% floor the arsenal uses applies here. A position player's single
+eephus is a gap in the data and not a gap worth naming.
+
+**Who it affects:** three real starters — Imanaga's splitter at 34%,
+Freeland's knuckle-curve at 21%, Ray's at 11%. Gausman and Skubal show nothing,
+because they have nothing missing.
+
+**A correction it forced.** Four Statcast codes had no display name (`FA`,
+`CS`, `PO`, `UN`), which did not matter while they could never appear on
+screen and mattered immediately once they could. Added to `PITCH_NAMES`, which
+stays the single source — the display name is written into the table by the
+aggregation rather than duplicated in TypeScript.
+
+**A number it corrected.** Task 12 recorded 9,444 unassigned pitches. The true
+figure is **9,446**; the original excluded two pitches that carry a type but no
+release speed. `make check` now asserts that assigned + unshaped equals every
+typed pitch, so the footnote cannot silently under-report.
+
 ---
 
 ## Open — still to defend
@@ -659,9 +696,8 @@ it."
 - **The 5.0 IQR banding cutoff.** RHP Curveball clears it by 0.6, LHP Curveball
   misses by 0.7. That single line is why no left-handed pitch has a speed band.
   Now measured (#49): moving it to 4.0 makes coverage worse, so the line stays.
-- **Imanaga's splitter.** 33.7% of his arsenal, invisible to the model because
-  left-handed splitters are too rare league-wide to measure. The footnote
-  discloses the share but does not name the pitch.
+- ~~**Imanaga's splitter.**~~ Closed by #50: the page now names the pitch and
+  gives the league counts that explain why it has no shape.
 - **Whiff rate is the only metric that ranks.** Chase rate and xwOBA are stored
   and shown but do not decide the marker. Whiff survives a 50-pitch sample;
   xwOBA on contact does not.

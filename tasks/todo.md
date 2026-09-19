@@ -188,6 +188,10 @@ driver is ever upgraded past v8.
         `opacity: 0.8`, a 3.9:1 ratio on the one text that stops a thin
         sample reading as a fact). Performance 98, LCP 1.1 s.
   - [x] Verify: 390px confirmed by you on Task 19's screen
+  - [x] Follow-up 2026-09-19: **migration 009 + a fifth aggregate** so the page
+        can name the pitches it cannot rate instead of reporting an anonymous
+        percentage. Imanaga's splitter is 34% of his arsenal. 219 rows;
+        `make check` asserts assigned + unshaped = every typed pitch.
   - [ ] Verify: **complete the whole flow on your actual phone** — search,
         pick, expand a hitter
 
