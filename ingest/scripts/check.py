@@ -1,5 +1,6 @@
 """Sanity checks on the loaded data. Run after any refresh."""
 
+import json
 import sys
 from pathlib import Path
 
@@ -101,6 +102,25 @@ CHECKS = [
                               lambda v: v == 0),
 ]
 
+def explainer_is_current(cur) -> tuple[str, bool]:
+    """The how-it-works page reads a committed JSON file rather than the
+    database, which is what keeps it off the 696,100-row pitch table. The cost
+    is that it can go stale without anything failing. This is the thing that
+    fails."""
+    path = Path(__file__).resolve().parents[2] / "web" / "data" / "explainer.json"
+    if not path.exists():
+        return ("missing — run `make explainer`", False)
+    doc = json.loads(path.read_text())
+    cur.execute("SELECT count(*) FROM pitch_shapes WHERE method = 'v1_type_velo'")
+    shapes = cur.fetchone()[0]
+    cur.execute("SELECT count(*) FROM shape_assignments WHERE method = 'v1_type_velo'")
+    assigned = cur.fetchone()[0]
+    ok = doc["totals"]["shapes"] == shapes and doc["totals"]["assigned"] == assigned
+    return (f"{doc['totals']['shapes']} shapes / {doc['totals']['assigned']:,} assigned"
+            + ("" if ok else f"  (db says {shapes} / {assigned:,} — run `make explainer`)"),
+            ok)
+
+
 if __name__ == "__main__":
     failed = 0
     with db.connect() as conn, conn.cursor() as cur:
@@ -112,4 +132,8 @@ if __name__ == "__main__":
             print(f"  {'PASS' if passed else 'FAIL'}  {label:<22} {value:,}"
                   if isinstance(value, int) else
                   f"  {'PASS' if passed else 'FAIL'}  {label:<22} {value}")
+
+        detail, passed = explainer_is_current(cur)
+        failed += not passed
+        print(f"  {'PASS' if passed else 'FAIL'}  {'explainer current':<22} {detail}")
     sys.exit(1 if failed else 0)

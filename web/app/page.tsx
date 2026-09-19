@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import PitcherSearch from "@/components/PitcherSearch";
@@ -15,6 +16,10 @@ export default function Home() {
       </p>
 
       <PitcherSearch onSelect={(p) => router.push(`/matchup/${p.id}`)} />
+
+      <p className="how-link">
+        <Link href="/how-it-works">How this works, in six steps →</Link>
+      </p>
 
     </main>
   );

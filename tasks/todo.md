@@ -197,6 +197,10 @@ driver is ever upgraded past v8.
   - [x] Follow-up 2026-09-19: **whiff bars** on every chip, one fixed 0-50%
         scale (measured: cells run 0.029-0.480) with a tick at the league
         rate. Decorative, so the numbers stay the accessible content.
+  - [x] Follow-up 2026-09-19: **`/how-it-works`** — the shape-matching idea in
+        six visual steps, built from `web/data/explainer.json` so the page
+        never queries `pitches`. `make check` asserts it is not stale.
+        **This is the visual version of success criterion #3.**
   - [ ] Verify: **complete the whole flow on your actual phone** — search,
         pick, expand a hitter
 
@@ -219,6 +223,7 @@ driver is ever upgraded past v8.
   - [ ] Verify: read cold in under 90 seconds
 
 - [ ] **Task 23: Rehearse the two-minute explanation** (XS) — depends on 22
+      *(`/how-it-works` is now the script: six steps, each with its number)*
   - [ ] Twice, no notes
   - [ ] Answer "isn't this just BvP with extra steps?" and "what's wrong with it?"
   - [ ] **This is success criterion #3. It is not optional.**

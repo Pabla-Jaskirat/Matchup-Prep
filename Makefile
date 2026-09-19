@@ -6,9 +6,9 @@
 PY := ingest/.venv/bin/python
 SEASON ?= 2026
 
-.PHONY: refresh fetch migrate load players describe check test web-test web-build dev verify-matchup shapes-analyze shapes-choose shapes roster aggregate verify coverage
+.PHONY: refresh fetch migrate load players describe check test web-test web-build dev verify-matchup explainer shapes-analyze shapes-choose shapes roster aggregate verify coverage
 
-refresh: fetch migrate load players roster shapes aggregate	## full pipeline, in order
+refresh: fetch migrate load players roster shapes aggregate explainer	## full pipeline, in order
 
 fetch:					## download Statcast into data/raw (skips cached weeks)
 	$(PY) ingest/scripts/fetch.py --season $(SEASON)
@@ -53,6 +53,9 @@ verify:				## re-count the Jays hitters in Python and compare to the SQL
 
 verify-matchup:			## check the matchup API against raw-pitch SQL (needs `make dev`)
 	$(PY) ingest/scripts/verify_matchup.py
+
+explainer:			## freeze the how-it-works numbers into web/data/explainer.json
+	$(PY) ingest/scripts/build_explainer.py --season $(SEASON)
 
 coverage:			## thin-cell audit: how much of the page is filled in (Task 15)
 	$(PY) ingest/scripts/check_coverage.py --season $(SEASON)

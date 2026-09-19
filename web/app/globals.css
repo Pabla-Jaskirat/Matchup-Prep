@@ -790,3 +790,365 @@ h2 {
 .bar-better .bar-fill {
   background: #15803d;
 }
+
+/* ---- how it works ---- */
+
+.how-title {
+  margin-bottom: 0.2rem;
+}
+
+.step {
+  margin: 2rem 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.step h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--fg);
+  margin-bottom: 0.6rem;
+}
+
+.step-num {
+  flex-shrink: 0;
+  width: 1.55rem;
+  height: 1.55rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.step p {
+  margin: 0 0 0.8rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.step-note {
+  font-size: 0.82rem !important;
+  color: var(--muted);
+}
+
+/* step 1 */
+.compare {
+  list-style: none;
+  margin: 0 0 0.8rem;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.compare li {
+  display: grid;
+  grid-template-columns: minmax(7rem, 11rem) 1fr 2.5rem;
+  gap: 0.6rem;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.compare-label {
+  color: var(--muted);
+}
+
+.compare-track {
+  height: 10px;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--fg) 8%, transparent);
+  position: relative;
+}
+
+.compare-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 5px;
+  background: #c2410c;
+}
+
+.compare-rule .compare-fill {
+  background: var(--accent);
+}
+
+.compare-value {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+
+/* step 2 */
+.pitchcard {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
+}
+
+.pitchcard > span {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+
+.pitchcard em {
+  font-style: normal;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.pitchcard .plus,
+.pitchcard .arrow {
+  border: 0;
+  background: none;
+  padding: 0 0.1rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.pitchcard-out {
+  border-color: var(--accent) !important;
+  color: var(--accent);
+}
+
+/* step 3 */
+.iqr,
+.shapebars {
+  list-style: none;
+  margin: 0 0 0.8rem;
+  padding: 0;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.iqr li,
+.shapebars li {
+  display: grid;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.78rem;
+}
+
+.shapebars li {
+  grid-template-columns: minmax(6.5rem, 9rem) 1fr 3.2rem;
+}
+
+/* Wider, because some rows carry a "3 bands" tag and a clipped tag is worse
+   than a narrower bar. */
+.iqr li {
+  grid-template-columns: minmax(8rem, 13rem) 1fr 2.4rem;
+}
+
+.shapebars-name {
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.iqr-name {
+  color: var(--muted);
+}
+
+.iqr .split .iqr-name {
+  color: var(--fg);
+  font-weight: 650;
+}
+
+.iqr-track,
+.shapebars-track {
+  position: relative;
+  height: 10px;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--fg) 8%, transparent);
+}
+
+.iqr-fill,
+.shapebars-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--fg) 30%, transparent);
+}
+
+.iqr .split .iqr-fill {
+  background: var(--accent);
+}
+
+.iqr .collapsed .iqr-name {
+  color: var(--fg);
+}
+
+.iqr .collapsed .iqr-fill {
+  background: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.iqr-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.35rem;
+}
+
+.iqr-tag {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 0 0.3rem;
+  white-space: nowrap;
+}
+
+.iqr-tag-muted {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.iqr-cut {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  background: #c2410c;
+}
+
+.iqr-value,
+.shapebars-value {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.shapebars-fill {
+  background: var(--accent);
+  opacity: 0.75;
+}
+
+/* step 5 */
+.grow {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  margin-bottom: 0.8rem;
+}
+
+.grow th {
+  text-align: left;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0 0.4rem 0.3rem 0;
+  font-weight: 600;
+}
+
+.grow td {
+  padding: 0.35rem 0.4rem 0.35rem 0;
+  border-top: 1px solid var(--line);
+  position: relative;
+}
+
+.grow .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.grow-bar {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 60%;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  z-index: 0;
+}
+
+.grow .usable td {
+  font-weight: 650;
+}
+
+/* step 6 */
+.venn {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.venn-side {
+  flex: 1 1 11rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.venn-side strong {
+  color: var(--fg);
+  font-size: 0.88rem;
+}
+
+.venn-mid {
+  display: grid;
+  place-items: center;
+  font-size: 1.3rem;
+  color: var(--accent);
+  padding: 0 0.2rem;
+}
+
+.how-honest {
+  margin-top: 2.5rem;
+  padding: 1rem;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+}
+
+.how-honest p {
+  margin: 0 0 0.7rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.how-honest p:last-child {
+  margin-bottom: 0;
+}
+
+.how-link {
+  margin: 1.5rem 0 0;
+  font-size: 0.85rem;
+}
+
+.how-link a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.how-link a:hover {
+  text-decoration: underline;
+}

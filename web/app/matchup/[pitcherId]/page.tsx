@@ -97,6 +97,10 @@ export default async function MatchupPage({
         </section>
       )}
 
+      <p className="how-link">
+        <Link href="/how-it-works">How these numbers are built →</Link>
+      </p>
+
       <p className="footnote">
         Built from {matchup.season} Statcast.{" "}
         {matchup.unclassified_share.toFixed(1)}% of his pitches sit outside the

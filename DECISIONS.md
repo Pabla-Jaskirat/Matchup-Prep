@@ -788,6 +788,47 @@ Neither would have failed a test, because both were sentences.
 The lesson is narrow and worth keeping: numbers written into prose are not
 covered by the tests that cover the numbers.
 
+### 57. The explainer is a page in the app, built from frozen measurements ✅
+
+`/how-it-works` walks the shape-matching idea in six steps, each one a picture
+with the real numbers under it. It is linked from both screens.
+
+**Its numbers are measured once by a script and committed as JSON**
+(`build_explainer.py` → `web/data/explainer.json`), for a specific reason: the
+page must not query `pitches`. An explainer that broke the app's central claim
+while explaining it would be a poor advertisement. Same pattern as
+`db/shapes/v1_type_velo.json` — a measurement stored as data, reviewable in a
+diff. The page prerenders statically; Lighthouse performance 100.
+
+**The cost is staleness**, so `make check` now asserts the file's shape count
+and assignment total match the database, and says `run make explainer` when
+they do not. Verified by breaking it on purpose and watching it fail.
+
+**The example is the argument in one line:** Guerrero saw **19 pitches** from
+Skenes all season, and the most he saw from *any* pitcher was 36 — both under
+the 50-pitch floor. Re-counted by shape, his 9 sinkers from Skenes become
+**439** from everyone. Same pitch, 49× the evidence.
+
+### 58. Step 3 nearly told a lie, and the data caught it ❌ *(prediction)*
+
+My first draft read "two groups clear the line" beside a chart plainly showing
+**three** bars past it. I had conflated *clears the spread test* with *gets
+split*.
+
+RHP knuckle-curves have the widest spread in baseball — 6.2 mph — and are
+still one shape, because three slices of 9,476 pitches would be ~3,159 each,
+under the 5,000 a band needs. The spread earns the split; the sample size
+overrules it.
+
+That is a better story than the one I was going to tell, and it was only
+available because the page renders from measured data. `bands` is now a real
+column in the JSON, and the two cases are labelled differently on the chart:
+**3 bands** against **too few to split**.
+
+**Also fixed:** `"Vladimir Guerrero Jr.".split(" ")[0]` gave "Vladimir" and
+`.slice(-1)` gives "Jr.". Surnames are now computed once in Python, suffix
+list and all.
+
 ---
 
 ## Open — still to defend

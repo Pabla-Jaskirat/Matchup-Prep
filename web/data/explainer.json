@@ -1,0 +1,327 @@
+{
+  "season": 2026,
+  "method": "v1_type_velo",
+  "generated": "2026-09-19",
+  "totals": {
+    "pitches": 696100,
+    "typed": 693243,
+    "assigned": 683797,
+    "assigned_pct": 98.6,
+    "shapes": 20,
+    "groups": 16,
+    "hitters": 14
+  },
+  "floors": {
+    "group_pitches": 5000,
+    "band_pitches": 5000,
+    "iqr_for_bands": 5.0,
+    "cell_pitches": 50,
+    "arsenal_pct": 3.0
+  },
+  "example": {
+    "hitter": "Vladimir Guerrero Jr.",
+    "hitter_short": "Guerrero",
+    "pitcher": "Paul Skenes",
+    "pitcher_short": "Skenes",
+    "pitcher_hand": "R",
+    "head_to_head": 19,
+    "pitchers_faced": 239,
+    "avg_per_pitcher": 8.7,
+    "max_per_pitcher": 36,
+    "by_shape": [
+      {
+        "shape_id": "R-SI-1",
+        "label": "RHP Sinker",
+        "from_him": 9,
+        "from_everyone": 439
+      },
+      {
+        "shape_id": "R-ST-1",
+        "label": "RHP Sweeper",
+        "from_him": 6,
+        "from_everyone": 141
+      },
+      {
+        "shape_id": "R-CH-1",
+        "label": "RHP Changeup",
+        "from_him": 2,
+        "from_everyone": 73
+      },
+      {
+        "shape_id": "R-FF-1",
+        "label": "RHP Four-Seam",
+        "from_him": 2,
+        "from_everyone": 325
+      }
+    ]
+  },
+  "groups": [
+    {
+      "hand": "R",
+      "pitch_type": "KC",
+      "name": "Knuckle-Curve",
+      "pitches": 9476,
+      "iqr": 6.2,
+      "bands": 1
+    },
+    {
+      "hand": "R",
+      "pitch_type": "CU",
+      "name": "Curveball",
+      "pitches": 29562,
+      "iqr": 5.6,
+      "bands": 3
+    },
+    {
+      "hand": "R",
+      "pitch_type": "FS",
+      "name": "Splitter",
+      "pitches": 19922,
+      "iqr": 5.1,
+      "bands": 3
+    },
+    {
+      "hand": "L",
+      "pitch_type": "CH",
+      "name": "Changeup",
+      "pitches": 28376,
+      "iqr": 4.4,
+      "bands": 1
+    },
+    {
+      "hand": "L",
+      "pitch_type": "CU",
+      "name": "Curveball",
+      "pitches": 14707,
+      "iqr": 4.3,
+      "bands": 1
+    },
+    {
+      "hand": "R",
+      "pitch_type": "CH",
+      "name": "Changeup",
+      "pitches": 49201,
+      "iqr": 4.3,
+      "bands": 1
+    },
+    {
+      "hand": "L",
+      "pitch_type": "SL",
+      "name": "Slider",
+      "pitches": 28294,
+      "iqr": 4.1,
+      "bands": 1
+    },
+    {
+      "hand": "L",
+      "pitch_type": "SI",
+      "name": "Sinker",
+      "pitches": 37098,
+      "iqr": 4.0,
+      "bands": 1
+    },
+    {
+      "hand": "L",
+      "pitch_type": "ST",
+      "name": "Sweeper",
+      "pitches": 15930,
+      "iqr": 3.7,
+      "bands": 1
+    },
+    {
+      "hand": "R",
+      "pitch_type": "ST",
+      "name": "Sweeper",
+      "pitches": 41234,
+      "iqr": 3.6,
+      "bands": 1
+    },
+    {
+      "hand": "R",
+      "pitch_type": "SL",
+      "name": "Slider",
+      "pitches": 63766,
+      "iqr": 3.5,
+      "bands": 1
+    },
+    {
+      "hand": "L",
+      "pitch_type": "FC",
+      "name": "Cutter",
+      "pitches": 14021,
+      "iqr": 3.4,
+      "bands": 1
+    },
+    {
+      "hand": "R",
+      "pitch_type": "FC",
+      "name": "Cutter",
+      "pitches": 41820,
+      "iqr": 3.4,
+      "bands": 1
+    },
+    {
+      "hand": "R",
+      "pitch_type": "FF",
+      "name": "Four-Seam",
+      "pitches": 151005,
+      "iqr": 3.3,
+      "bands": 1
+    },
+    {
+      "hand": "R",
+      "pitch_type": "SI",
+      "name": "Sinker",
+      "pitches": 78032,
+      "iqr": 3.3,
+      "bands": 1
+    },
+    {
+      "hand": "L",
+      "pitch_type": "FF",
+      "name": "Four-Seam",
+      "pitches": 61353,
+      "iqr": 3.2,
+      "bands": 1
+    }
+  ],
+  "below_floor": [
+    {
+      "hand": "L",
+      "pitch_type": "FS",
+      "name": "Splitter",
+      "pitches": 2242,
+      "pitchers": 30
+    },
+    {
+      "hand": "L",
+      "pitch_type": "SV",
+      "name": "Slurve",
+      "pitches": 1800,
+      "pitchers": 11
+    },
+    {
+      "hand": "R",
+      "pitch_type": "SV",
+      "name": "Slurve",
+      "pitches": 1287,
+      "pitchers": 15
+    },
+    {
+      "hand": "L",
+      "pitch_type": "KC",
+      "name": "Knuckle-Curve",
+      "pitches": 1279,
+      "pitchers": 10
+    },
+    {
+      "hand": "R",
+      "pitch_type": "EP",
+      "name": "Eephus",
+      "pitches": 1047,
+      "pitchers": 41
+    }
+  ],
+  "shapes": [
+    {
+      "shape_id": "R-FF-1",
+      "label": "RHP Four-Seam",
+      "pitches": 151005
+    },
+    {
+      "shape_id": "R-SI-1",
+      "label": "RHP Sinker",
+      "pitches": 78032
+    },
+    {
+      "shape_id": "R-SL-1",
+      "label": "RHP Slider",
+      "pitches": 63766
+    },
+    {
+      "shape_id": "L-FF-1",
+      "label": "LHP Four-Seam",
+      "pitches": 61353
+    },
+    {
+      "shape_id": "R-CH-1",
+      "label": "RHP Changeup",
+      "pitches": 49201
+    },
+    {
+      "shape_id": "R-FC-1",
+      "label": "RHP Cutter",
+      "pitches": 41820
+    },
+    {
+      "shape_id": "R-ST-1",
+      "label": "RHP Sweeper",
+      "pitches": 41234
+    },
+    {
+      "shape_id": "L-SI-1",
+      "label": "LHP Sinker",
+      "pitches": 37098
+    },
+    {
+      "shape_id": "L-CH-1",
+      "label": "LHP Changeup",
+      "pitches": 28376
+    },
+    {
+      "shape_id": "L-SL-1",
+      "label": "LHP Slider",
+      "pitches": 28294
+    },
+    {
+      "shape_id": "L-ST-1",
+      "label": "LHP Sweeper",
+      "pitches": 15930
+    },
+    {
+      "shape_id": "L-CU-1",
+      "label": "LHP Curveball",
+      "pitches": 14707
+    },
+    {
+      "shape_id": "L-FC-1",
+      "label": "LHP Cutter",
+      "pitches": 14021
+    },
+    {
+      "shape_id": "R-CU-2",
+      "label": "RHP Curveball 79-83",
+      "pitches": 10023
+    },
+    {
+      "shape_id": "R-CU-3",
+      "label": "RHP Curveball 83+",
+      "pitches": 9931
+    },
+    {
+      "shape_id": "R-CU-1",
+      "label": "RHP Curveball under 79",
+      "pitches": 9608
+    },
+    {
+      "shape_id": "R-KC-1",
+      "label": "RHP Knuckle-Curve",
+      "pitches": 9476
+    },
+    {
+      "shape_id": "R-FS-2",
+      "label": "RHP Splitter 85-88",
+      "pitches": 6935
+    },
+    {
+      "shape_id": "R-FS-3",
+      "label": "RHP Splitter 88+",
+      "pitches": 6580
+    },
+    {
+      "shape_id": "R-FS-1",
+      "label": "RHP Splitter under 85",
+      "pitches": 6407
+    }
+  ]
+}
