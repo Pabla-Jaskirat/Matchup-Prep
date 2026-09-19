@@ -46,7 +46,14 @@ export type LeagueStat = {
  * component cannot render a rate without having handled the other case first.
  */
 export type Cell =
-  | ({ kind: "value"; whiff_delta: number | null; verdict: Verdict | null } & ShapeStat)
+  | ({
+      kind: "value";
+      whiff_delta: number | null;
+      verdict: Verdict | null;
+      /** The baseline this cell is judged against, carried along so the detail
+       *  view can name it instead of only colouring by it. */
+      league: LeagueStat;
+    } & ShapeStat)
   | { kind: "insufficient"; pitches_seen: number };
 
 export type ArsenalEntry = { shape_id: string; pitches: number; share: number };
@@ -96,10 +103,16 @@ export function makeCell(
   if (stat.pitches_seen < minPitches) {
     return { kind: "insufficient", pitches_seen: stat.pitches_seen };
   }
-  const leagueWhiff = league?.whiff_rate ?? null;
+  const baseline: LeagueStat = league ?? {
+    whiff_rate: null,
+    chase_rate: null,
+    avg_est_woba: null,
+  };
+  const leagueWhiff = baseline.whiff_rate;
   return {
     kind: "value",
     ...stat,
+    league: baseline,
     whiff_delta:
       stat.whiff_rate !== null && leagueWhiff !== null ? stat.whiff_rate - leagueWhiff : null,
     verdict: verdictFor(stat.whiff_rate, leagueWhiff),

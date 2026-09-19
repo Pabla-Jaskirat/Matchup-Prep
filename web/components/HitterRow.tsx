@@ -1,14 +1,24 @@
+import HitterDetail from "./HitterDetail";
+import { shortLabel } from "@/lib/labels";
 import type { Cell } from "@/lib/matchup";
 import type { HitterLine, ShapeMeta } from "@/lib/matchup-data";
-import { shortLabel } from "@/lib/labels";
 
 const pct = (v: number | null) => (v === null ? "—" : `${Math.round(v * 100)}%`);
 
 /**
- * One hitter, one chip per pitch in tonight's arsenal.
+ * One hitter: a row of chips you can scan, and a disclosure with the words.
  *
- * Chips rather than table columns: a seven-pitch arsenal would need seven
- * columns, and a phone is 390px wide. Chips wrap.
+ * Chips rather than table columns — a seven-pitch arsenal would need seven
+ * columns and a phone is 390px wide, so they wrap instead.
+ *
+ * The detail is a <details> element rather than React state: it opens on tap
+ * and on Enter, announces its own expanded state to a screen reader, needs no
+ * JavaScript, and cannot shift the layout when it opens because the content
+ * was rendered on the server and is already there.
+ *
+ * The chips stay outside the <summary>. A <summary> may only contain phrasing
+ * content, and a list is not phrasing content; browsers would render it, a
+ * validator would not accept it.
  */
 export default function HitterRow({
   hitter,
@@ -27,7 +37,7 @@ export default function HitterRow({
           {hitter.position}
           {hitter.stand ? ` · bats ${hitter.stand}` : ""}
           {" · "}
-          {usable} of {arsenal.length} pitches with enough history
+          {usable} of {arsenal.length} with enough history
         </span>
       </div>
 
@@ -41,6 +51,11 @@ export default function HitterRow({
           />
         ))}
       </ul>
+
+      <details className="why">
+        <summary>Why — {hitter.name.split(" ").slice(-1)[0]} pitch by pitch</summary>
+        <HitterDetail hitter={hitter} arsenal={arsenal} />
+      </details>
     </li>
   );
 }
@@ -50,9 +65,7 @@ function Chip({ label, cell, attack }: { label: string; cell: Cell; attack: bool
     return (
       <li className="chip chip-thin">
         <span className="chip-label">{label}</span>
-        <span className="chip-value">
-          {cell?.pitches_seen ?? 0} seen — not enough
-        </span>
+        <span className="chip-value">{cell?.pitches_seen ?? 0} seen — not enough</span>
       </li>
     );
   }

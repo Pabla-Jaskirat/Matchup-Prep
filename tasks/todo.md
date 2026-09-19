@@ -10,6 +10,9 @@ Day 3 — stats tables, roster, aggregation, and the Task 15 cut from 33 shapes 
 Day 4 — Next.js scaffold and a health route that reaches Neon.
 
 **Loose ends:** `requirements.txt` added 2026-09-18. No README until Task 22.
+`pg` warns that `sslmode=require` will change meaning in pg v9 — today it is
+treated as the stricter `verify-full`, so nothing is weaker now. Revisit if the
+driver is ever upgraded past v8.
 **Day 4 started 2026-09-19:** the web app lives in `web/`; `make dev` runs it.
 
 ---
@@ -161,12 +164,27 @@ Day 4 — Next.js scaffold and a health route that reaches Neon.
   - [x] Verify: no route touches `pitches`; 4 aggregate queries, **80 ms API /
         160 ms page warm** against a 300 ms budget (pool `max` 1 → 5)
   - [x] Verify: unknown id → 404 with a usable message; `abc` → 400
-  - [ ] Verify: **nine hitters without sideways scroll at 390px — yours to check**
+  - [x] Verify: checked at 390px — no sideways scroll (confirmed 2026-09-19)
 
-- [ ] **Task 20: Detail view, empty states, phone** (M) — depends on 19
-  - [ ] League comparison in words, never a percentile; count on every rate
-  - [ ] "Not enough data — 41 pitches seen, below the 50 threshold."
-  - [ ] Verify: complete the flow on your actual phone
+- [x] **Task 20: Detail view, empty states, phone** (M) — DONE
+  - [x] `<details>` per hitter — opens on tap and on Enter, no JavaScript,
+        nothing arrives later so nothing can shift
+  - [x] League comparison in words; a test asserts those strings contain **no
+        digits at all**, so a percentile cannot creep back in
+  - [x] Every rate carries its counts: "Misses 23% of his swings — 16 misses
+        on 71 swings"
+  - [x] Contact quality gets its own floor, **25 batted balls** — 50 pitches
+        might be 8 batted balls, and xwOBA over 8 is noise
+  - [x] Two empty states, both live on real pages: *"Not enough data — 41
+        pitches seen, below the 50 threshold."* and *"He has not seen this
+        pitch in 2026."*
+  - [x] `loading.tsx` skeleton matching the real layout — CLS measured **0**
+  - [x] Verify: **Lighthouse accessibility 100** (was 95: `.chip-count` had
+        `opacity: 0.8`, a 3.9:1 ratio on the one text that stops a thin
+        sample reading as a fact). Performance 98, LCP 1.1 s.
+  - [x] Verify: 390px confirmed by you on Task 19's screen
+  - [ ] Verify: **complete the whole flow on your actual phone** — search,
+        pick, expand a hitter
 
 - [ ] **CHECKPOINT C — Days 4–5 done**
   - [ ] Pick pitcher → 9 hitters → tap → why, on a phone

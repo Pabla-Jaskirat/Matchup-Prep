@@ -287,8 +287,11 @@ h2 {
   font-variant-numeric: tabular-nums;
 }
 
+/* No opacity here. It used to carry 0.8, which dropped "on 68 swings" to a
+   3.9:1 contrast ratio -- below WCAG AA, on the one piece of text that exists
+   to stop a thin sample being read as a fact. */
 .chip-count {
-  opacity: 0.8;
+  color: inherit;
 }
 
 /* Worse for the hitter, i.e. better for us. Colour is never the only signal:
@@ -335,4 +338,169 @@ h2 {
   margin-top: 2rem;
   font-size: 0.78rem;
   color: var(--muted);
+}
+
+/* ---- hitter detail ---- */
+
+.why {
+  margin-top: 0.7rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.5rem;
+}
+
+.why > summary {
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: var(--accent);
+  list-style: none;
+  padding: 0.35rem 0;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.why > summary::-webkit-details-marker {
+  display: none;
+}
+
+.why > summary::before {
+  content: "▸";
+  font-size: 0.75em;
+  transition: transform 0.12s ease;
+}
+
+.why[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.why > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.detail {
+  padding: 0.25rem 0 0.25rem;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.detail-note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.detail-shape h4 {
+  margin: 0 0 0.3rem;
+  font-size: 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.detail-share {
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.detail-flag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 0.05rem 0.4rem;
+}
+
+.detail-shape p {
+  margin: 0 0 0.15rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.detail-contact,
+.detail-sample {
+  color: var(--muted);
+}
+
+.detail-sample {
+  font-size: 0.78rem;
+}
+
+.detail-empty {
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ---- loading skeleton ---- */
+
+.skeleton {
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    var(--line) 25%,
+    color-mix(in srgb, var(--line) 45%, var(--card)) 37%,
+    var(--line) 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+.skeleton-title {
+  height: 1.7rem;
+  width: 60%;
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-line {
+  height: 0.9rem;
+  width: 85%;
+  margin-bottom: 1.5rem;
+}
+
+.skeleton-line.short {
+  width: 45%;
+  margin-bottom: 0.75rem;
+}
+
+.skeleton-edge {
+  height: 4.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.skeleton-chips {
+  height: 3.2rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

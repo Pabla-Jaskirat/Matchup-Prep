@@ -516,6 +516,59 @@ reads.
 means the aggregates, the arsenal floor, the 50-pitch rule, the switch-hitter
 stand selection and the league comparison all survived the trip to JSON.
 
+### 43. The detail view is `<details>`, not React state ✅
+
+It opens on tap and on Enter, announces its own expanded state to a screen
+reader, needs no JavaScript, and cannot shift the layout when it opens because
+the content was rendered on the server and is already in the HTML.
+
+The chips stay *outside* the `<summary>`. A `<summary>` may contain only
+phrasing content and a list is not phrasing content; browsers would render it
+anyway and a validator would not accept it.
+
+### 44. The league comparison is words, never a percentile ✅
+
+"73rd percentile" is a number a coach has to translate. "He misses more often
+than most hitters do against it, at 16%" is the translation, and it names the
+baseline rather than implying one.
+
+A test asserts the comparison strings contain no digits at all, so the next
+person to edit them cannot quietly reintroduce a percentile.
+
+### 45. Contact quality has its own, much higher floor ✅
+
+50 pitches might be 8 batted balls, and xwOBA over 8 batted balls is noise
+wearing a decimal point. `MIN_BATTED_BALLS = 25`; below it the page says
+"Only 9 batted balls — too few to say anything about his contact" rather than
+printing a number.
+
+This is the "higher threshold for contact quality" PLAN.md asked for, and it
+is the second place the same restraint shows up on screen.
+
+### 46. Two different empty states, because they are two different facts ✅
+
+- **"Not enough data — 41 pitches seen, below the 50 threshold."** He has
+  history; there is not enough of it.
+- **"He has not seen this pitch in 2026."** There is no history at all.
+
+Both occur on real pages. Gausman's shows two hitters with zero splitters of
+one band; Skubal's shows Sean Keys with no changeups and no curveballs.
+Collapsing them into one sentence would have been easier and would have told
+a reader less.
+
+### 47. A contrast failure on the sample counts, found by measuring ✅
+
+Lighthouse accessibility came back 95 with one repeated failure: `.chip-count`
+— the "on 68 swings" text — carried `opacity: 0.8`, which dropped it to a
+3.9:1 ratio, below WCAG AA.
+
+That is the one piece of text on the page whose whole job is to stop a thin
+sample being read as a fact, and it was the least readable thing on screen.
+Opacity removed.
+
+**Measured after:** accessibility **100** on both the search and matchup
+pages, performance 98, cumulative layout shift **0**.
+
 ---
 
 ## Open — still to defend
