@@ -1,18 +1,50 @@
 import Link from "next/link";
 
+import PitchStory from "@/components/how/PitchStory";
+import evidence from "@/data/evidence.json";
 import facts from "@/data/explainer.json";
-import { shortLabel } from "@/lib/labels";
+import { LEAGUE_MARGIN } from "@/lib/matchup";
 
 export const metadata = { title: "How it works — Matchup Prep" };
 
 const n = (v: number) => v.toLocaleString();
 
+/** Sample sizes for the "Why 50?" chart; the floor's own row is marked. */
+const SWING_STEPS = [10, 25, 50, 100];
+/** The example hitter's miss rate in that chart: a typical one. */
+const BASE_RATE = 20;
+
+const pct = (v: number | null) => (v === null ? "—" : `${Math.round(v * 100)}%`);
+
+/** "RHP Sinker" -> "Righty sinker": the hand in words, not a scouting code. */
+const handName = (hand: string) => (hand === "L" ? "Lefty" : "Righty");
+const plainLabel = (label: string) =>
+  label.replace(/^([LR])HP\s+(.*)$/, (_, h: string, rest: string) => `${handName(h)} ${rest.toLowerCase()}`);
+
+/**
+ * The explainer, in three layers.
+ *
+ *   1. The idea, told with the pitches themselves: one dot per pitch, in a
+ *      picture that changes as the reader scrolls (PitchStory).
+ *   2. Why the line is at 50, since every scene is measured against it.
+ *   3. Details, collapsed, for anyone who wants the reasoning behind a choice.
+ *
+ * The split-half test used to sit between 1 and 2. It is parked, whole, in
+ * components/how/TheTest.tsx.
+ *
+ * Every number comes from a file a script wrote (explainer.json from
+ * build_explainer, evidence.json from reliability), never typed into this
+ * page, so the page cannot drift from what was measured.
+ */
 export default function HowItWorks() {
   const { example, groups, shapes, totals, floors, below_floor, split_test } = facts;
+  const hand = facts.hand_example;
   const rarest = below_floor[0];
-  const biggest = example.by_shape[0];
   const widestIqr = Math.max(...groups.map((g) => g.iqr));
   const biggestShape = shapes[0].pitches;
+  const handWord = example.pitcher_hand === "L" ? "left-hander" : "right-hander";
+
+
   // The groups the retired velocity rule would have cut into bands, measured
   // rather than listed here: build_explainer re-reads that rule's shape file
   // and counts what the split cost.
@@ -21,8 +53,7 @@ export default function HowItWorks() {
   );
   // Clearing the old spread line was not enough on its own: three slices of a
   // group this size would each have fallen under the band floor. The widest
-  // bar on the chart below is one of these, so the page has to say why it
-  // carries no tag -- it read as a contradiction otherwise.
+  // bar on the chart is one of these, so the page says why it carries no tag.
   const tooThin = groups.filter(
     (g) =>
       split_test != null &&
@@ -31,276 +62,265 @@ export default function HowItWorks() {
   );
 
   return (
-    <main className="page">
+    <main className="page how">
       <Link href="/" className="back">
         ← Back to the app
       </Link>
 
-      <h1 className="how-title">How this works</h1>
-      <p className="tagline">
-        Six steps, with the real {example.hitter_short}-versus-{example.pitcher_short}{" "}
-        numbers at each one.
-      </p>
-
-      {/* 1 ------------------------------------------------------------- */}
-      <Step num={1} title="Facing a pitcher tells you almost nothing">
-        <p>
-          {example.hitter} saw <strong>{example.head_to_head} pitches</strong> from{" "}
-          {example.pitcher} all season. Across every pitcher he faced, the average is{" "}
-          {example.avg_per_pitcher} and the most he ever saw from one man is{" "}
-          {example.max_per_pitcher}.
+      {/* Hero --------------------------------------------------------- */}
+      <header className="how-hero">
+        <p className="eyebrow">How it works</p>
+        <h1 className="how-title">Don&rsquo;t ask about the pitcher. Ask about the pitch.</h1>
+        <p className="how-lede">
+          A hitter almost never sees enough of one pitcher to learn anything. But he
+          sees the same <em>kinds</em> of pitches all season long.
         </p>
-        <Compare
-          rows={[
-            { label: `From ${example.pitcher}`, value: example.head_to_head, tone: "thin" },
-            { label: "Most from any one pitcher", value: example.max_per_pitcher, tone: "thin" },
-            { label: `The floor to print a number`, value: floors.cell_pitches, tone: "rule" },
-          ]}
-          max={floors.cell_pitches}
-        />
-        <p className="step-note">
-          Nothing on the left reaches the line. That is the problem this tool exists to
-          get around.
-        </p>
-      </Step>
-
-      {/* 2 ------------------------------------------------------------- */}
-      <Step num={2} title="So describe the pitch, not the pitcher">
-        <p>
-          Every pitch gets two labels: which hand threw it, and what kind of pitch it
-          is. Nothing about who threw it.
-        </p>
-        <div className="pitchcard">
-          <span>
-            <em>hand</em>
-            {example.pitcher_hand}HP
-          </span>
-          <span aria-hidden="true" className="plus">
-            +
-          </span>
-          <span>
-            <em>type</em>
-            {shortLabel(biggest.label).replace(/\s\d.*$/, "")}
-          </span>
-          <span aria-hidden="true" className="arrow">
+        <div className="duel">
+          <div className="duel-side duel-thin">
+            <span className="duel-num">{evidence.max_swings_vs_pitcher}</span>
+            <span className="duel-label">
+              most swings any hitter took against <strong>one pitcher</strong> all season
+            </span>
+          </div>
+          <span className="duel-arrow" aria-hidden="true">
             →
           </span>
-          <span className="pitchcard-out">
-            <em>shape</em>
-            {biggest.shape_id}
-          </span>
+          <div className="duel-side duel-good">
+            <span className="duel-num">{evidence.max_swings_vs_group}</span>
+            <span className="duel-label">
+              against <strong>one kind of pitch</strong>, from everyone who throws it
+            </span>
+          </div>
         </div>
-        <p className="step-note">
-          The hand is not a formality. A sweeper breaks away from the arm that threw
-          it, so against a left-handed hitter a lefty&rsquo;s sweeper runs off the plate
-          and a righty&rsquo;s runs into the bat path. Same label, 5.4 points apart on
-          whiff rate — more than the whole hitter-by-pitch signal this page is about.
-        </p>
-      </Step>
+      </header>
 
-      {/* 3 ------------------------------------------------------------- */}
-      <Step num={3} title="Speed was the obvious third label. We measured it and dropped it.">
-        <p>
-          Each bar is how much that pitch varies across the league — the gap between a
-          typically slow one and a typically fast one. An earlier version cut the
-          widest-spreading ones into three speed bands each, on the theory that a 73 mph
-          curveball and an 87 mph curveball are different pitches to stand in against.
-        </p>
-        <ul className="iqr">
-          {groups.map((g) => {
-            const key = `${g.hand}-${g.pitch_type}`;
-            const marked = wouldSplit.has(key);
-            const thin = tooThin.some((t) => `${t.hand}-${t.pitch_type}` === key);
-            return (
-              <li key={key} className={marked ? "split" : thin ? "collapsed" : ""}>
-                <span className="iqr-name">
-                  {g.hand}HP {g.name}
-                  {marked && <span className="iqr-tag">was split</span>}
-                  {thin && <span className="iqr-tag iqr-tag-muted">too few to split</span>}
-                </span>
-                <span className="iqr-track">
-                  <span
-                    className="iqr-fill"
-                    style={{ width: `${(g.iqr / (widestIqr * 1.05)) * 100}%` }}
-                  />
-                  {split_test?.split_above_iqr != null && (
-                    <span
-                      className="iqr-cut"
-                      style={{
-                        left: `${(split_test.split_above_iqr / (widestIqr * 1.05)) * 100}%`,
-                      }}
-                    />
-                  )}
-                </span>
-                <span className="iqr-value">{g.iqr.toFixed(1)}</span>
-              </li>
-            );
-          })}
-        </ul>
-        {split_test && (
-          <>
-            <Compare
-              rows={[
-                {
-                  label: "Jays numbers, pitches kept whole",
-                  value: split_test.cells_whole,
-                  tone: "good",
-                },
-                {
-                  label: "Jays numbers, pitches split by speed",
-                  value: split_test.cells_split,
-                  tone: "thin",
-                },
-              ]}
-              max={Math.max(split_test.cells_whole, 1)}
-            />
-            <p className="step-note">
-              The theory was fine and the cost was not. Splitting those{" "}
-              {split_test.groups.length} pitches gave{" "}
-              <strong>{split_test.cells_split} usable Blue Jays numbers</strong>, because
-              a hitter&rsquo;s sample gets divided along with the pitch — the most any
-              Jay managed against a single band was {split_test.best_split_cell} pitches,
-              under the {floors.cell_pitches} a number needs. Kept whole, the same
-              pitches give <strong>{split_test.cells_whole}</strong>.
-            </p>
-            {tooThin[0] && (
-              <p className="step-note">
-                Spread alone was never enough. {tooThin[0].hand}HP{" "}
-                {tooThin[0].name.toLowerCase()}s vary the most of anything in baseball
-                at {tooThin[0].iqr.toFixed(1)} mph and were still left whole even then:
-                three slices of {n(tooThin[0].pitches)} pitches would be about{" "}
-                {n(Math.round(tooThin[0].pitches / 3))} each, under the{" "}
-                {n(split_test.min_band_pitches)} a band needed.
-              </p>
-            )}
-            <p className="step-note">
-              Splitting also did not measure any better: {totals.shapes} shapes capture
-              5.0 points of real hitter-by-pitch difference and{" "}
-              {split_test.shapes_then} capture 4.9. So the shape is a hand and a pitch
-              type, and speed is not part of it.
-            </p>
-          </>
-        )}
-        <p className="step-note">
-          Pitches too rare to measure never get here at all. The biggest of them is the{" "}
-          {rarest.hand}HP {rarest.name.toLowerCase()} — {n(rarest.pitches)} thrown all
-          season by {rarest.pitchers} pitchers, under the {n(floors.group_pitches)} a
-          pitch type needs before it can be a shape.
-        </p>
-      </Step>
+      <PitchStory
+        hitter={example.hitter}
+        hitterShort={example.hitter_short}
+        pitcherShort={example.pitcher_short}
+        handWord={handWord}
+        headToHead={example.head_to_head}
+        maxPerPitcher={example.max_per_pitcher}
+        floor={floors.cell_pitches}
+        columns={example.by_shape}
+        cta={
+          <Link href={`/matchup/${example.pitcher_id}`} className="how-cta">
+            See every Jay against {example.pitcher_short} →
+          </Link>
+        }
+      />
 
-      {/* 4 ------------------------------------------------------------- */}
-      <Step num={4} title={`Every pitch in baseball lands in one of ${totals.shapes}`}>
+      {/* Why 50 ------------------------------------------------------- */}
+      <section className="why50" id="why-50" aria-labelledby="why-50-title">
+        <p className="eyebrow">Why {floors.cell_pitches}?</p>
+        <h2 id="why-50-title" className="why50-title">
+          It&rsquo;s a judgment call, not a magic number
+        </h2>
         <p>
-          {n(totals.assigned)} of {n(totals.typed)} pitches — {totals.assigned_pct}%. The
-          rest are pitch types too rare to measure, and the app says so by name rather
-          than hiding them.
+          A miss rate is misses divided by swings, and with only a few swings, a single
+          one moves it a lot. {floors.cell_pitches} pitches is about{" "}
+          {floors.cell_pitches / 2} swings, since hitters swing at roughly half of what
+          they see.
         </p>
-        <ul className="shapebars">
-          {shapes.map((s) => (
-            <li key={s.shape_id}>
-              <span className="shapebars-name">{s.label}</span>
-              <span className="shapebars-track">
-                <span
-                  className="shapebars-fill"
-                  style={{ width: `${(s.pitches / biggestShape) * 100}%` }}
-                />
+        <p className="step-note">
+          Take a hitter who misses {BASE_RATE}% of the time. If just one more of his
+          swings had been a miss:
+        </p>
+        <ul className="swingcost" aria-label="How much one swing changes a miss rate">
+          {SWING_STEPS.map((sw) => (
+            <li key={sw} className={sw === floors.cell_pitches / 2 ? "is-floor" : ""}>
+              <span className="swingcost-n">{sw} swings</span>
+              <span className="swingcost-track" aria-hidden="true">
+                <span className="swingcost-fill" style={{ width: `${(SWING_STEPS[0] / sw) * 100}%` }} />
               </span>
-              <span className="shapebars-value">{n(s.pitches)}</span>
+              <span className="swingcost-v">
+                {BASE_RATE}% → {BASE_RATE + Math.round(100 / sw)}%
+              </span>
             </li>
           ))}
         </ul>
-      </Step>
-
-      {/* 5 ------------------------------------------------------------- */}
-      <Step num={5} title="Now the sample is big enough to mean something">
         <p>
-          Re-count {example.hitter_short}’s {example.head_to_head} pitches from{" "}
-          {example.pitcher} by <em>shape</em>, then ask how many of that shape he has
-          seen from <strong>anyone</strong>.
+          The app colours a hitter orange or green when he misses {LEAGUE_MARGIN * 100}{" "}
+          more (or fewer) times per 100 swings than the average hitter: say{" "}
+          {BASE_RATE + LEAGUE_MARGIN * 100}% when the average is {BASE_RATE}%. At {Math.round(1 / LEAGUE_MARGIN)} swings or
+          fewer, one swing moves him that far on its own, so a single lucky or unlucky swing
+          could flip the colour. At {floors.cell_pitches / 2} swings it takes at least two.
         </p>
-        <table className="grow">
-          <thead>
-            <tr>
-              <th>Shape</th>
-              <th>From {example.pitcher_short}</th>
-              <th>From everyone</th>
-            </tr>
-          </thead>
-          <tbody>
-            {example.by_shape.map((s) => (
-              <tr key={s.shape_id} className={s.from_everyone >= floors.cell_pitches ? "usable" : ""}>
-                <td>{shortLabel(s.label)}</td>
-                <td className="num">{s.from_him}</td>
-                <td className="num">
-                  <span className="grow-bar" style={{ width: `${(s.from_everyone / biggest.from_everyone) * 92}%` }} />
-                  {n(s.from_everyone)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <p className="step-note">
-          His sinker: <strong>{biggest.from_him} pitches</strong> becomes{" "}
-          <strong>{n(biggest.from_everyone)}</strong>. Same pitch, {" "}
-          {Math.round(biggest.from_everyone / biggest.from_him)}× the evidence. Rows that
-          clear the {floors.cell_pitches}-pitch floor are the ones that get a number.
-        </p>
-      </Step>
-
-      {/* 6 ------------------------------------------------------------- */}
-      <Step num={6} title="The report is the overlap">
         <p>
-          Tonight’s starter throws a handful of shapes — anything at least{" "}
-          {floors.arsenal_pct}% of his pitches. Cross those against what each of our{" "}
-          {totals.hitters} hitters has done against those same shapes, and that is the
-          page.
-        </p>
-        <div className="venn">
-          <span className="venn-side">
-            <strong>His arsenal</strong>
-            {totals.shapes} shapes exist · he throws 3–7 of them
-          </span>
-          <span className="venn-mid" aria-hidden="true">
-            ∩
-          </span>
-          <span className="venn-side">
-            <strong>Their history</strong>
-            every pitch of that shape, from anyone
-          </span>
-        </div>
-      </Step>
-
-      <section className="how-honest">
-        <h2>What this is not</h2>
-        <p>
-          This is the standard approach, not a new one — public stuff models like Stuff+
-          and PitchingBot are built on the same premise. The judgment here is in the
-          floors: {floors.group_pitches.toLocaleString()} league pitches before a pitch
-          type is a shape, {floors.cell_pitches} before a hitter’s number is printed, and
-          a sentence instead of a number whenever it falls short.
-        </p>
-        <p className="step-note">
-          Numbers on this page are from {facts.season} Statcast, frozen on{" "}
-          {facts.generated}. They are measured by a script and committed as data, so the
-          page never has to query the 696,100-row pitch table to explain itself.
+          An earlier version asked for 75, and most of the grid came up blank. So the
+          line moved to {floors.cell_pitches}, and every number in the app shows how many
+          swings it&rsquo;s built on. A number built on 25 swings looks different from one built
+          on 200, so a coach can judge it for himself.
         </p>
       </section>
-    </main>
-  );
-}
 
-function Step({ num, title, children }: { num: number; title: string; children: React.ReactNode }) {
-  return (
-    <section className="step">
-      <h2>
-        <span className="step-num" aria-hidden="true">
-          {num}
-        </span>
-        {title}
-      </h2>
-      {children}
-    </section>
+      {/* Under the hood -------------------------------------------------- */}
+      <section className="hood" aria-labelledby="hood-title">
+        <h2 id="hood-title">Under the hood</h2>
+        <ol className="pipeline">
+          <li>
+            <strong>Statcast</strong>
+            MLB&rsquo;s pitch-tracking data: all {n(totals.pitches)} pitches from{" "}
+            {facts.season}
+          </li>
+          <li>
+            <strong>Python</strong>
+            sorts every pitch into its group and adds up each hitter&rsquo;s numbers, then
+            checks them against a second, separately written version
+          </li>
+          <li>
+            <strong>Postgres</strong>
+            a database that stores the finished numbers, so pages load fast
+          </li>
+          <li>
+            <strong>Next.js</strong>
+            the website itself, designed for a phone in the clubhouse first
+          </li>
+        </ol>
+        <p className="step-note">
+          Every decision, from the {floors.cell_pitches}-pitch minimum to leaving out pitch
+          speed, is written down along with the numbers behind it.
+        </p>
+      </section>
+
+      {/* Details --------------------------------------------------------- */}
+      <section className="more">
+        <h2>Details</h2>
+
+        <details className="more-item">
+          <summary>Why it matters which hand threw the pitch</summary>
+          <p>
+            A sweeper breaks away from the arm that threw it. So against a left-handed
+            hitter, a lefty&rsquo;s sweeper runs away from him and a righty&rsquo;s runs in
+            toward him.
+          </p>
+          <p>
+            Hitters feel it: left-handed hitters miss{" "}
+            <strong>{pct(hand.vs_left_hitters.lefty)}</strong> of lefty sweepers but only{" "}
+            <strong>{pct(hand.vs_left_hitters.righty)}</strong> of righty ones, and
+            right-handed hitters show the mirror image ({pct(hand.vs_right_hitters.righty)}{" "}
+            against {pct(hand.vs_right_hitters.lefty)}). Same name, different pitch, so
+            they get separate groups.
+          </p>
+        </details>
+
+        {split_test && (
+          <details className="more-item">
+            <summary>Why pitch speed is left out</summary>
+            <p>
+              An earlier version also split the pitches whose speed varies most into slow,
+              medium and fast, since a 73 mph curveball and an 87 mph one feel different
+              to a hitter. But that divides each hitter&rsquo;s pitches three ways, and
+              the piles got too small:
+            </p>
+            <Compare
+              rows={[
+                { label: "Numbers we can show, not split", value: split_test.cells_whole, tone: "good" },
+                { label: "Numbers we can show, split", value: split_test.cells_split, tone: "thin" },
+              ]}
+              max={Math.max(split_test.cells_whole, 1)}
+            />
+            <p>
+              Split by speed, the most any Jays hitter saw of one slice was{" "}
+              {split_test.best_split_cell} pitches, short of the {floors.cell_pitches} needed.
+            </p>
+            <p className="step-note">
+              How much each kind of pitch varies in speed: the gap, in mph, between a
+              typically slow one and a typically fast one. The old version split anything
+              past the red line.
+            </p>
+            <ul className="iqr">
+              {groups.map((g) => {
+                const key = `${g.hand}-${g.pitch_type}`;
+                const marked = wouldSplit.has(key);
+                const thin = tooThin.some((t) => `${t.hand}-${t.pitch_type}` === key);
+                return (
+                  <li key={key} className={marked ? "split" : thin ? "collapsed" : ""}>
+                    <span className="iqr-name">
+                      {handName(g.hand)} {g.name.toLowerCase()}
+                      {marked && <span className="iqr-tag">was split</span>}
+                      {thin && <span className="iqr-tag iqr-tag-muted">too rare to split</span>}
+                    </span>
+                    <span className="iqr-track">
+                      <span
+                        className="iqr-fill"
+                        style={{ width: `${(g.iqr / (widestIqr * 1.05)) * 100}%` }}
+                      />
+                      {split_test.split_above_iqr != null && (
+                        <span
+                          className="iqr-cut"
+                          style={{
+                            left: `${(split_test.split_above_iqr / (widestIqr * 1.05)) * 100}%`,
+                          }}
+                        />
+                      )}
+                    </span>
+                    <span className="iqr-value">{g.iqr.toFixed(1)}</span>
+                  </li>
+                );
+              })}
+            </ul>
+            {tooThin[0] && (
+              <p className="step-note">
+                {handName(tooThin[0].hand)} {tooThin[0].name.toLowerCase()}s vary the most
+                but were never split: {n(tooThin[0].pitches)} pitches cut three ways would
+                leave each slice under the {n(split_test.min_band_pitches)} a group needs.
+              </p>
+            )}
+          </details>
+        )}
+
+        <details className="more-item">
+          <summary>All {totals.shapes} pitch groups</summary>
+          <p>
+            Together they cover {n(totals.assigned)} of the {n(totals.typed)} pitches thrown
+            this season. A kind of pitch needs {n(floors.group_pitches)} thrown across MLB
+            to get its own group. The biggest one that falls short is the{" "}
+            {handName(rarest.hand).toLowerCase()} {rarest.name.toLowerCase()} (
+            {n(rarest.pitches)} thrown by {rarest.pitchers} pitchers). When a starter throws
+            one of those, his page says so instead of hiding it.
+          </p>
+          <ul className="shapebars">
+            {shapes.map((s) => (
+              <li key={s.shape_id}>
+                <span className="shapebars-name">{plainLabel(s.label)}</span>
+                <span className="shapebars-track">
+                  <span
+                    className="shapebars-fill"
+                    style={{ width: `${(s.pitches / biggestShape) * 100}%` }}
+                  />
+                </span>
+                <span className="shapebars-value">{n(s.pitches)}</span>
+              </li>
+            ))}
+          </ul>
+        </details>
+
+        <details className="more-item">
+          <summary>What this is not</summary>
+          <p>
+            Grouping pitches by kind is a standard idea, not a new one: well-known public
+            pitch ratings are built the same way, and MLB&rsquo;s own tracking system
+            decides what counts as a slider or a sweeper. What&rsquo;s mine is splitting
+            by the pitcher&rsquo;s hand, the minimums ({n(floors.group_pitches)} pitches
+            across MLB for a group, {floors.cell_pitches} for a hitter&rsquo;s number),
+            comparing every hitter to the average, and stopping here after measuring that
+            finer groups don&rsquo;t help.
+          </p>
+          <p className="step-note">
+            Numbers on this page come from MLB&rsquo;s {facts.season} pitch-tracking data,
+            measured on{" "}
+            {new Date(`${evidence.generated}T12:00:00Z`).toLocaleDateString("en-US", {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+              timeZone: "UTC",
+            })}
+            .
+          </p>
+        </details>
+      </section>
+    </main>
   );
 }
 
