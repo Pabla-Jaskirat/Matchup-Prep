@@ -47,15 +47,6 @@ Measured with a split-half test (`make reliability`): every pitch goes into one 
 - **It isn't just "good hitters are good".** After removing each hitter's overall miss rate and how hard each pitch is for everyone, what's left, a hitter's trouble with a *specific* pitch, still repeats at **0.48**. That's real but not overwhelming, roughly half signal and half noise, which is why every number in the app shows its sample size.
 - **Hand + pitch type is the right level of detail.** It captures more real difference between hitters (5.0 points of miss rate) than coarser groupings (4.5). Adding pitch speed (4.9) splits samples thinner without finding anything new.
 
-## Limits, stated plainly
-
-- **50 pitches is a judgment call.** It was 75 until most of the grid came up blank. It's defensible only because every number shows its swing count.
-- **One season.** The database is Neon's free tier (500 MB), and one season of pitches is 207 MB.
-- **Statcast's classifier is inherited.** MLB's tracking system decides what counts as a slider or a sweeper. What's mine is the handedness split, the minimums, the comparison with the average, and stopping at this level after measuring that finer doesn't help.
-- **Miss rate is the only number shown.** Chase rate and contact quality are computed and stored but not shown, to keep the grid readable. Contact quality wouldn't survive a 50-pitch sample anyway.
-
-Every one of these, and every other judgment call, is written up with the measurement behind it in **[DECISIONS.md](DECISIONS.md)**.
-
 ## How it's built
 
 ```
@@ -71,39 +62,6 @@ Statcast (pybaseball)  →  Python pipeline  →  Postgres (Neon)  →  Next.js
 - **`web/`**: Next.js 16 and React 19, TypeScript. The rules that decide what a coach sees (the 50-pitch floor, the arsenal floor, the colour thresholds) live in `web/lib/` as pure functions with unit tests, apart from the components.
 - **`web/data/`**: the numbers on How it works, frozen by scripts (`make explainer`, `make reliability`), never typed into the page.
 
-## Run it locally
-
-You need Python 3.12, Node 20.9+, and a Postgres database (a free [Neon](https://neon.tech) project works).
-
-```bash
-# 1. Python environment
-python3 -m venv ingest/.venv
-ingest/.venv/bin/pip install -r requirements.txt
-
-# 2. Database connection: fill in both strings
-cp .env.example .env
-
-# 3. Build the data: download the season, load it, group it, aggregate it
-make refresh
-
-# 4. Run the app at http://localhost:3000
-cd web && npm install && cd ..
-make dev
-```
-
-`.env` holds two connection strings: `DATABASE_URL` (direct, used by the pipeline and migrations) and `DATABASE_URL_POOLED` (pooled, the only one the web app reads). When deploying, also set `NEXT_PUBLIC_SITE_URL` so link previews get absolute URLs.
-
-## Tests and checks
-
-```bash
-make test          # the web app's unit tests, then the Python ones
-make web-build     # production build; fails on any TypeScript error
-make verify        # re-count the Jays hitters in Python and compare to the SQL
-make reliability   # the split-half test above
-```
-
-The [Makefile](Makefile) lists every other target, each with a one-line description.
-
 ---
 
-Built as a portfolio project for a Baseball Systems application with the Toronto Blue Jays. Not affiliated with or endorsed by MLB or the Blue Jays. Data: MLB Statcast via [pybaseball](https://github.com/jldbc/pybaseball), and the MLB Stats API.
+Not affiliated with or endorsed by MLB or the Blue Jays. Data: MLB Statcast via [pybaseball](https://github.com/jldbc/pybaseball), and the MLB Stats API.
