@@ -7,10 +7,21 @@ import Link from "next/link";
 // Self-hosted by Next at build time: no request to Google from a coach's phone.
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 
+/**
+ * The site's own address, for link previews: apps like Slack and LinkedIn
+ * need the preview image's full URL. On Vercel the production domain comes
+ * for free; NEXT_PUBLIC_SITE_URL is only for a custom domain.
+ */
+function siteUrl(): URL {
+  if (process.env.NEXT_PUBLIC_SITE_URL) return new URL(process.env.NEXT_PUBLIC_SITE_URL);
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return new URL(`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`);
+  }
+  return new URL("http://localhost:3000");
+}
+
 export const metadata: Metadata = {
-  // Link previews need absolute URLs. Set NEXT_PUBLIC_SITE_URL to the live
-  // address once it is deployed; locally this falls back to the dev server.
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  metadataBase: siteUrl(),
   title: "Matchup Prep",
   description:
     "Pick an opposing starter and see which of his pitches each Blue Jays hitter handles, and which he doesn't.",
