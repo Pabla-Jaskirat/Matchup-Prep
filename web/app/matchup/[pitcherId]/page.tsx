@@ -2,8 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import Headshot from "@/components/Headshot";
-import HitterRow from "@/components/HitterRow";
-import Legend from "@/components/Legend";
+import MatchupBoard from "@/components/MatchupBoard";
 import { shortLabel } from "@/lib/labels";
 import { getMatchup } from "@/lib/matchup-data";
 import { missingSentence } from "@/lib/missing";
@@ -54,39 +53,18 @@ export default async function MatchupPage({
 
       {edge && (
         <section className="edge">
-          <h2>Tonight’s edge</h2>
+          <h2>His best weapon against us</h2>
           <p>
-            <strong>{edge.hitters} of our {hitters.length} hitters</strong> handle{" "}
-            <strong>{shortLabel(edge.label)}</strong> worse than anything else he
-            throws.
+            The <strong>{shortLabel(edge.label)}</strong>.{" "}
+            <strong>
+              {edge.hitters} of our {hitters.length} hitters
+            </strong>{" "}
+            struggle with it more than anything else he throws.
           </p>
         </section>
       )}
 
-      <section className="arsenal">
-        <h2>His arsenal</h2>
-        <ul className="arsenal-list">
-          {arsenal.map((s) => (
-            <li key={s.shape_id}>
-              <span>{shortLabel(s.label)}</span>
-              <span className="arsenal-share">{s.share.toFixed(0)}%</span>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <h2 className="hitters-heading">Our hitters</h2>
-      <p className="legend">
-        How often each hitter swings and misses at that pitch — against anyone who
-        throws it, not just him.
-      </p>
-      <Legend />
-
-      <ul className="hitters">
-        {hitters.map((h) => (
-          <HitterRow key={h.id} hitter={h} arsenal={arsenal} />
-        ))}
-      </ul>
+      <MatchupBoard arsenal={arsenal} hitters={hitters} />
 
       {missing.length > 0 && (
         <section className="missing">
@@ -103,8 +81,8 @@ export default async function MatchupPage({
 
       <p className="footnote">
         Built from {matchup.season} Statcast.{" "}
-        {matchup.unclassified_share.toFixed(1)}% of his pitches sit outside the
-        {" "}shapes above.
+        {matchup.unclassified_share.toFixed(1)}% of his pitches don’t fit the
+        {" "}pitch types above.
       </p>
     </main>
   );

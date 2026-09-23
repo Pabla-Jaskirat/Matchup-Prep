@@ -11,14 +11,8 @@ export default function Loading() {
       <div className="skeleton skeleton-title" />
       <div className="skeleton skeleton-line" />
       <div className="skeleton skeleton-edge" />
-      <ul className="hitters">
-        {Array.from({ length: 6 }, (_, i) => (
-          <li className="hitter" key={i}>
-            <div className="skeleton skeleton-line short" />
-            <div className="skeleton skeleton-chips" />
-          </li>
-        ))}
-      </ul>
+      <div className="skeleton skeleton-line short" />
+      <div className="skeleton skeleton-board" />
       <p className="sr-only" role="status">
         Loading the matchup.
       </p>

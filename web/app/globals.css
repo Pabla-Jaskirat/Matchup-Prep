@@ -8,6 +8,20 @@
   --line: #dcdfe4;
   --card: #ffffff;
   --accent: #134a8e; /* Blue Jays blue */
+  --brand: #134a8e;
+  --on-brand: #ffffff;
+  /* Worse for our hitter / better for our hitter. */
+  --warn: #c2410c;
+  --good: #15803d;
+  /* His arsenal, most-thrown first: one blue ramp, so it never competes with
+     the orange and green that carry the verdicts. */
+  --mix-0: #0b2f5e;
+  --mix-1: #1d5aa6;
+  --mix-2: #4a86d0;
+  --mix-3: #7eaae3;
+  --mix-4: #a9c7ee;
+  --mix-5: #cbdcf4;
+  --mix-6: #e2ebf8;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,6 +32,16 @@
     --line: #2b2f37;
     --card: #1c1f25;
     --accent: #7fb2ee;
+    --brand: #0f3c75;
+    --warn: #f97316;
+    --good: #22c55e;
+    --mix-0: #cfe1f8;
+    --mix-1: #9fc3f0;
+    --mix-2: #6f9fdf;
+    --mix-3: #4b7fc4;
+    --mix-4: #36659f;
+    --mix-5: #294f7d;
+    --mix-6: #1f3c5f;
   }
 }
 
@@ -29,7 +53,8 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--fg);
-  font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  font: 16px/1.45 var(--font-sans, -apple-system), BlinkMacSystemFont, "Segoe UI",
+    system-ui, sans-serif;
 }
 
 .page {
@@ -129,25 +154,6 @@ h1 {
   font-variant-numeric: tabular-nums;
 }
 
-.chosen {
-  margin-top: 1.5rem;
-  padding: 1rem;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--card);
-}
-
-.chosen h2 {
-  margin: 0 0 0.2rem;
-  font-size: 1.05rem;
-}
-
-.chosen p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
 /* ---- matchup screen ---- */
 
 .back {
@@ -190,31 +196,6 @@ h2 {
   font-size: 0.95rem;
 }
 
-.arsenal-list {
-  list-style: none;
-  margin: 0 0 1.75rem;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.arsenal-list li {
-  display: flex;
-  gap: 0.4rem;
-  align-items: baseline;
-  padding: 0.3rem 0.6rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--card);
-  font-size: 0.85rem;
-}
-
-.arsenal-share {
-  color: var(--muted);
-  font-variant-numeric: tabular-nums;
-}
-
 .hitters-heading {
   margin-top: 1.75rem;
 }
@@ -224,110 +205,6 @@ h2 {
   font-size: 0.85rem;
   line-height: 1.5;
   color: var(--muted);
-}
-
-.hitters {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 0.75rem;
-}
-
-.hitter {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--card);
-  padding: 0.85rem;
-}
-
-.hitter-head {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.15rem 0.5rem;
-  align-items: baseline;
-  margin-bottom: 0.6rem;
-}
-
-.hitter-name {
-  font-weight: 650;
-}
-
-.hitter-meta {
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-
-.chips {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
-  gap: 0.4rem;
-}
-
-.chip {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  padding: 0.45rem 0.6rem;
-  border: 1px solid var(--line);
-  border-left: 3px solid var(--line);
-  border-radius: 8px;
-  font-size: 0.8rem;
-}
-
-.chip-label {
-  font-weight: 600;
-}
-
-.chip-value {
-  color: var(--muted);
-  font-variant-numeric: tabular-nums;
-  font-weight: 600;
-}
-
-/* No opacity here. It used to carry 0.8, which dropped "on 68 swings" to a
-   3.9:1 contrast ratio -- below WCAG AA, on the one piece of text that exists
-   to stop a thin sample being read as a fact. */
-.chip-count {
-  color: inherit;
-  display: block;
-  font-size: 0.75rem;
-}
-
-/* Worse for the hitter, i.e. better for us. Colour is never the only signal:
-   every chip also carries its number and its sample size. */
-.chip-worse {
-  border-left-color: #c2410c;
-  background: color-mix(in srgb, #c2410c 8%, transparent);
-}
-
-.chip-better {
-  border-left-color: #15803d;
-  background: color-mix(in srgb, #15803d 8%, transparent);
-}
-
-.chip-typical {
-  border-left-color: var(--muted);
-}
-
-.chip-thin {
-  border-style: dashed;
-  border-left-style: dashed;
-  color: var(--muted);
-}
-
-.chip-attack {
-  outline: 2px solid var(--accent);
-  outline-offset: -1px;
-}
-
-.chip-flag {
-  color: var(--accent);
-  font-weight: 700;
-  white-space: nowrap;
 }
 
 .empty {
@@ -341,104 +218,6 @@ h2 {
   margin-top: 2rem;
   font-size: 0.78rem;
   color: var(--muted);
-}
-
-/* ---- hitter detail ---- */
-
-.why {
-  margin-top: 0.7rem;
-  border-top: 1px solid var(--line);
-  padding-top: 0.5rem;
-}
-
-.why > summary {
-  cursor: pointer;
-  font-size: 0.82rem;
-  color: var(--accent);
-  list-style: none;
-  padding: 0.35rem 0;
-  min-height: 32px;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.why > summary::-webkit-details-marker {
-  display: none;
-}
-
-.why > summary::before {
-  content: "▸";
-  font-size: 0.75em;
-  transition: transform 0.12s ease;
-}
-
-.why[open] > summary::before {
-  transform: rotate(90deg);
-}
-
-.why > summary:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-.detail {
-  padding: 0.25rem 0 0.25rem;
-  display: grid;
-  gap: 0.9rem;
-}
-
-.detail-note {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-.detail-shape h4 {
-  margin: 0 0 0.3rem;
-  font-size: 0.85rem;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.4rem;
-}
-
-.detail-share {
-  font-weight: 400;
-  color: var(--muted);
-  font-size: 0.78rem;
-}
-
-.detail-flag {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  color: var(--accent);
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  padding: 0.05rem 0.4rem;
-}
-
-.detail-shape p {
-  margin: 0 0 0.15rem;
-  font-size: 0.85rem;
-  line-height: 1.45;
-}
-
-.detail-contact,
-.detail-sample {
-  color: var(--muted);
-}
-
-.detail-sample {
-  font-size: 0.78rem;
-}
-
-.detail-empty {
-  color: var(--muted);
-  font-style: italic;
 }
 
 /* ---- loading skeleton ---- */
@@ -487,13 +266,14 @@ h2 {
   margin-bottom: 0.75rem;
 }
 
+.skeleton-board {
+  height: 22rem;
+  border-radius: 12px;
+}
+
 .skeleton-edge {
   height: 4.5rem;
   margin-bottom: 1.75rem;
-}
-
-.skeleton-chips {
-  height: 3.2rem;
 }
 
 .sr-only {
@@ -570,19 +350,6 @@ h2 {
   margin: 0;
 }
 
-.hitter-head {
-  align-items: center;
-  gap: 0.7rem;
-  flex-wrap: nowrap;
-}
-
-.hitter-id {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  min-width: 0;
-}
-
 /* The search row is a flex button; the face goes first and the name keeps the
    remaining width. */
 .result .headshot {
@@ -599,75 +366,11 @@ h2 {
   min-width: 0;
 }
 
-/* ---- the whiff bar ---- */
-
-/* One scale for every chip (0 to 50%, see lib/bar.ts), so two bars on the
-   same card can be compared by eye. The tick is the league rate for that
-   pitch, which is what turns a number into a judgement. */
-.bar {
-  position: relative;
-  display: block;
-  height: 6px;
-  margin: 0.3rem 0 0.35rem;
-  border-radius: 3px;
-  background: color-mix(in srgb, var(--fg) 9%, transparent);
-  overflow: hidden;
-}
-
-.bar-fill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  border-radius: 3px;
-  background: var(--muted);
-}
-
-.bar-tick {
-  position: absolute;
-  top: -2px;
-  bottom: -2px;
-  width: 2px;
-  margin-left: -1px;
-  border-radius: 1px;
-  background: var(--fg);
-  opacity: 0.55;
-}
-
-/* The tick has to stay visible when it sits at either end of the track. */
-.bar {
-  overflow: visible;
-}
-
-.bar-fill {
-  max-width: 100%;
-}
-
-.chip-worse .bar-fill {
-  background: #c2410c;
-}
-
-.chip-better .bar-fill {
-  background: #15803d;
-}
-
-.chip-typical .bar-fill {
-  background: color-mix(in srgb, var(--fg) 45%, transparent);
-}
-
-/* No data: a hatched track, so the chip keeps the same height as its
-   neighbours and the row does not go ragged. */
-.bar-empty {
-  background: repeating-linear-gradient(
-    45deg,
-    color-mix(in srgb, var(--fg) 8%, transparent) 0 4px,
-    transparent 4px 8px
-  );
-}
-
 /* ---- the key ---- */
 
 .key {
   list-style: none;
-  margin: 0 0 1.25rem;
+  margin: 0 0 0.75rem;
   padding: 0.6rem 0.75rem;
   display: flex;
   flex-wrap: wrap;
@@ -693,144 +396,489 @@ h2 {
 }
 
 .key-worse {
-  background: #c2410c;
+  background: var(--warn);
 }
 
 .key-better {
-  background: #15803d;
+  background: var(--good);
 }
 
 .key-typical {
   background: color-mix(in srgb, var(--fg) 45%, transparent);
 }
 
-.key-thin {
-  background: repeating-linear-gradient(
-    45deg,
-    color-mix(in srgb, var(--fg) 20%, transparent) 0 3px,
-    transparent 3px 6px
-  );
-  border: 1px dashed var(--line);
+.key-swatch + .key-swatch {
+  margin-left: -0.2rem;
 }
 
-.key-tick {
-  width: 2px;
+.key-watch {
+  width: 16px;
   height: 12px;
-  background: var(--fg);
-  opacity: 0.55;
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 2px var(--accent);
   flex-shrink: 0;
 }
 
-.key-flag {
-  color: var(--accent);
+.key-cell {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--card);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.key-cell-rate {
+  font-size: 0.72rem;
   font-weight: 700;
-  white-space: nowrap;
+  color: var(--fg);
 }
 
-/* ---- the stat grid inside "why" ---- */
-
-.stats {
-  display: grid;
-  grid-template-columns: minmax(6.5rem, auto) 1fr;
-  gap: 0.35rem 0.75rem;
-  margin: 0;
-  align-items: baseline;
-}
-
-.stats dt {
-  font-size: 0.78rem;
+.key-cell-n {
+  font-size: 0.6rem;
   color: var(--muted);
 }
 
-.stats dd {
-  margin: 0;
-  min-width: 0;
+.key-mark {
+  min-width: 16px;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--muted);
 }
 
-.stat-row {
+/* ---- site header ---- */
+
+.site-head {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.site-head-inner {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 0.7rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.site-name {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.stat-row .bar {
-  flex: 1 1 auto;
-  margin: 0;
-  min-width: 3rem;
+.site-mark {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--on-brand);
+  color: var(--brand);
+  display: grid;
+  place-items: center;
+  font-size: 0.72rem;
+  font-weight: 800;
 }
 
-.stat-value {
+.site-nav {
+  color: inherit;
+  opacity: 0.85;
   font-size: 0.85rem;
-  font-weight: 650;
-  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+}
+
+.site-nav:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* ---- his arsenal ---- */
+
+.arsenal {
+  margin-bottom: 1.75rem;
+}
+
+.usage {
+  display: flex;
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  gap: 2px;
+  background: var(--card);
+}
+
+/* Shares of what the arsenal shows, so the bar always fills: the few pitches
+   outside it are counted in the footnote instead. */
+.usage-seg {
+  flex-basis: 0;
+  min-width: 4px;
+  transition: opacity 0.15s ease;
+}
+
+.usage:has(.is-focus) .usage-seg:not(.is-focus) {
+  opacity: 0.3;
+}
+
+.usage-key {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.usage-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 36px;
+  padding: 0.3rem 0.65rem;
+  font: inherit;
+  font-size: 0.85rem;
+  color: inherit;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.usage-item:hover {
+  border-color: var(--accent);
+}
+
+.usage-item[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--card));
+  font-weight: 600;
+}
+
+.usage-item:focus-visible,
+.col-button:focus-visible,
+.link-button:focus-visible,
+.game:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.usage-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
   flex-shrink: 0;
-  min-width: 2.6rem;
-  text-align: right;
 }
 
-.stat-note {
-  display: block;
-  font-size: 0.75rem;
+.usage-share {
   color: var(--muted);
-  margin-top: 0.1rem;
+  font-weight: 400;
 }
 
-.stat-seen {
-  grid-column: 1 / -1;
+/* ---- the lineup grid ---- */
+
+.board-status {
+  min-height: 1.3rem;
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+}
+
+.link-button {
+  font: inherit;
+  color: var(--accent);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* The page never scrolls sideways; a seven-pitch arsenal on a phone scrolls
+   inside this box instead, with the hitter column pinned. */
+.board-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+}
+
+.board {
+  width: 100%;
+  font-variant-numeric: tabular-nums;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.85rem;
+}
+
+.board th,
+.board td {
+  border-bottom: 1px solid var(--line);
+}
+
+.board tbody tr:last-child th,
+.board tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.board thead th {
+  padding: 0;
+  font-weight: 600;
+  vertical-align: bottom;
+  background: var(--card);
+}
+
+.board-corner {
+  padding: 0.55rem 0.75rem !important;
+  text-align: left;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.col-button {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.45rem 0.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.col-button:hover .col-name {
+  color: var(--accent);
+}
+
+.col-name {
+  font-size: 0.8rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.col-band {
+  font-size: 0.68rem;
+  font-weight: 400;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.board thead th.is-focus {
+  box-shadow: inset 0 -3px 0 var(--accent);
+}
+
+.board thead th.is-focus .col-name {
+  color: var(--accent);
+}
+
+.board-hitter {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--card);
+  padding: 0.45rem 0.6rem 0.45rem 0.75rem;
+  text-align: left;
+  font-weight: 400;
+  min-width: 8.5rem;
+}
+
+.board-hitter-in {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.board-corner {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
+.board-hitter .headshot {
+  width: 28px;
+  height: 28px;
+}
+
+.board-id {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.board-name {
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.board-meta {
   font-size: 0.72rem;
   color: var(--muted);
-  padding-top: 0.15rem;
+  white-space: nowrap;
 }
 
-/* Inside the detail the bars carry the verdict colour too. */
-.bar-worse .bar-fill {
-  background: #c2410c;
+.cell {
+  min-width: 3.4rem;
+  padding: 0.3rem 0.2rem;
+  text-align: center;
+  vertical-align: middle;
+  border-left: 1px solid var(--line);
+  position: relative;
 }
 
-.bar-better .bar-fill {
-  background: #15803d;
+.cell-rate {
+  display: block;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.cell-n {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+/* Colour is never the only signal: every cell also carries its number and
+   the swings behind it. */
+.cell-worse {
+  background: color-mix(in srgb, var(--warn) 16%, var(--card));
+}
+
+.cell-worse .cell-rate {
+  color: color-mix(in srgb, var(--warn) 75%, var(--fg));
+}
+
+.cell-better {
+  background: color-mix(in srgb, var(--good) 14%, var(--card));
+}
+
+.cell-better .cell-rate {
+  color: color-mix(in srgb, var(--good) 75%, var(--fg));
+}
+
+.cell-thin .cell-rate {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.cell.is-watch {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.cell.is-focus:not(.cell-worse):not(.cell-better) {
+  background: color-mix(in srgb, var(--accent) 7%, var(--card));
+}
+
+/* ---- home: upcoming starters ---- */
+
+.home-title {
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+}
+
+.games {
+  list-style: none;
+  margin: 0 0 2rem;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.game {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: inherit;
+  text-decoration: none;
+}
+
+a.game:hover {
+  border-color: var(--accent);
+}
+
+a.game:hover .game-go {
+  transform: translateX(2px);
+}
+
+.game-when {
+  font-size: 0.75rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.game-live {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--on-brand);
+  background: var(--warn);
+  border-radius: 4px;
+  padding: 0.05rem 0.3rem;
+}
+
+.game-result {
+  font-weight: 600;
+}
+
+.game-result.is-win {
+  color: var(--good);
+}
+
+.game-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.game-name {
+  font-weight: 650;
+}
+
+.game-sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.game-go {
+  color: var(--accent);
+  font-weight: 700;
+  transition: transform 0.12s ease;
+}
+
+.game-off {
+  color: var(--muted);
+}
+
+.game-off .game-name {
+  font-weight: 500;
 }
 
 /* ---- how it works ---- */
 
 .how-title {
   margin-bottom: 0.2rem;
-}
-
-.step {
-  margin: 2rem 0;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--line);
-}
-
-.step h2 {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1rem;
-  text-transform: none;
-  letter-spacing: 0;
-  color: var(--fg);
-  margin-bottom: 0.6rem;
-}
-
-.step-num {
-  flex-shrink: 0;
-  width: 1.55rem;
-  height: 1.55rem;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--accent);
-  color: #fff;
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.step p {
-  margin: 0 0 0.8rem;
-  font-size: 0.9rem;
-  line-height: 1.5;
 }
 
 .step-note {
@@ -870,7 +918,7 @@ h2 {
   position: absolute;
   inset: 0 auto 0 0;
   border-radius: 5px;
-  background: #c2410c;
+  background: var(--warn);
 }
 
 .compare-rule .compare-fill,
@@ -885,49 +933,6 @@ h2 {
 }
 
 /* step 2 */
-.pitchcard {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.4rem;
-  margin-bottom: 0.8rem;
-}
-
-.pitchcard > span {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  padding: 0.4rem 0.7rem;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--card);
-  font-size: 0.85rem;
-  font-weight: 650;
-}
-
-.pitchcard em {
-  font-style: normal;
-  font-size: 0.65rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
-  font-weight: 600;
-}
-
-.pitchcard .plus,
-.pitchcard .arrow {
-  border: 0;
-  background: none;
-  padding: 0 0.1rem;
-  color: var(--muted);
-  font-weight: 400;
-}
-
-.pitchcard-out {
-  border-color: var(--accent) !important;
-  color: var(--accent);
-}
-
 /* step 3 */
 .iqr,
 .shapebars {
@@ -1029,7 +1034,7 @@ h2 {
   top: -3px;
   bottom: -3px;
   width: 2px;
-  background: #c2410c;
+  background: var(--warn);
 }
 
 .iqr-value,
@@ -1044,100 +1049,857 @@ h2 {
 }
 
 /* step 5 */
-.grow {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.82rem;
-  margin-bottom: 0.8rem;
-}
+/* step 6 */
+/* ---- how it works: hero ---- */
 
-.grow th {
-  text-align: left;
-  font-size: 0.7rem;
-  letter-spacing: 0.04em;
+.eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: var(--accent);
+}
+
+.how-hero {
+  margin-bottom: 2rem;
+}
+
+.how-hero .how-title {
+  font-size: 1.75rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.6rem;
+}
+
+.how-lede {
+  margin: 0 0 1.25rem;
+  font-size: 1.02rem;
   color: var(--muted);
-  padding: 0 0.4rem 0.3rem 0;
-  font-weight: 600;
 }
 
-.grow td {
-  padding: 0.35rem 0.4rem 0.35rem 0;
-  border-top: 1px solid var(--line);
-  position: relative;
+.duel {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
+  gap: 0.5rem;
 }
 
-.grow .num {
-  text-align: right;
+.duel-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.9rem 0.9rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--card);
+}
+
+.duel-num {
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
+}
+
+.duel-thin .duel-num {
+  color: var(--warn);
+}
+
+.duel-good {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  background: color-mix(in srgb, var(--accent) 7%, var(--card));
+}
+
+.duel-good .duel-num {
+  color: var(--accent);
+}
+
+.duel-label {
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+.duel-label strong {
+  color: var(--fg);
+}
+
+.duel-arrow {
+  align-self: center;
+  color: var(--muted);
+  font-size: 1.2rem;
+}
+
+.how-cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.how-cta:hover {
+  filter: brightness(1.1);
+}
+
+.how-cta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---- how it works: page width ---- */
+
+/* Text stays at reading width; only the story gets the full desktop width. */
+@media (min-width: 60rem) {
+  .how {
+    max-width: 66rem;
+  }
+
+  .how > :not(.story) {
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .how > .back {
+    display: block;
+  }
+}
+
+/* ---- how it works: the dot story ---- */
+
+.story {
+  position: relative;
+  margin: 1.5rem -1rem 0;
+}
+
+/* On a phone the picture pins to the top half and the words scroll up
+   underneath it, one step at a time. */
+.story-figure {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  height: 52vh;
+  /* The small-viewport unit, so the picture doesn't jump as a phone's
+     address bar shows and hides. */
+  height: 52svh;
+  padding: 0.5rem 1rem 0.4rem;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.story-svg {
+  width: 100%;
+  max-width: 440px;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.story-legend {
+  margin: 0;
+  transition: opacity 0.4s ease;
+  display: flex;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.story-legend span {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: opacity 0.4s ease;
+}
+
+.story-legend .is-off {
+  opacity: 0.25;
+}
+
+.story-legend i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.lg-him {
+  background: var(--warn);
+}
+
+.lg-all {
+  background: var(--accent);
+}
+
+.story-steps {
+  position: relative;
+  z-index: 1;
+  padding: 0 1rem 30vh;
+}
+
+.story-step {
+  min-height: 70vh;
+  padding-top: 2.5rem;
+  opacity: 0.35;
+  transition: opacity 0.4s ease;
+}
+
+.story-step.is-active {
+  opacity: 1;
+}
+
+.story-kicker {
+  margin: 0 0 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.story-step h3 {
+  margin: 0 0 0.6rem;
+  font-size: 1.3rem;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.story-step p {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+/* Links in the running text only; the button keeps its own colours. */
+.story-step p a {
+  color: var(--accent);
+}
+
+.story-step em {
+  font-style: normal;
+}
+
+.t-him {
+  color: var(--warn);
+}
+
+.t-all {
+  color: var(--accent);
+}
+
+@media (min-width: 60rem) {
+  .story {
+    margin: 2.5rem 0 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 3rem;
+  }
+
+  /* As tall as the picture, not the screen, and pinned so its middle sits
+     at the middle of the screen, where the active step's words are. Before
+     it pins, it starts level with the first step. */
+  .story-figure {
+    order: 2;
+    align-self: start;
+    top: max(2rem, calc(50vh - 15rem));
+    height: auto;
+    border: 0;
+    background: none;
+  }
+
+  .story-svg {
+    flex: none;
+    height: auto;
+  }
+
+  .story-steps {
+    order: 1;
+    padding: 0 0 20vh;
+  }
+
+  .story-step {
+    min-height: 85vh;
+    padding-top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .story-step h3 {
+    font-size: 1.6rem;
+  }
+
+  /* The first step starts at the top, beside the picture, instead of
+     floating in the middle of a screen-tall block under the hero. */
+  .story-step:first-child {
+    min-height: 60vh;
+    justify-content: flex-start;
+    padding-top: 3.5rem;
+  }
+}
+
+.slot {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 3;
+  opacity: 0.6;
+}
+
+/* The dots move by CSS transform. Pin where a transform is measured from:
+   older Safari resolved the origin on SVG differently from Chrome, which
+   would scale the dots about the wrong point. */
+.dot,
+.scatter-dot {
+  transform-box: view-box;
+  transform-origin: 0 0;
+}
+
+.dot {
+  transition:
+    transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 0.5s ease;
+}
+
+.dot-him {
+  fill: var(--warn);
+}
+
+.dot-all {
+  fill: var(--accent);
+}
+
+.box,
+.fade {
+  transition: opacity 0.5s ease;
+}
+
+.floor-line {
+  stroke: var(--fg);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+  opacity: 0.55;
+}
+
+.svg-floor {
+  font-size: 10px;
+  fill: var(--muted);
+}
+
+/* Text that sits over dots keeps a ring of background around each letter. */
+.svg-halo {
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+.svg-caption {
+  font-size: 13px;
+  font-weight: 650;
+  fill: var(--fg);
+}
+
+.svg-count {
+  font-size: 12px;
+  font-weight: 750;
+  fill: var(--fg);
+}
+
+.svg-name {
+  font-size: 11px;
+  font-weight: 600;
+  fill: var(--muted);
+}
+
+.svg-cell rect {
+  fill: var(--card);
+  stroke: var(--line);
+}
+
+.svg-cell-better rect {
+  fill: color-mix(in srgb, var(--good) 14%, var(--card));
+  stroke: color-mix(in srgb, var(--good) 45%, var(--line));
+}
+
+.svg-cell-worse rect {
+  fill: color-mix(in srgb, var(--warn) 16%, var(--card));
+  stroke: color-mix(in srgb, var(--warn) 45%, var(--line));
+}
+
+.svg-cell-name {
+  font-size: 11px;
+  font-weight: 650;
+  fill: var(--fg);
+}
+
+.svg-cell-rate {
+  font-size: 24px;
+  font-weight: 800;
+  fill: var(--fg);
+}
+
+.svg-cell-better .svg-cell-rate {
+  fill: color-mix(in srgb, var(--good) 75%, var(--fg));
+}
+
+.svg-cell-worse .svg-cell-rate {
+  fill: color-mix(in srgb, var(--warn) 75%, var(--fg));
+}
+
+.svg-cell-sub {
+  font-size: 9.5px;
+  fill: var(--muted);
+}
+
+/* ---- how it works: the scatter ---- */
+/* Parked with the test (components/how/TheTest.tsx): unused while it is off
+   the page, kept so it can come back as it was. */
+
+.seg {
+  display: inline-flex;
+  max-width: 100%;
+  overflow-x: auto;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+}
+
+.seg-btn {
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
   white-space: nowrap;
+  min-height: 36px;
+  padding: 0.35rem 0.8rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
 }
 
-.grow-bar {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 60%;
-  border-radius: 3px;
-  background: color-mix(in srgb, var(--accent) 18%, transparent);
-  z-index: 0;
+.seg-btn[aria-pressed="true"] {
+  background: var(--brand);
+  color: var(--on-brand);
 }
 
-.grow .usable td {
+.seg-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.scatter-body {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+@media (min-width: 40rem) {
+  .scatter-body {
+    grid-template-columns: minmax(0, 330px) 1fr;
+    gap: 1.25rem;
+    align-items: center;
+  }
+}
+
+.scatter-svg {
+  width: 100%;
+  max-width: 380px;
+}
+
+.scatter-tick line {
+  stroke: var(--line);
+}
+
+.scatter-tick text,
+.scatter-axis {
+  font-size: 9.5px;
+  fill: var(--muted);
+}
+
+.scatter-diag {
+  stroke: var(--fg);
+  stroke-width: 1.2;
+  stroke-dasharray: 4 4;
+  opacity: 0.5;
+  transition: opacity 0.4s ease;
+}
+
+.scatter-dot {
+  fill: var(--accent);
+  opacity: 0.45;
+  transition:
+    transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 0.4s ease;
+}
+
+.scatter-empty {
+  transition: opacity 0.4s ease;
+}
+
+.scatter-empty text {
+  font-size: 10px;
+  fill: var(--muted);
+}
+
+.scatter-empty .scatter-empty-big {
+  font-size: 16px;
+  font-weight: 700;
+  fill: var(--fg);
+}
+
+.scatter-r {
+  display: block;
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.scatter-r.is-thin {
+  color: var(--warn);
+}
+
+.scatter-r-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-right: 0.3rem;
+  letter-spacing: 0;
+}
+
+.scatter-r-sub {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.scatter-readout p {
+  margin: 0.75rem 0 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot,
+  .scatter-dot,
+  .box,
+  .fade,
+  .story-step,
+  .story-legend span {
+    transition: none !important;
+  }
+}
+
+/* ---- how it works: why 50 ---- */
+
+.why50 {
+  margin-top: 3rem;
+}
+
+.why50-title {
+  font-size: 1.4rem;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  color: var(--fg);
+  margin: 0 0 0.6rem;
+}
+
+.why50 p {
+  margin: 0 0 0.9rem;
+  font-size: 0.97rem;
+  line-height: 1.6;
+}
+
+.swingcost {
+  list-style: none;
+  margin: 0.5rem 0 1rem;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.swingcost li {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr 6.5rem;
+  gap: 0.6rem;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.swingcost-track {
+  height: 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+}
+
+.swingcost-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--fg) 28%, transparent);
+}
+
+.swingcost-v {
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.swingcost .is-floor {
+  color: var(--fg);
   font-weight: 650;
 }
 
-/* step 6 */
-.venn {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: stretch;
-  gap: 0.5rem;
-  margin-bottom: 0.8rem;
+.swingcost .is-floor .swingcost-fill {
+  background: var(--accent);
 }
 
-.venn-side {
-  flex: 1 1 11rem;
+.swingcost .is-floor .swingcost-v {
+  color: var(--accent);
+}
+
+/* ---- how it works: the test (parked, see TheTest.tsx) ---- */
+
+.proof {
+  margin: 2.5rem -1rem 0;
+  padding: 1.75rem 1rem 1.5rem;
+  background: var(--card);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+@media (min-width: 44rem) {
+  .proof {
+    margin-left: 0;
+    margin-right: 0;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.75rem 1.5rem 1.5rem;
+  }
+}
+
+.proof-title {
+  font-size: 1.4rem;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  color: var(--fg);
+  margin: 0 0 0.5rem;
+}
+
+.proof-lede {
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.finding {
+  padding-top: 1.1rem;
+  margin-top: 1.1rem;
+  border-top: 1px solid var(--line);
+}
+
+.finding h3 {
+  margin: 0 0 0.6rem;
+  font-size: 1rem;
+}
+
+.finding p {
+  margin: 0.6rem 0 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.levels {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.levels li {
+  display: grid;
+  grid-template-columns: 1fr 2.2rem;
+  grid-template-areas: "name name" "track value";
+  gap: 0.2rem 0.6rem;
+  align-items: center;
+}
+
+.levels-name {
+  grid-area: name;
+  font-size: 0.85rem;
+}
+
+.levels-count {
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin-left: 0.25rem;
+}
+
+.levels-track {
+  grid-area: track;
+  height: 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+}
+
+.levels-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--fg) 30%, transparent);
+}
+
+.levels-value {
+  grid-area: value;
+  text-align: right;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.levels .is-best .levels-name {
+  font-weight: 700;
+}
+
+.levels .is-best .levels-fill {
+  background: var(--accent);
+}
+
+.levels .is-best .levels-value {
+  color: var(--accent);
+}
+
+/* ---- how it works: under the hood ---- */
+
+.hood {
+  margin-top: 2.5rem;
+}
+
+.pipeline {
+  list-style: none;
+  counter-reset: stage;
+  margin: 0.25rem 0 0.75rem;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.pipeline li {
+  counter-increment: stage;
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
-  padding: 0.7rem 0.8rem;
+  gap: 0.1rem;
+  padding: 0.6rem 0.8rem 0.6rem 2.6rem;
   border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--card);
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   color: var(--muted);
 }
 
-.venn-side strong {
-  color: var(--fg);
-  font-size: 0.88rem;
-}
-
-.venn-mid {
+.pipeline li::before {
+  content: counter(stage);
+  position: absolute;
+  left: 0.8rem;
+  top: 0.65rem;
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 50%;
   display: grid;
   place-items: center;
-  font-size: 1.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
   color: var(--accent);
-  padding: 0 0.2rem;
+  border: 1.5px solid var(--accent);
 }
 
-.how-honest {
+.pipeline strong {
+  color: var(--fg);
+  font-size: 0.92rem;
+}
+
+/* The evidence behind the four steps, collapsed until someone asks. */
+.more {
   margin-top: 2.5rem;
-  padding: 1rem;
-  border: 1px dashed var(--line);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.more-item {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+  margin-bottom: 0.5rem;
+}
+
+.more-item > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0.8rem 1rem;
+  min-height: 44px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.more-item > summary::-webkit-details-marker {
+  display: none;
+}
+
+.more-item > summary::after {
+  content: "+";
+  color: var(--accent);
+  font-size: 1.2rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.more-item[open] > summary::after {
+  content: "−";
+}
+
+.more-item > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
   border-radius: 10px;
 }
 
-.how-honest p {
-  margin: 0 0 0.7rem;
-  font-size: 0.85rem;
-  line-height: 1.5;
+.more-item > :not(summary) {
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
-.how-honest p:last-child {
-  margin-bottom: 0;
+.more-item > p {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  margin-top: 0;
+}
+
+.more-item > :last-child {
+  margin-bottom: 1rem;
 }
 
 .how-link {

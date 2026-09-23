@@ -50,6 +50,6 @@ export function missingSentence(m: Missing, throws: "L" | "R"): string {
     `${m.pitch_name} — ${Math.round(m.share)}% of what he throws. ` +
     `Only ${who}threw one all season, ${m.league_pitches.toLocaleString()} pitches ` +
     `in total, which is too few to measure what a typical hitter does against it. ` +
-    `So there is no baseline to compare him to, and we would rather say that than guess.`
+    `So there is no average to compare our hitters with, and we would rather say that than guess.`
   );
 }
