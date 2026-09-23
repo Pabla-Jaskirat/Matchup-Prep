@@ -905,6 +905,98 @@ slider and what is a sweeper. That work is not mine. What is mine is the
 handedness split, the sample floors, the league baseline, and the choice to
 stop at this level after measuring that going finer does not help.
 
+### 61. The matchup screen is one grid, not a card per hitter ✅ *(user's call)*
+
+**Before:** fourteen cards, each with a row of pitch chips and a "Why — pitch
+by pitch" disclosure holding three stats per pitch. On a six-pitch arsenal that
+was eighteen numbers per hitter, and the first of the three repeated the chip.
+
+**Now:** hitters down the side, his pitches across the top, one cell each: the
+miss rate, coloured against the MLB average, with the swings it rests on under
+it. A pitch that troubles the whole lineup shows up as an orange column before
+anyone reads a number.
+
+**Cost, stated plainly:** chase rate and xwOBA on contact are still computed and
+stored but no longer shown anywhere. The league tick on each bar went too; the
+colour carries the comparison and the average is in each cell's hover text.
+Decision 6 still holds: no rate appears without its count.
+
+### 62. Every label speaks from our side of the field ✅
+
+"← go here" and "Tonight's edge" were written from the pitcher's point of view
+on a page whose reader is a Jays coach. They are now "his weakest pitch,
+compared with the average" (an outline on the cell) and "His best weapon
+against us". "Tonight" is gone from anything permanent: the app will mostly be
+read in the offseason.
+
+The weakest-pitch outline is relative on purpose (see `attackShape`): Guerrero
+beats the average on everything, so his outlined cell is green. The key says
+"compared with the average" so that does not read as a contradiction.
+
+### 63. The grid opens with the hitters he is most likely to trouble ✅
+
+**Score:** for each hitter, how much more often than average he misses on this
+starter's pitches, each pitch weighted by how often the starter throws it.
+
+**The rule that matters:** a pitch without a number counts as *average*, not as
+missing. The first version dropped it, and Schneider — one number, 41% on 37
+swings — outranked Okamoto, orange on three pitches. Counting the unknown as
+average means a lone thin cell moves a hitter only as far as that pitch's share
+of the arsenal. Hitters with no numbers at all go last, never ranked as "no
+trouble". Tapping a pitch still re-sorts by that one.
+
+### 64. The home page shows the next starters — or, off-season, the last ones ✅ *(user's call)*
+
+MLB's public schedule API gives the Jays' probable pitchers. The regular season
+ends 2026-09-27 and the Jays are out of the playoffs, so for five months "next
+games" would be empty — which is exactly when the app gets reviewed. So when no
+game is ahead, the same list shows the last three played, with the result.
+
+Measured against the real response rather than assumed:
+
+- A rainout (2026-09-22 at BAL) comes back as **Final** with no score. Dropped.
+- A game that started 12+ hours ago and is still not Final is stale data, not
+  tonight's game.
+- Spring training and exhibitions are not matchups and are left out.
+- A starter only gets a link if he has an arsenal in the database; otherwise
+  the card says so instead of leading to a 404.
+
+Any failure (MLB down, slow, changed format) gives an empty list. Search still
+works; the home page never breaks because someone else's API did.
+
+### 65. `reliability.py`'s speed row had been measuring hand + type twice ❌ *(bug)*
+
+After the v2 cutover (#60), shape IDs no longer carry speed, so the row keyed
+on `a.shape_id` silently re-measured hand + type and printed identical numbers
+under a "+ speed" label. The v1 rows had been deleted with `retire_method.py` (138 MB on a
+500 MB tier), so
+the bands are now rebuilt from `db/shapes/v1_type_velo.json`, as
+`build_explainer` already did. The row reproduces #59's recorded numbers
+exactly (0.707, 0.475, 4.9), so those conclusions stand.
+
+`make reliability` now also freezes its results into `web/data/evidence.json`
+and the split-half points into `web/data/halves.json`, so nothing on the site
+quotes a number that cannot be re-run.
+
+### 66. How it works tells the story with the pitches themselves ✅ *(user's call on scope)*
+
+One dot per pitch, in a picture that changes as the reader scrolls: Guerrero's
+19 pitches from Skenes in a box of 50; sorted by kind; every pitch of those
+kinds from every other right-hander poured in until each pile clears 50; each
+pile collapsed into the cell the app shows. Then a "Why 50?" section that calls
+the floor what it is — a judgment call — with the arithmetic behind it.
+
+**Parked, not deleted:** an interactive split-half scatter (#59 drawn, including
+an empty "hitter vs one pitcher" view) was built and taken off the page because
+first-time readers found it hard to follow. It lives whole in
+`components/how/TheTest.tsx`.
+
+Every number on the page comes from a file a script wrote; none is typed in.
+The sweeper handedness gap, for one, used to be a hard-coded "5.4" and is now
+read from `explainer.json` (34% vs 29% for left-handed hitters). The page also
+avoids jargon: "percentage points", "league", "cell" and scouting codes like RHP
+were replaced with plain words.
+
 ---
 
 ## Open — still to defend
@@ -919,9 +1011,9 @@ stop at this level after measuring that going finer does not help.
   Now measured (#49): moving it to 4.0 makes coverage worse, so the line stays.
 - ~~**Imanaga's splitter.**~~ Closed by #50: the page now names the pitch and
   gives the league counts that explain why it has no shape.
-- **Whiff rate is the only metric that ranks.** Chase rate and xwOBA are stored
-  and shown but do not decide the marker. Whiff survives a 50-pitch sample;
-  xwOBA on contact does not.
+- **Whiff rate is the only metric shown.** Chase rate and xwOBA are stored but,
+  since #61, not shown at all. Whiff survives a 50-pitch sample; xwOBA on
+  contact does not. Chase is the one worth bringing back if a coach asks.
 - **Inheriting Statcast's pitch classifier.** The slider/sweeper overlap is the
   concrete example of where it fails. Measured (#60): the classifier's fine
   labels do beat three coarse buckets, so the inherited work is doing real
