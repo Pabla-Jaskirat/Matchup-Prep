@@ -136,21 +136,47 @@ def facts(cur, season: int, method: str) -> dict:
                      GROUP BY pitcher_id) x""", (season, HITTER))
     avg_per_pitcher, max_per_pitcher, pitchers_faced = cur.fetchone()
 
-    # The same pitches, re-counted by shape instead of by who threw them.
+    # The same pitches, re-counted by shape instead of by who threw them --
+    # and what the hitter did against every pitch of that shape, beside the
+    # league, so the page can end on the same cell the app would show.
     cur.execute("""
       SELECT a.shape_id, s.label, count(*) AS from_him,
-             coalesce(h.pitches_seen, 0) AS from_everyone
+             coalesce(h.pitches_seen, 0) AS from_everyone,
+             coalesce(h.swings, 0), coalesce(h.whiffs, 0),
+             h.whiff_rate, l.whiff_rate
       FROM pitches p
       JOIN shape_assignments a USING (game_pk, at_bat_number, pitch_number)
       JOIN pitch_shapes s ON s.method = a.method AND s.shape_id = a.shape_id
       LEFT JOIN hitter_shape_stats h ON h.method = a.method AND h.season = p.season
            AND h.batter_id = p.batter_id AND h.stand = p.stand
            AND h.shape_id = a.shape_id
+      LEFT JOIN league_shape_stats l ON l.method = a.method AND l.season = p.season
+           AND l.stand = p.stand AND l.shape_id = a.shape_id
       WHERE a.method=%s AND p.season=%s AND p.batter_id=%s AND p.pitcher_id=%s
-      GROUP BY 1, 2, 4 ORDER BY 3 DESC""",
+      GROUP BY 1, 2, 4, 5, 6, 7, 8 ORDER BY 3 DESC""",
                 (method, season, HITTER, PITCHER))
-    by_shape = [{"shape_id": s, "label": l, "from_him": a, "from_everyone": b}
-                for s, l, a, b in cur.fetchall()]
+    rate = lambda v: None if v is None else float(v)
+    by_shape = [{"shape_id": s, "label": l, "from_him": a, "from_everyone": b,
+                 "swings": sw, "whiffs": wh, "whiff_rate": rate(wr),
+                 "league_whiff_rate": rate(lw)}
+                for s, l, a, b, sw, wh, wr, lw in cur.fetchall()]
+
+    # The page's case for splitting by hand: the same pitch type from each
+    # arm, against hitters from each side. Measured, so the page never quotes
+    # a gap nobody can re-run.
+    cur.execute("""
+      SELECT stand, split_part(shape_id, '-', 1), whiff_rate
+      FROM league_shape_stats
+      WHERE method = %s AND season = %s AND shape_id IN ('L-ST-1', 'R-ST-1')""",
+                (method, season))
+    sweeper = {}
+    for stand, hand, rate in cur.fetchall():
+        sweeper.setdefault(stand, {})[hand] = None if rate is None else float(rate)
+    hand_example = {"pitch": "Sweeper",
+                    "vs_left_hitters": {"lefty": sweeper.get("L", {}).get("L"),
+                                        "righty": sweeper.get("L", {}).get("R")},
+                    "vs_right_hitters": {"lefty": sweeper.get("R", {}).get("L"),
+                                         "righty": sweeper.get("R", {}).get("R")}}
 
     # Every (hand, type) that clears the group floor, with the spread that
     # decides whether speed splits it.
@@ -217,12 +243,14 @@ def facts(cur, season: int, method: str) -> dict:
                    "cell_pitches": MIN_CELL_PITCHES,
                    "arsenal_pct": ARSENAL_FLOOR_PCT},
         "split_test": split_test(cur, season, method),
-        "example": {"hitter": hitter_name, "hitter_short": surname(hitter_name),
+        "example": {"hitter_id": HITTER, "pitcher_id": PITCHER,
+                    "hitter": hitter_name, "hitter_short": surname(hitter_name),
                     "pitcher": pitcher_name, "pitcher_short": surname(pitcher_name),
                     "pitcher_hand": pitcher_hand, "head_to_head": head_to_head,
                     "pitchers_faced": pitchers_faced,
                     "avg_per_pitcher": float(avg_per_pitcher),
                     "max_per_pitcher": max_per_pitcher, "by_shape": by_shape},
+        "hand_example": hand_example,
         "groups": groups,
         "below_floor": below_floor,
         "shapes": shapes,

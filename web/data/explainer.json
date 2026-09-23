@@ -49,6 +49,8 @@
     "best_split_cell": 39
   },
   "example": {
+    "hitter_id": 665489,
+    "pitcher_id": 694973,
     "hitter": "Vladimir Guerrero Jr.",
     "hitter_short": "Guerrero",
     "pitcher": "Paul Skenes",
@@ -63,27 +65,54 @@
         "shape_id": "R-SI-1",
         "label": "RHP Sinker",
         "from_him": 9,
-        "from_everyone": 439
+        "from_everyone": 439,
+        "swings": 203,
+        "whiffs": 19,
+        "whiff_rate": 0.0936,
+        "league_whiff_rate": 0.1324
       },
       {
         "shape_id": "R-ST-1",
         "label": "RHP Sweeper",
         "from_him": 6,
-        "from_everyone": 141
+        "from_everyone": 141,
+        "swings": 73,
+        "whiffs": 19,
+        "whiff_rate": 0.2603,
+        "league_whiff_rate": 0.3296
       },
       {
         "shape_id": "R-CH-1",
         "label": "RHP Changeup",
         "from_him": 2,
-        "from_everyone": 73
+        "from_everyone": 73,
+        "swings": 45,
+        "whiffs": 10,
+        "whiff_rate": 0.2222,
+        "league_whiff_rate": 0.3417
       },
       {
         "shape_id": "R-FF-1",
         "label": "RHP Four-Seam",
         "from_him": 2,
-        "from_everyone": 325
+        "from_everyone": 325,
+        "swings": 144,
+        "whiffs": 26,
+        "whiff_rate": 0.1806,
+        "league_whiff_rate": 0.2331
       }
     ]
+  },
+  "hand_example": {
+    "pitch": "Sweeper",
+    "vs_left_hitters": {
+      "lefty": 0.3425,
+      "righty": 0.2888
+    },
+    "vs_right_hitters": {
+      "lefty": 0.2789,
+      "righty": 0.3296
+    }
   },
   "groups": [
     {
