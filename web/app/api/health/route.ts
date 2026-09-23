@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { query, safeHost, isPooled, requireUrl } from "@/lib/db";
+import { query, isPooled, requireUrl } from "@/lib/db";
 
 // Never prerendered: a health check that was answered at build time is not a
 // health check. This route must reach the database on every request.
@@ -14,7 +14,6 @@ export async function GET() {
     return NextResponse.json({
       ok: true,
       pitches: Number(rows[0].pitches),
-      host: safeHost(),
       pooled: isPooled(requireUrl(process.env)),
       ms: Date.now() - started,
     });

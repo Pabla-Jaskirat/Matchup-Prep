@@ -364,7 +364,7 @@ ingestion, these would have to separate again.
 
 ### 31. `/api/health` exists before any UI ✅
 
-It returns the pitch count, the hostname, and whether the host is pooled. A
+It returns the pitch count and whether the connection is pooled. A
 connection problem found through a blank health route takes two minutes to
 diagnose; the same problem found through a broken page takes an hour.
 
@@ -372,6 +372,9 @@ It is `force-dynamic` — a health check answered at build time is not a health
 check — and on failure it returns the error's *name* only. Driver errors can
 carry the connection string in their message, so the message never crosses the
 boundary; it goes to the server log.
+
+It no longer returns the hostname. That was useful while wiring up the deploy,
+but the live site has no reason to publish where its database lives.
 
 **First run measured:** 3.0 s cold (Neon waking from idle), 120 ms warm. The cold
 path is what Task 21 has to verify on the deployed app.
