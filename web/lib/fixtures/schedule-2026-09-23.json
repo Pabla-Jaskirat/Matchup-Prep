@@ -1,0 +1,403 @@
+{
+ "dates": [
+  {
+   "date": "2026-09-18",
+   "games": [
+    {
+     "gamePk": 822847,
+     "gameDate": "2026-09-19T00:05:00Z",
+     "gameType": "R",
+     "status": {
+      "abstractGameState": "Final",
+      "detailedState": "Final",
+      "startTimeTBD": false
+     },
+     "teams": {
+      "home": {
+       "team": {
+        "id": 140,
+        "name": "Texas Rangers",
+        "teamName": "Rangers",
+        "abbreviation": "TEX"
+       },
+       "probablePitcher": {
+        "id": 677958,
+        "fullName": "Kumar Rocker"
+       },
+       "score": 7
+      },
+      "away": {
+       "team": {
+        "id": 141,
+        "name": "Toronto Blue Jays",
+        "teamName": "Blue Jays",
+        "abbreviation": "TOR"
+       },
+       "probablePitcher": {
+        "id": 656302,
+        "fullName": "Dylan Cease"
+       },
+       "score": 1
+      }
+     }
+    }
+   ]
+  },
+  {
+   "date": "2026-09-19",
+   "games": [
+    {
+     "gamePk": 822843,
+     "gameDate": "2026-09-19T23:05:00Z",
+     "gameType": "R",
+     "status": {
+      "abstractGameState": "Final",
+      "detailedState": "Final",
+      "startTimeTBD": false
+     },
+     "teams": {
+      "home": {
+       "team": {
+        "id": 140,
+        "name": "Texas Rangers",
+        "teamName": "Rangers",
+        "abbreviation": "TEX"
+       },
+       "probablePitcher": {
+        "id": 615698,
+        "fullName": "Cal Quantrill"
+       },
+       "score": 6
+      },
+      "away": {
+       "team": {
+        "id": 141,
+        "name": "Toronto Blue Jays",
+        "teamName": "Blue Jays",
+        "abbreviation": "TOR"
+       },
+       "probablePitcher": {
+        "id": 667755,
+        "fullName": "Jos\u00e9 Soriano"
+       },
+       "score": 2
+      }
+     }
+    }
+   ]
+  },
+  {
+   "date": "2026-09-20",
+   "games": [
+    {
+     "gamePk": 822844,
+     "gameDate": "2026-09-20T18:35:00Z",
+     "gameType": "R",
+     "status": {
+      "abstractGameState": "Final",
+      "detailedState": "Final",
+      "startTimeTBD": false
+     },
+     "teams": {
+      "home": {
+       "team": {
+        "id": 140,
+        "name": "Texas Rangers",
+        "teamName": "Rangers",
+        "abbreviation": "TEX"
+       },
+       "probablePitcher": {
+        "id": 594798,
+        "fullName": "Jacob deGrom"
+       },
+       "score": 2
+      },
+      "away": {
+       "team": {
+        "id": 141,
+        "name": "Toronto Blue Jays",
+        "teamName": "Blue Jays",
+        "abbreviation": "TOR"
+       },
+       "probablePitcher": {
+        "id": 693686,
+        "fullName": "Spencer Miles"
+       },
+       "score": 7
+      }
+     }
+    }
+   ]
+  },
+  {
+   "date": "2026-09-21",
+   "games": [
+    {
+     "gamePk": 824787,
+     "gameDate": "2026-09-21T22:35:00Z",
+     "gameType": "R",
+     "status": {
+      "abstractGameState": "Final",
+      "detailedState": "Final",
+      "startTimeTBD": false
+     },
+     "teams": {
+      "home": {
+       "team": {
+        "id": 110,
+        "name": "Baltimore Orioles",
+        "teamName": "Orioles",
+        "abbreviation": "BAL"
+       },
+       "probablePitcher": {
+        "id": 669358,
+        "fullName": "Shane Baz"
+       },
+       "score": 4
+      },
+      "away": {
+       "team": {
+        "id": 141,
+        "name": "Toronto Blue Jays",
+        "teamName": "Blue Jays",
+        "abbreviation": "TOR"
+       },
+       "probablePitcher": {
+        "id": 702056,
+        "fullName": "Trey Yesavage"
+       },
+       "score": 3
+      }
+     }
+    }
+   ]
+  },
+  {
+   "date": "2026-09-22",
+   "games": [
+    {
+     "gamePk": 824785,
+     "gameDate": "2026-09-22T22:35:00Z",
+     "gameType": "R",
+     "status": {
+      "abstractGameState": "Final",
+      "detailedState": "Postponed",
+      "startTimeTBD": false
+     },
+     "teams": {
+      "home": {
+       "team": {
+        "id": 110,
+        "name": "Baltimore Orioles",
+        "teamName": "Orioles",
+        "abbreviation": "BAL"
+       },
+       "probablePitcher": {
+        "id": 605135,
+        "fullName": "Chris Bassitt"
+       }
+      },
+      "away": {
+       "team": {
+        "id": 141,
+        "name": "Toronto Blue Jays",
+        "teamName": "Blue Jays",
+        "abbreviation": "TOR"
+       },
+       "probablePitcher": {
+        "id": 453286,
+        "fullName": "Max Scherzer"
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "date": "2026-09-23",
+   "games": [
+    {
+     "gamePk": 824785,
+     "gameDate": "2026-09-23T17:35:00Z",
+     "gameType": "R",
+     "status": {
+      "abstractGameState": "Final",
+      "detailedState": "Final",
+      "startTimeTBD": false
+     },
+     "teams": {
+      "home": {
+       "team": {
+        "id": 110,
+        "name": "Baltimore Orioles",
+        "teamName": "Orioles",
+        "abbreviation": "BAL"
+       },
+       "probablePitcher": {
+        "id": 605135,
+        "fullName": "Chris Bassitt"
+       },
+       "score": 4
+      },
+      "away": {
+       "team": {
+        "id": 141,
+        "name": "Toronto Blue Jays",
+        "teamName": "Blue Jays",
+        "abbreviation": "TOR"
+       },
+       "probablePitcher": {
+        "id": 453286,
+        "fullName": "Max Scherzer"
+       },
+       "score": 2
+      }
+     }
+    },
+    {
+     "gamePk": 824784,
+     "gameDate": "2026-09-23T22:35:00Z",
+     "gameType": "R",
+     "status": {
+      "abstractGameState": "Preview",
+      "detailedState": "Scheduled",
+      "startTimeTBD": false
+     },
+     "teams": {
+      "home": {
+       "team": {
+        "id": 110,
+        "name": "Baltimore Orioles",
+        "teamName": "Orioles",
+        "abbreviation": "BAL"
+       },
+       "probablePitcher": {
+        "id": 694346,
+        "fullName": "Trey Gibson"
+       }
+      },
+      "away": {
+       "team": {
+        "id": 141,
+        "name": "Toronto Blue Jays",
+        "teamName": "Blue Jays",
+        "abbreviation": "TOR"
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "date": "2026-09-25",
+   "games": [
+    {
+     "gamePk": 822760,
+     "gameDate": "2026-09-25T23:07:00Z",
+     "gameType": "R",
+     "status": {
+      "abstractGameState": "Preview",
+      "detailedState": "Scheduled",
+      "startTimeTBD": false
+     },
+     "teams": {
+      "home": {
+       "team": {
+        "id": 141,
+        "name": "Toronto Blue Jays",
+        "teamName": "Blue Jays",
+        "abbreviation": "TOR"
+       }
+      },
+      "away": {
+       "team": {
+        "id": 113,
+        "name": "Cincinnati Reds",
+        "teamName": "Reds",
+        "abbreviation": "CIN"
+       },
+       "probablePitcher": {
+        "id": 666157,
+        "fullName": "Nick Lodolo"
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "date": "2026-09-26",
+   "games": [
+    {
+     "gamePk": 822759,
+     "gameDate": "2026-09-26T19:07:00Z",
+     "gameType": "R",
+     "status": {
+      "abstractGameState": "Preview",
+      "detailedState": "Scheduled",
+      "startTimeTBD": false
+     },
+     "teams": {
+      "home": {
+       "team": {
+        "id": 141,
+        "name": "Toronto Blue Jays",
+        "teamName": "Blue Jays",
+        "abbreviation": "TOR"
+       }
+      },
+      "away": {
+       "team": {
+        "id": 113,
+        "name": "Cincinnati Reds",
+        "teamName": "Reds",
+        "abbreviation": "CIN"
+       },
+       "probablePitcher": {
+        "id": 695076,
+        "fullName": "Rhett Lowder"
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "date": "2026-09-27",
+   "games": [
+    {
+     "gamePk": 822761,
+     "gameDate": "2026-09-27T19:07:00Z",
+     "gameType": "R",
+     "status": {
+      "abstractGameState": "Preview",
+      "detailedState": "Scheduled",
+      "startTimeTBD": false
+     },
+     "teams": {
+      "home": {
+       "team": {
+        "id": 141,
+        "name": "Toronto Blue Jays",
+        "teamName": "Blue Jays",
+        "abbreviation": "TOR"
+       }
+      },
+      "away": {
+       "team": {
+        "id": 113,
+        "name": "Cincinnati Reds",
+        "teamName": "Reds",
+        "abbreviation": "CIN"
+       },
+       "probablePitcher": {
+        "id": 682227,
+        "fullName": "Brandon Williamson"
+       }
+      }
+     }
+    }
+   ]
+  }
+ ]
+}

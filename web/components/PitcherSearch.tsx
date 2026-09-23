@@ -15,8 +15,10 @@ const DEBOUNCE_MS = 200;
 
 export default function PitcherSearch({
   onSelect,
+  label = "Opposing starter",
 }: {
   onSelect: (pitcher: Pitcher) => void;
+  label?: string;
 }) {
   const [q, setQ] = useState("");
   const [state, setState] = useState<State>({ kind: "idle" });
@@ -86,7 +88,7 @@ export default function PitcherSearch({
   return (
     <div className="search">
       <label htmlFor={`${listId}-input`} className="label">
-        Opposing starter
+        {label}
       </label>
       <input
         id={`${listId}-input`}

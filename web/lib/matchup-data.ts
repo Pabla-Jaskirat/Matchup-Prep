@@ -21,8 +21,8 @@ import {
 } from "@/lib/matchup";
 import { type Missing, type UnshapedRow, missingArsenal } from "@/lib/missing.ts";
 
-const SEASON = 2026;
-const METHOD = "v2_hand_type";
+export const SEASON = 2026;
+export const METHOD = "v2_hand_type";
 
 /**
  * Four small queries against the aggregate tables. None of them touches
