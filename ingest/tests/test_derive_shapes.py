@@ -1,6 +1,6 @@
 """Validating the shape file before it reaches the database.
 
-db/shapes/v1_type_velo.json is hand-editable on purpose -- Task 15 may widen
+db/shapes/<method>.json is hand-editable on purpose -- a later audit may widen
 the bands by editing it. That makes it the most likely place for a silent
 mistake to enter the pipeline, so it is checked before it is loaded rather
 than after the numbers look wrong.
@@ -24,7 +24,7 @@ def band(shape_id, lo, hi, pitches=10_000):
 
 
 def doc(*groups):
-    return {"method": "v1_type_velo", "season": 2026,
+    return {"method": "v2_hand_type", "season": 2026,
             "generated": "2026-09-18", "rule": {}, "groups": list(groups)}
 
 
@@ -96,7 +96,7 @@ def test_a_row_carries_the_method_and_season_from_the_file():
     # Both are part of how the row is identified later; neither is re-derived.
     d = doc(group(bands=[band("R-FF-1", None, None)]))
     row = ds.rows_from(d)[0]
-    assert row[0] == "v1_type_velo"
+    assert row[0] == "v2_hand_type"
     assert row[9] == 2026
 
 
@@ -121,12 +121,30 @@ def test_the_checked_in_shape_file_is_valid():
     ds.validate(ds.read_file())
 
 
-def test_the_checked_in_shape_file_holds_20_shapes():
-    # The count the README and the interview answer both quote. It was 33
-    # until the Task 15 coverage audit: splitting a group halves every
-    # hitter's sample, and the middle-spread splits were not separating
-    # anything worth that price.
-    assert len(ds.rows_from(ds.read_file())) == 20
+def test_the_checked_in_shape_file_holds_16_shapes():
+    # The count the README and the interview answer both quote. It was 33,
+    # then 20, now 16. The direction never changed: splitting a group halves
+    # every hitter's sample, and velocity was never what separated the
+    # pitches. 16 is one per (hand, pitch_type) group above the league floor.
+    assert len(ds.rows_from(ds.read_file())) == 16
+
+
+def test_no_shape_is_bounded_by_velocity():
+    # The rule in one assertion. A shape is a hand and a pitch type; if a
+    # velocity edge ever reappears here, the 50-pitch cell floor starts
+    # hiding hitters again and this is the test that says so.
+    for group in ds.read_file()["groups"]:
+        for band in group["bands"]:
+            assert band["velo_min"] is None and band["velo_max"] is None, \
+                band["shape_id"]
+
+
+def test_every_shape_is_one_hand_and_pitch_type():
+    # The corollary: exactly one shape per group, so a (hand, type) pair can
+    # never be spread across two rows a hitter's sample has to be divided by.
+    doc = ds.read_file()
+    pairs = {(g["p_throws"], g["pitch_type"]) for g in doc["groups"]}
+    assert len(pairs) == len(doc["groups"]) == len(ds.rows_from(doc))
 
 
 # --- shapes the file no longer defines --------------------------------------

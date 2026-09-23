@@ -7,6 +7,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 import db
 
+# The method under test, quoted for direct interpolation into the SQL below.
+# Every assertion goes through this: half of them checking one rule's rows and
+# half checking another's would still print all-PASS.
+M = f"'{db.DEFAULT_METHOD}'"
+
 CHECKS = [
     ("pitches loaded",        "SELECT count(*) FROM pitches", lambda v: v > 500_000),
     ("players named",         "SELECT count(*) FROM players", lambda v: v > 2_000),
@@ -34,14 +39,14 @@ CHECKS = [
                               "pitches b WHERE b.batter_id = p.mlbam_id)",
                               lambda v: v == 0),
 
-    # 16 is the floor: one band per (hand, pitch_type) group that clears the
-    # 5,000-pitch threshold. Fewer means a group vanished; many more means the
-    # banding rule has started splitting groups the spread does not justify.
+    # One shape per (hand, pitch_type) group that clears the 5,000-pitch
+    # threshold, so this is also the group count. 16 in 2026. Fewer means a
+    # group vanished; more means something has started splitting groups again.
     ("shapes defined",        "SELECT count(*) FROM pitch_shapes "
-                              "WHERE method = 'v1_type_velo'", lambda v: 16 <= v <= 48),
+                              "WHERE method = {M}", lambda v: 14 <= v <= 20),
     ("pct pitches assigned",  "SELECT round(100.0*count(a.*)/count(*), 1) "
                               "FROM pitches p LEFT JOIN shape_assignments a "
-                              "ON a.method='v1_type_velo' AND a.game_pk=p.game_pk "
+                              "ON a.method={M} AND a.game_pk=p.game_pk "
                               "AND a.at_bat_number=p.at_bat_number "
                               "AND a.pitch_number=p.pitch_number "
                               "WHERE p.pitch_type IS NOT NULL "
@@ -51,23 +56,29 @@ CHECKS = [
     # The strongest assertion in this file: every league row must equal the
     # sum of the hitter rows behind it. A group-by that dropped or duplicated
     # a dimension shows up here and almost nowhere else.
-    ("league reconciles",     "SELECT count(*) FROM (SELECT l.pitches_seen, l.swings, "
+    # Grouped by the league row's identity -- method, season, stand, shape --
+    # not by its values. Two methods can hold identical rows for a shape they
+    # both define the same way, and grouping on the values merged them and
+    # doubled the hitter side. 28 false failures the day v2_hand_type landed.
+    ("league reconciles",     "SELECT count(*) FROM (SELECT l.method, l.season, "
+                              "l.stand, l.shape_id, l.pitches_seen, l.swings, "
                               "l.whiffs, l.out_of_zone, l.chases, l.batted_balls, "
                               "sum(h.pitches_seen) sp, sum(h.swings) ss, sum(h.whiffs) sw, "
                               "sum(h.out_of_zone) so, sum(h.chases) sc, "
                               "sum(h.batted_balls) sb FROM league_shape_stats l "
                               "JOIN hitter_shape_stats h ON h.method=l.method AND "
                               "h.season=l.season AND h.stand=l.stand AND "
-                              "h.shape_id=l.shape_id GROUP BY 1,2,3,4,5,6) x WHERE "
+                              "h.shape_id=l.shape_id GROUP BY 1,2,3,4,5,6,7,8,9,10) x "
+                              "WHERE "
                               "(pitches_seen,swings,whiffs,out_of_zone,chases,batted_balls) "
                               "IS DISTINCT FROM (sp,ss,sw,so,sc,sb)", lambda v: v == 0),
     # The arsenal side must account for exactly the same pitches the hitter
     # side does. A drift here means one of the two aggregates was rebuilt and
     # the other was not.
     ("pitcher shapes total",  "SELECT (SELECT coalesce(sum(pitches),0) FROM "
-                              "pitcher_shape_stats WHERE method='v1_type_velo' "
+                              "pitcher_shape_stats WHERE method={M} "
                               "AND season=2026) - (SELECT count(*) FROM "
-                              "shape_assignments WHERE method='v1_type_velo')",
+                              "shape_assignments WHERE method={M})",
                               lambda v: v == 0),
 
     # Every typed pitch is either assigned a shape or recorded as unshaped.
@@ -76,9 +87,9 @@ CHECKS = [
                               "season=2026 AND pitch_type IS NOT NULL) - "
                               "(SELECT count(*) FROM shape_assignments a JOIN "
                               "pitches p USING (game_pk, at_bat_number, pitch_number) "
-                              "WHERE a.method='v1_type_velo' AND p.season=2026) - "
+                              "WHERE a.method={M} AND p.season=2026) - "
                               "(SELECT coalesce(sum(pitches),0) FROM "
-                              "pitcher_unshaped_stats WHERE method='v1_type_velo' "
+                              "pitcher_unshaped_stats WHERE method={M} "
                               "AND season=2026)", lambda v: v == 0),
 
     ("impossible rates",      "SELECT count(*) FROM hitter_shape_stats WHERE "
@@ -111,9 +122,9 @@ def explainer_is_current(cur) -> tuple[str, bool]:
     if not path.exists():
         return ("missing — run `make explainer`", False)
     doc = json.loads(path.read_text())
-    cur.execute("SELECT count(*) FROM pitch_shapes WHERE method = 'v1_type_velo'")
+    cur.execute(f"SELECT count(*) FROM pitch_shapes WHERE method = {M}")
     shapes = cur.fetchone()[0]
-    cur.execute("SELECT count(*) FROM shape_assignments WHERE method = 'v1_type_velo'")
+    cur.execute(f"SELECT count(*) FROM shape_assignments WHERE method = {M}")
     assigned = cur.fetchone()[0]
     ok = doc["totals"]["shapes"] == shapes and doc["totals"]["assigned"] == assigned
     return (f"{doc['totals']['shapes']} shapes / {doc['totals']['assigned']:,} assigned"
@@ -125,7 +136,7 @@ if __name__ == "__main__":
     failed = 0
     with db.connect() as conn, conn.cursor() as cur:
         for label, sql, ok in CHECKS:
-            cur.execute(sql)
+            cur.execute(sql.replace("{M}", M))
             value = cur.fetchone()[0]
             passed = ok(value)
             failed += not passed

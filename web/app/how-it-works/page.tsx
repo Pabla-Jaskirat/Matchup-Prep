@@ -8,15 +8,27 @@ export const metadata = { title: "How it works — Matchup Prep" };
 const n = (v: number) => v.toLocaleString();
 
 export default function HowItWorks() {
-  const { example, groups, shapes, totals, floors, below_floor } = facts;
+  const { example, groups, shapes, totals, floors, below_floor, split_test } = facts;
   const rarest = below_floor[0];
-  const split = groups.filter((g) => g.bands > 1);
-  // Clears the spread test and still came back as one shape, because three
-  // bands of its size would each fall under the band floor.
-  const collapsed = groups.filter((g) => g.iqr > floors.iqr_for_bands && g.bands === 1);
   const biggest = example.by_shape[0];
   const widestIqr = Math.max(...groups.map((g) => g.iqr));
   const biggestShape = shapes[0].pitches;
+  // The groups the retired velocity rule would have cut into bands, measured
+  // rather than listed here: build_explainer re-reads that rule's shape file
+  // and counts what the split cost.
+  const wouldSplit = new Set(
+    (split_test?.groups ?? []).map((g) => `${g.hand}-${g.pitch_type}`),
+  );
+  // Clearing the old spread line was not enough on its own: three slices of a
+  // group this size would each have fallen under the band floor. The widest
+  // bar on the chart below is one of these, so the page has to say why it
+  // carries no tag -- it read as a contradiction otherwise.
+  const tooThin = groups.filter(
+    (g) =>
+      split_test != null &&
+      g.iqr > split_test.split_above_iqr &&
+      !wouldSplit.has(`${g.hand}-${g.pitch_type}`),
+  );
 
   return (
     <main className="page">
@@ -55,8 +67,8 @@ export default function HowItWorks() {
       {/* 2 ------------------------------------------------------------- */}
       <Step num={2} title="So describe the pitch, not the pitcher">
         <p>
-          Every pitch gets three labels: which hand threw it, what kind of pitch it is,
-          and how hard. Nothing about who threw it.
+          Every pitch gets two labels: which hand threw it, and what kind of pitch it
+          is. Nothing about who threw it.
         </p>
         <div className="pitchcard">
           <span>
@@ -70,15 +82,6 @@ export default function HowItWorks() {
             <em>type</em>
             {shortLabel(biggest.label).replace(/\s\d.*$/, "")}
           </span>
-          <span aria-hidden="true" className="plus">
-            +
-          </span>
-          <span>
-            <em>speed</em>
-            {/\d/.test(biggest.label)
-              ? shortLabel(biggest.label).replace(/^\D+/, "")
-              : "all speeds"}
-          </span>
           <span aria-hidden="true" className="arrow">
             →
           </span>
@@ -87,49 +90,97 @@ export default function HowItWorks() {
             {biggest.shape_id}
           </span>
         </div>
+        <p className="step-note">
+          The hand is not a formality. A sweeper breaks away from the arm that threw
+          it, so against a left-handed hitter a lefty&rsquo;s sweeper runs off the plate
+          and a righty&rsquo;s runs into the bat path. Same label, 5.4 points apart on
+          whiff rate — more than the whole hitter-by-pitch signal this page is about.
+        </p>
       </Step>
 
       {/* 3 ------------------------------------------------------------- */}
-      <Step num={3} title="Speed only splits a pitch when speed actually varies">
+      <Step num={3} title="Speed was the obvious third label. We measured it and dropped it.">
         <p>
           Each bar is how much that pitch varies across the league — the gap between a
-          typically slow one and a typically fast one. Past{" "}
-          <strong>{floors.iqr_for_bands} mph</strong> the slow and fast versions are
-          different pitches and get split. Below it they are the same pitch.
+          typically slow one and a typically fast one. An earlier version cut the
+          widest-spreading ones into three speed bands each, on the theory that a 73 mph
+          curveball and an 87 mph curveball are different pitches to stand in against.
         </p>
         <ul className="iqr">
-          {groups.map((g) => (
-            <li
-              key={`${g.hand}-${g.pitch_type}`}
-              className={g.bands > 1 ? "split" : g.iqr > floors.iqr_for_bands ? "collapsed" : ""}
-            >
-              <span className="iqr-name">
-                {g.hand}HP {g.name}
-                {g.bands > 1 && <span className="iqr-tag">{g.bands} bands</span>}
-                {g.bands === 1 && g.iqr > floors.iqr_for_bands && (
-                  <span className="iqr-tag iqr-tag-muted">too few to split</span>
-                )}
-              </span>
-              <span className="iqr-track">
-                <span className="iqr-fill" style={{ width: `${(g.iqr / (widestIqr * 1.05)) * 100}%` }} />
-                <span
-                  className="iqr-cut"
-                  style={{ left: `${(floors.iqr_for_bands / (widestIqr * 1.05)) * 100}%` }}
-                />
-              </span>
-              <span className="iqr-value">{g.iqr.toFixed(1)}</span>
-            </li>
-          ))}
+          {groups.map((g) => {
+            const key = `${g.hand}-${g.pitch_type}`;
+            const marked = wouldSplit.has(key);
+            const thin = tooThin.some((t) => `${t.hand}-${t.pitch_type}` === key);
+            return (
+              <li key={key} className={marked ? "split" : thin ? "collapsed" : ""}>
+                <span className="iqr-name">
+                  {g.hand}HP {g.name}
+                  {marked && <span className="iqr-tag">was split</span>}
+                  {thin && <span className="iqr-tag iqr-tag-muted">too few to split</span>}
+                </span>
+                <span className="iqr-track">
+                  <span
+                    className="iqr-fill"
+                    style={{ width: `${(g.iqr / (widestIqr * 1.05)) * 100}%` }}
+                  />
+                  {split_test?.split_above_iqr != null && (
+                    <span
+                      className="iqr-cut"
+                      style={{
+                        left: `${(split_test.split_above_iqr / (widestIqr * 1.05)) * 100}%`,
+                      }}
+                    />
+                  )}
+                </span>
+                <span className="iqr-value">{g.iqr.toFixed(1)}</span>
+              </li>
+            );
+          })}
         </ul>
-        <p className="step-note">
-          {groups.filter((g) => g.iqr > floors.iqr_for_bands).length} groups clear the
-          line; <strong>{split.length}</strong> actually get split. {collapsed[0]?.hand}HP{" "}
-          {collapsed[0]?.name}s vary the most of anything in baseball and still end up as
-          one shape: three slices of {n(collapsed[0]?.pitches ?? 0)} pitches would be
-          about {n(Math.round((collapsed[0]?.pitches ?? 0) / 3))} each, under the{" "}
-          {n(floors.band_pitches)} a band needs. The spread earns the split; the sample
-          size can overrule it.
-        </p>
+        {split_test && (
+          <>
+            <Compare
+              rows={[
+                {
+                  label: "Jays numbers, pitches kept whole",
+                  value: split_test.cells_whole,
+                  tone: "good",
+                },
+                {
+                  label: "Jays numbers, pitches split by speed",
+                  value: split_test.cells_split,
+                  tone: "thin",
+                },
+              ]}
+              max={Math.max(split_test.cells_whole, 1)}
+            />
+            <p className="step-note">
+              The theory was fine and the cost was not. Splitting those{" "}
+              {split_test.groups.length} pitches gave{" "}
+              <strong>{split_test.cells_split} usable Blue Jays numbers</strong>, because
+              a hitter&rsquo;s sample gets divided along with the pitch — the most any
+              Jay managed against a single band was {split_test.best_split_cell} pitches,
+              under the {floors.cell_pitches} a number needs. Kept whole, the same
+              pitches give <strong>{split_test.cells_whole}</strong>.
+            </p>
+            {tooThin[0] && (
+              <p className="step-note">
+                Spread alone was never enough. {tooThin[0].hand}HP{" "}
+                {tooThin[0].name.toLowerCase()}s vary the most of anything in baseball
+                at {tooThin[0].iqr.toFixed(1)} mph and were still left whole even then:
+                three slices of {n(tooThin[0].pitches)} pitches would be about{" "}
+                {n(Math.round(tooThin[0].pitches / 3))} each, under the{" "}
+                {n(split_test.min_band_pitches)} a band needed.
+              </p>
+            )}
+            <p className="step-note">
+              Splitting also did not measure any better: {totals.shapes} shapes capture
+              5.0 points of real hitter-by-pitch difference and{" "}
+              {split_test.shapes_then} capture 4.9. So the shape is a hand and a pitch
+              type, and speed is not part of it.
+            </p>
+          </>
+        )}
         <p className="step-note">
           Pitches too rare to measure never get here at all. The biggest of them is the{" "}
           {rarest.hand}HP {rarest.name.toLowerCase()} — {n(rarest.pitches)} thrown all

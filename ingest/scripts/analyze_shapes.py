@@ -2,7 +2,7 @@
 
 Read-only. This script writes nothing and decides nothing. It prints the numbers
 a human needs in order to choose velocity band boundaries defensibly, so that the
-boundaries in db/shapes/v1_type_velo.json trace back to real percentiles rather
+boundaries in db/shapes/<method>.json trace back to real percentiles rather
 than to a guess.
 
 The banding rule itself lives in PLAN.md and is applied by hand. That is
@@ -204,7 +204,7 @@ def report(df: pd.DataFrame, season: int) -> None:
     print(f"{len(groups)} groups above the threshold.")
     print(f"bimodal: {', '.join(bimodal) if bimodal else 'none'}")
     print("\nNext: apply the banding rule in PLAN.md by hand and write "
-          "db/shapes/v1_type_velo.json (Task 10).")
+          "db/shapes/<method>.json (Task 10).")
 
 
 def main() -> None:

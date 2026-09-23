@@ -5,7 +5,7 @@ the whole aggregate design exists to support, and an explainer that broke it
 while explaining it would be a poor advertisement. So the facts are measured
 once, here, and written to a JSON file the page imports.
 
-Same pattern as db/shapes/v1_type_velo.json: a decision, or in this case a
+Same pattern as db/shapes/<method>.json: a decision, or in this case a
 measurement, stored as data and reviewable in a diff.
 
 Read-only. Re-run after any change to the shape definitions.
@@ -20,7 +20,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 import db
 from analyze_shapes import MIN_GROUP_PITCHES, PITCH_NAMES
-from choose_bands import MIN_BAND_PITCHES, THREE_BANDS_ABOVE_IQR
+from choose_bands import SHAPES_DIR, SPLIT_ABOVE_IQR
 
 MIN_CELL_PITCHES = 50
 ARSENAL_FLOOR_PCT = 3.0
@@ -40,6 +40,85 @@ def surname(full_name: str) -> str:
     gives "Vladimir", and both read as a mistake on the page."""
     parts = [p for p in full_name.split() if p not in SUFFIXES]
     return parts[-1] if parts else full_name
+
+
+# The rule that was measured and rejected. Its shape file stays in git, so the
+# comparison below is driven by the real band edges rather than by numbers
+# typed into the page.
+REJECTED = "v1_type_velo"
+
+
+def split_test(cur, season: int, method: str) -> dict | None:
+    """What splitting on velocity would cost, measured against the same data.
+
+    The claim on the page -- that the speed bands showed nothing to anyone --
+    is a coverage claim, so it is counted rather than asserted. For every
+    (hand, pitch_type) the old rule cut into bands, count the Blue Jays
+    hitter cells that clear the 50-pitch display floor whole, and count them
+    again sliced into those bands.
+
+    Returns None if the old shape file is gone, which is the honest outcome:
+    the page then has nothing to show rather than a stale number.
+    """
+    path = SHAPES_DIR / f"{REJECTED}.json"
+    if not path.exists():
+        return None
+    old = json.loads(path.read_text())
+    banded = [g for g in old["groups"] if len(g["bands"]) > 1]
+    if not banded:
+        return None
+
+    groups = []
+    for g in banded:
+        # One row per (hitter, stand) with that hand+type, and the same
+        # pitches bucketed by the old band edges.
+        cases = " ".join(
+            f"WHEN {'TRUE' if b['velo_min'] is None else f'release_speed >= {b_min}'}"
+            f" AND {'TRUE' if b['velo_max'] is None else f'release_speed < {b_max}'}"
+            f" THEN '{b['shape_id']}'"
+            for b in g["bands"]
+            for b_min, b_max in [(b["velo_min"], b["velo_max"])]
+        )
+        cur.execute(f"""
+          WITH mine AS (
+            SELECT p.batter_id, p.stand, p.release_speed,
+                   CASE {cases} END AS band
+            FROM pitches p
+            JOIN players pl ON pl.mlbam_id = p.batter_id
+            WHERE p.season = %s AND p.p_throws = %s AND p.pitch_type = %s
+              AND p.release_speed IS NOT NULL
+              AND pl.team = 'TOR' AND pl.position <> 'P'
+          )
+          SELECT
+            (SELECT count(*) FROM (SELECT 1 FROM mine GROUP BY batter_id, stand
+                                   HAVING count(*) >= %s) w),
+            (SELECT count(*) FROM (SELECT 1 FROM mine GROUP BY batter_id, stand, band
+                                   HAVING count(*) >= %s) b),
+            (SELECT max(n) FROM (SELECT count(*) n FROM mine
+                                 GROUP BY batter_id, stand, band) m)
+        """, (season, g["p_throws"], g["pitch_type"], MIN_CELL_PITCHES,
+              MIN_CELL_PITCHES))
+        whole, split, best = cur.fetchone()
+        groups.append({"hand": g["p_throws"], "pitch_type": g["pitch_type"],
+                       "name": PITCH_NAMES.get(g["pitch_type"], g["pitch_type"]),
+                       "bands": len(g["bands"]), "iqr": g["iqr"],
+                       "cells_whole": whole, "cells_split": split,
+                       "best_split_cell": best or 0})
+
+    return {
+        "rejected_method": REJECTED,
+        "split_above_iqr": old["rule"].get("three_bands_above_iqr",
+                                           old["rule"].get("split_above_iqr")),
+        "shapes_then": old["shapes"],
+        # A group could clear the spread test and still come back as one
+        # shape, because three slices of it would each fall under this floor.
+        # The page needs it to explain the widest bar on its own chart.
+        "min_band_pitches": old["rule"]["min_band_pitches"],
+        "groups": groups,
+        "cells_whole": sum(g["cells_whole"] for g in groups),
+        "cells_split": sum(g["cells_split"] for g in groups),
+        "best_split_cell": max((g["best_split_cell"] for g in groups), default=0),
+    }
 
 
 def facts(cur, season: int, method: str) -> dict:
@@ -134,10 +213,10 @@ def facts(cur, season: int, method: str) -> dict:
                    "assigned_pct": round(100.0 * assigned / typed, 1),
                    "shapes": len(shapes), "groups": len(groups), "hitters": pool},
         "floors": {"group_pitches": MIN_GROUP_PITCHES,
-                   "band_pitches": MIN_BAND_PITCHES,
-                   "iqr_for_bands": THREE_BANDS_ABOVE_IQR,
+                   "split_above_iqr": SPLIT_ABOVE_IQR,
                    "cell_pitches": MIN_CELL_PITCHES,
                    "arsenal_pct": ARSENAL_FLOOR_PCT},
+        "split_test": split_test(cur, season, method),
         "example": {"hitter": hitter_name, "hitter_short": surname(hitter_name),
                     "pitcher": pitcher_name, "pitcher_short": surname(pitcher_name),
                     "pitcher_hand": pitcher_hand, "head_to_head": head_to_head,
@@ -153,7 +232,7 @@ def facts(cur, season: int, method: str) -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--season", type=int, default=2026)
-    ap.add_argument("--method", default="v1_type_velo")
+    ap.add_argument("--method", default=db.DEFAULT_METHOD)
     args = ap.parse_args()
 
     conn = db.connect()

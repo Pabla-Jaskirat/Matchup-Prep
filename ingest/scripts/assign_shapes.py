@@ -84,7 +84,7 @@ def explain_unassigned(counts: dict[tuple[str, str], int],
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--season", type=int, default=2026)
-    ap.add_argument("--method", default="v1_type_velo")
+    ap.add_argument("--method", default=db.DEFAULT_METHOD)
     args = ap.parse_args()
     params = {"season": args.season, "method": args.method}
 

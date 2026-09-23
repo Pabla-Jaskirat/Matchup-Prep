@@ -51,7 +51,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--base", default="http://localhost:3000")
     ap.add_argument("--season", type=int, default=2026)
-    ap.add_argument("--method", default="v1_type_velo")
+    ap.add_argument("--method", default=db.DEFAULT_METHOD)
     ap.add_argument("pitchers", nargs="*", type=int,
                     default=[592332, 669373, 650911])  # Gausman, Skubal, Sánchez
     args = ap.parse_args()

@@ -5,8 +5,9 @@
 
 PY := ingest/.venv/bin/python
 SEASON ?= 2026
+METHOD ?= v1_type_velo
 
-.PHONY: refresh fetch migrate load players describe check test web-test web-build dev verify-matchup explainer reliability shapes-analyze shapes-choose shapes roster aggregate verify coverage
+.PHONY: refresh fetch migrate load players describe check test web-test web-build dev verify-matchup explainer reliability shapes-analyze shapes-choose shapes-choose-split retire-method shapes roster aggregate verify coverage
 
 refresh: fetch migrate load players roster shapes aggregate explainer	## full pipeline, in order
 
@@ -34,8 +35,15 @@ check:					## row counts and data-quality sanity checks
 shapes-analyze:			## read-only: velocity distributions per pitch type (Task 9)
 	$(PY) ingest/scripts/analyze_shapes.py --season $(SEASON)
 
-shapes-choose:			## apply the banding rule -> db/shapes/v1_type_velo.json (Task 10)
+shapes-choose:			## apply the shape rule -> db/shapes/<method>.json (Task 10)
 	$(PY) ingest/scripts/choose_bands.py --season $(SEASON)
+
+shapes-choose-split:		## rebuild the rejected velocity-band rule, for comparison
+	$(PY) ingest/scripts/choose_bands.py --season $(SEASON) \
+		--split-above-iqr 5.0 --method v1_type_velo
+
+retire-method:			## drop a superseded method's rows (METHOD=v1_type_velo)
+	$(PY) ingest/scripts/retire_method.py --method $(METHOD)
 
 shapes: shapes-derive shapes-assign	## load the shape file and assign every pitch
 

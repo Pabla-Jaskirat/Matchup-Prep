@@ -1,34 +1,45 @@
 """Turn the measured velocity distributions into the shape definitions (Task 10).
 
 This is the one human decision in the pipeline, so it is stored as data rather
-than code: this script writes db/shapes/v1_type_velo.json and nothing else
-reads the database to decide band edges. Widening the bands on Day 3 is an
-edit to that file and a re-run of assign_shapes, not a migration.
+than code: this script writes db/shapes/<method>.json and nothing else reads
+the database to decide what a shape is. Changing the rule is an edit here and a
+re-run of derive_shapes and assign_shapes, not a migration.
 
 The rule, in full:
 
   1. A (hand, pitch_type) group needs 5,000 league pitches to exist at all.
-  2. Its velocity IQR -- the width of the middle half -- picks the band count:
-     5.0 mph or less -> 1 band, over 5.0 -> 3 bands at p33 and p67.
-  3. Any band holding fewer than 5,000 pitches is merged into its smaller
-     neighbour, repeatedly, until every surviving band clears the floor.
+  2. That group is the shape. Hand and pitch type, nothing else.
 
-Spread earns bands; the sample floor can overrule the spread. RHP knuckle-curves
-have the widest spread in the data (6.2 mph) and still end up as a single shape,
-because 9,476 pitches cannot support three bands of ~3,200.
+Hand is not a formality. A sweeper breaks away from the arm that threw it, so
+against a left-handed hitter a lefty's sweeper runs off the plate and a
+righty's runs into the bat path. Measured 2026: 34.3% whiffs against the
+first, 28.9% against the second. Same label, 5.4 points apart -- more than the
+whole hitter-by-pitch signal this tool is built on. Dropping hand and grouping
+on the label alone costs 0.5 points of that signal (5.0 -> 4.5).
 
-**Revised 2026-09-18 after the Task 15 coverage audit.** The first version also
-split every group between 2.5 and 5.0 mph into two bands, which produced 33
-shapes -- and a page where a typical matchup had one usable number out of a
-seven-shape arsenal, because splitting a group halves each hitter's sample.
+**Velocity bands were removed 2026-09-23, after measuring them.**
 
-Measured: dropping those middle splits raises a typical matchup from 2 usable
-shapes to 3, and the coverage is identical to abandoning velocity bands
-altogether. So the bands that survive are free: they keep real information at
-no measurable cost. The ones that were cut were not separating anything. RHP
-sliders span 3.5 mph, so a "slow" one is 85 and a "fast" one is 88 -- the same
-pitch. RHP curveballs span 5.6, and a 73 and an 87 are genuinely different
-pitches to stand in against.
+The previous rule (method v1_type_velo) also split a group into three velocity
+bands when its IQR exceeded 5.0 mph. Only two groups in the league ever
+qualified -- RHP curveballs and RHP splitters -- and the split was measured to
+be worth nothing:
+
+  * Real hitter-by-pitch signal captured: 5.0 points at 16 shapes, 4.9 at 20.
+    The split made it very slightly worse. (`make reliability`.)
+  * Coverage: no Blue Jay cleared the 50-pitch cell floor on any banded shape
+    -- the best was 39 -- so those four extra shapes showed nothing to anyone.
+    Merging them back returns 12 displayable cells.
+
+The splitting rule is kept behind --split-above-iqr rather than deleted, so
+the rejected experiment stays reproducible:
+
+    python choose_bands.py --split-above-iqr 5.0 --method v1_type_velo
+
+An earlier revision (2026-09-18) had also cut a two-band split for groups
+between 2.5 and 5.0 mph, which produced 33 shapes and a page where a typical
+matchup had one usable number in a seven-shape arsenal. The direction was
+consistent every time it was measured: splitting a group halves every hitter's
+sample, and velocity was never what separated the pitches.
 """
 
 import argparse
@@ -41,20 +52,26 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 import numpy as np
 
+import db
 from analyze_shapes import MIN_GROUP_PITCHES, PITCH_NAMES, load, velocity_stats
 
-# A group is split only when its middle half spans more than this. Below it,
-# the slow and fast versions of the pitch are the same pitch.
-THREE_BANDS_ABOVE_IQR = 5.0
+# The shipped rule never splits on speed. Passing a threshold reinstates the
+# old behaviour: a group whose middle half spans more than that many mph is
+# cut into three bands. Kept so the measurement that rejected it can be redone.
+SPLIT_ABOVE_IQR = None
 MIN_BAND_PITCHES = 5_000
 
-METHOD = "v1_type_velo"
-OUT = Path(__file__).resolve().parents[2] / "db" / "shapes" / f"{METHOD}.json"
+SHAPES_DIR = Path(__file__).resolve().parents[2] / "db" / "shapes"
 
 
-def band_count(iqr: float) -> int:
-    """How many velocity slices this group's spread justifies."""
-    return 3 if iqr > THREE_BANDS_ABOVE_IQR else 1
+def band_count(iqr: float, split_above_iqr: float | None = SPLIT_ABOVE_IQR) -> int:
+    """How many velocity slices this group gets.
+
+    One, unless a caller asks for the old velocity rule back.
+    """
+    if split_above_iqr is None:
+        return 1
+    return 3 if iqr > split_above_iqr else 1
 
 
 def cut_percentiles(n_bands: int) -> list[int]:
@@ -127,14 +144,15 @@ def label(hand: str, pitch_type: str, bands: list[dict], index: int) -> str:
     return f"{name} {round(band['velo_min'])}-{round(band['velo_max'])}"
 
 
-def build(df, season: int) -> dict:
+def build(df, season: int, method: str,
+          split_above_iqr: float | None = SPLIT_ABOVE_IQR) -> dict:
     groups = []
     for (hand, pitch_type), g in df.groupby(["p_throws", "pitch_type"]):
         speeds = g["release_speed"].dropna()
         if speeds.size < MIN_GROUP_PITCHES:
             continue
         stats = velocity_stats(speeds)
-        n_bands = band_count(stats["iqr"])
+        n_bands = band_count(stats["iqr"], split_above_iqr)
         cuts = [(round(float(np.percentile(speeds, p)), 1), p)
                 for p in cut_percentiles(n_bands)]
         bands = collapse_under_floor(count_bands(speeds.tolist(), make_bands(cuts)))
@@ -149,12 +167,12 @@ def build(df, season: int) -> dict:
         })
     groups.sort(key=lambda g: -g["pitches"])
     return {
-        "method": METHOD,
+        "method": method,
         "season": season,
         "generated": date.today().isoformat(),
         "rule": {
             "min_group_pitches": MIN_GROUP_PITCHES,
-            "three_bands_above_iqr": THREE_BANDS_ABOVE_IQR,
+            "split_above_iqr": split_above_iqr,
             "min_band_pitches": MIN_BAND_PITCHES,
             "interval": "velo_min <= release_speed < velo_max; null is unbounded",
         },
@@ -166,15 +184,19 @@ def build(df, season: int) -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--season", type=int, default=2026)
+    ap.add_argument("--method", default=db.DEFAULT_METHOD)
+    ap.add_argument("--split-above-iqr", type=float, default=SPLIT_ABOVE_IQR,
+                    help="reinstate the old velocity rule at this IQR, in mph")
     args = ap.parse_args()
 
-    doc = build(load(args.season), args.season)
+    doc = build(load(args.season), args.season, args.method, args.split_above_iqr)
 
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(doc, indent=2) + "\n")
+    out = SHAPES_DIR / f"{args.method}.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(doc, indent=2) + "\n")
 
     print(f"{doc['shapes']} shapes across {len(doc['groups'])} groups -> "
-          f"{OUT.relative_to(Path.cwd())}\n")
+          f"{out.relative_to(Path.cwd())}\n")
     for g in doc["groups"]:
         collapsed = "" if len(g["bands"]) == g["bands_by_spread"] else \
             f"  (spread said {g['bands_by_spread']}, floor cut it to {len(g['bands'])})"

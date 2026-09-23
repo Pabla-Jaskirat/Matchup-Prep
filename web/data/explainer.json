@@ -1,22 +1,52 @@
 {
   "season": 2026,
-  "method": "v1_type_velo",
-  "generated": "2026-09-19",
+  "method": "v2_hand_type",
+  "generated": "2026-09-23",
   "totals": {
     "pitches": 696100,
     "typed": 693243,
     "assigned": 683797,
     "assigned_pct": 98.6,
-    "shapes": 20,
+    "shapes": 16,
     "groups": 16,
     "hitters": 14
   },
   "floors": {
     "group_pitches": 5000,
-    "band_pitches": 5000,
-    "iqr_for_bands": 5.0,
+    "split_above_iqr": null,
     "cell_pitches": 50,
     "arsenal_pct": 3.0
+  },
+  "split_test": {
+    "rejected_method": "v1_type_velo",
+    "split_above_iqr": 5.0,
+    "shapes_then": 20,
+    "min_band_pitches": 5000,
+    "groups": [
+      {
+        "hand": "R",
+        "pitch_type": "CU",
+        "name": "Curveball",
+        "bands": 3,
+        "iqr": 5.6,
+        "cells_whole": 8,
+        "cells_split": 0,
+        "best_split_cell": 39
+      },
+      {
+        "hand": "R",
+        "pitch_type": "FS",
+        "name": "Splitter",
+        "bands": 3,
+        "iqr": 5.1,
+        "cells_whole": 4,
+        "cells_split": 0,
+        "best_split_cell": 31
+      }
+    ],
+    "cells_whole": 12,
+    "cells_split": 0,
+    "best_split_cell": 39
   },
   "example": {
     "hitter": "Vladimir Guerrero Jr.",
@@ -70,7 +100,7 @@
       "name": "Curveball",
       "pitches": 29562,
       "iqr": 5.6,
-      "bands": 3
+      "bands": 1
     },
     {
       "hand": "R",
@@ -78,7 +108,7 @@
       "name": "Splitter",
       "pitches": 19922,
       "iqr": 5.1,
-      "bands": 3
+      "bands": 1
     },
     {
       "hand": "L",
@@ -264,6 +294,11 @@
       "pitches": 37098
     },
     {
+      "shape_id": "R-CU-1",
+      "label": "RHP Curveball",
+      "pitches": 29562
+    },
+    {
       "shape_id": "L-CH-1",
       "label": "LHP Changeup",
       "pitches": 28376
@@ -272,6 +307,11 @@
       "shape_id": "L-SL-1",
       "label": "LHP Slider",
       "pitches": 28294
+    },
+    {
+      "shape_id": "R-FS-1",
+      "label": "RHP Splitter",
+      "pitches": 19922
     },
     {
       "shape_id": "L-ST-1",
@@ -289,39 +329,9 @@
       "pitches": 14021
     },
     {
-      "shape_id": "R-CU-2",
-      "label": "RHP Curveball 79-83",
-      "pitches": 10023
-    },
-    {
-      "shape_id": "R-CU-3",
-      "label": "RHP Curveball 83+",
-      "pitches": 9931
-    },
-    {
-      "shape_id": "R-CU-1",
-      "label": "RHP Curveball under 79",
-      "pitches": 9608
-    },
-    {
       "shape_id": "R-KC-1",
       "label": "RHP Knuckle-Curve",
       "pitches": 9476
-    },
-    {
-      "shape_id": "R-FS-2",
-      "label": "RHP Splitter 85-88",
-      "pitches": 6935
-    },
-    {
-      "shape_id": "R-FS-3",
-      "label": "RHP Splitter 88+",
-      "pitches": 6580
-    },
-    {
-      "shape_id": "R-FS-1",
-      "label": "RHP Splitter under 85",
-      "pitches": 6407
     }
   ]
 }

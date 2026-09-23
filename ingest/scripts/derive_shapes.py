@@ -1,4 +1,4 @@
-"""Load db/shapes/v1_type_velo.json into pitch_shapes (Task 12, first half).
+"""Load db/shapes/<method>.json into pitch_shapes (Task 12, first half).
 
 The file is the decision; this script is only the courier. It validates the
 file before touching the database, because the file is hand-editable and a
@@ -38,7 +38,7 @@ class ShapeFileError(Exception):
     """The shape file would produce wrong assignments if loaded."""
 
 
-def read_file(method: str = "v1_type_velo") -> dict:
+def read_file(method: str = db.DEFAULT_METHOD) -> dict:
     return json.loads((SHAPES / f"{method}.json").read_text())
 
 
@@ -94,7 +94,7 @@ def rows_from(doc: dict) -> list[tuple]:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--method", default="v1_type_velo")
+    ap.add_argument("--method", default=db.DEFAULT_METHOD)
     args = ap.parse_args()
 
     doc = read_file(args.method)

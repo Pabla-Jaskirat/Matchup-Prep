@@ -873,7 +873,8 @@ h2 {
   background: #c2410c;
 }
 
-.compare-rule .compare-fill {
+.compare-rule .compare-fill,
+.compare-good .compare-fill {
   background: var(--accent);
 }
 

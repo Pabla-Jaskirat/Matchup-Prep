@@ -13,6 +13,13 @@ from dotenv import load_dotenv
 ROOT = Path(__file__).resolve().parents[2]
 load_dotenv(ROOT / ".env")
 
+# The shape rule in force. `method` leads every primary key in the shape and
+# stats tables so that changing the rule is a new name rather than a rewrite of
+# rows that already mean something else. Every script defaults to this one;
+# the previous rule, v1_type_velo, split some pitch types by velocity and is
+# still reproducible -- see choose_bands.py --split-above-iqr.
+DEFAULT_METHOD = "v2_hand_type"
+
 
 def url(pooled: bool = False) -> str:
     key = "DATABASE_URL_POOLED" if pooled else "DATABASE_URL"

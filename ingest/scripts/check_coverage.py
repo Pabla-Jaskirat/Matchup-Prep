@@ -8,7 +8,7 @@ shapes at once, he sees the four or five tonight's starter throws.
 
 The lever, if the answer is bad, is wider bands -- not more data. A second
 season is ruled out on storage. Widening means editing
-db/shapes/v1_type_velo.json and re-running Tasks 12 and 14, which is exactly
+db/shapes/<method>.json and re-running Tasks 12 and 14, which is exactly
 why the bands live in a file.
 
 Read-only.
@@ -118,7 +118,7 @@ def verdict(typical_usable: float, typical_arsenal: float) -> bool:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--season", type=int, default=2026)
-    ap.add_argument("--method", default="v1_type_velo")
+    ap.add_argument("--method", default=db.DEFAULT_METHOD)
     ap.add_argument("--threshold", type=int, default=MIN_PITCHES)
     args = ap.parse_args()
     params = {"season": args.season, "method": args.method}

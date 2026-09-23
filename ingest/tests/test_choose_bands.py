@@ -2,7 +2,7 @@
 
 Task 10 is the only place a human decision enters the pipeline: how many
 velocity slices each pitch type gets. The decision lives in these functions
-and its output lives in db/shapes/v1_type_velo.json, so both the rule and the
+and its output lives in db/shapes/<method>.json, so both the rule and the
 data it produced can be argued with later.
 """
 
@@ -10,28 +10,42 @@ import choose_bands as cb
 
 
 # --- how many bands a group earns -------------------------------------------
+#
+# The shipped rule does not split on speed at all. That is a measured result,
+# not a simplification: grouping by hand + pitch type captured 5.0 points of
+# real hitter-by-pitch difference, and adding a speed band captured 4.9, while
+# costing 12 Blue Jays cells that no longer cleared the 50-pitch floor. See
+# `make reliability`.
+#
+# The splitting rule is kept as an option rather than deleted, so the rejected
+# experiment can be re-run -- `choose_bands.py --split-above-iqr 5.0` rebuilds
+# the 20-shape file the comparison was made against.
+
+
+def test_speed_does_not_split_a_group_by_default():
+    # Even RHP curveballs, the widest-spreading pitch that was ever split.
+    assert cb.band_count(5.6) == 1
+
 
 def test_a_tight_group_gets_one_band():
-    # Everyone throws it at the same speed. Splitting would make two buckets
-    # of the same pitch.
     assert cb.band_count(2.0) == 1
 
 
-def test_a_moderate_group_is_left_whole():
-    # RHP sliders, IQR 3.5: a "slow" one is 85 and a "fast" one is 88, which
-    # is the same pitch. Splitting halves every hitter's sample and separates
-    # nothing. Measured in the Task 15 audit, not assumed.
-    assert cb.band_count(3.5) == 1
+def test_the_old_rule_still_splits_when_asked_for():
+    # RHP curveballs: some are 73, some are 87. Wide enough that the old rule
+    # split them, which is what makes it the interesting case to reproduce.
+    assert cb.band_count(5.6, split_above_iqr=5.0) == 3
 
 
-def test_a_wide_group_gets_three_bands():
-    # RHP curveballs: some are 73, some are 87. That is a real difference.
-    assert cb.band_count(5.6) == 3
-
-
-def test_the_threshold_is_inclusive():
+def test_the_old_threshold_is_inclusive():
     # "> 5.0 -> 3 bands", so a group sitting exactly on 5.0 stays whole.
-    assert cb.band_count(5.0) == 1
+    assert cb.band_count(5.0, split_above_iqr=5.0) == 1
+
+
+def test_a_moderate_group_is_left_whole_under_the_old_rule_too():
+    # RHP sliders, IQR 3.5: a "slow" one is 85 and a "fast" one is 88, which
+    # is the same pitch.
+    assert cb.band_count(3.5, split_above_iqr=5.0) == 1
 
 
 # --- where the cuts go ------------------------------------------------------
