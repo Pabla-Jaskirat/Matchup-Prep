@@ -32,8 +32,10 @@ r above 0 -> hitters really do have pitch-specific strengths, and the
              intersection with tonight's arsenal is real information.
 """
 import argparse
+import json
 import statistics
 import sys
+from datetime import date
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -61,13 +63,52 @@ FAMILY = ("CASE WHEN a.shape_id ~ '-(FF|SI|FC)-' THEN 'fastball' "
 TYPE_ONLY = "split_part(a.shape_id,'-',2)"
 HAND_TYPE = "split_part(a.shape_id,'-',1) || '-' || split_part(a.shape_id,'-',2)"
 
-KEYS = {
-    "fastball/breaking/offspeed, with hand (6)":
-        "split_part(a.shape_id,'-',1) || '-' || " + FAMILY,
-    "pitch type only, hand ignored     (8)": TYPE_ONLY,
-    "hand + type                      (16)": HAND_TYPE,
-    "hand + type + speed              (20)": "a.shape_id",
-}
+SHAPES_DIR = Path(__file__).resolve().parents[2] / "db" / "shapes"
+SPEED_RULE = "v1_type_velo"
+
+
+def speed_key() -> str | None:
+    """hand + type, with the retired rule's speed bands cut back in.
+
+    Its rows were deleted from the database when v2 replaced it (138 MB on a
+    500 MB tier), so the bands are rebuilt from the rule file, exactly as
+    build_explainer does. Before this, the row keyed on a.shape_id -- which
+    under v2 no longer carries speed, so it silently re-measured hand + type.
+    A pitch with no recorded speed stays in its unbanded group.
+    """
+    path = SHAPES_DIR / f"{SPEED_RULE}.json"
+    if not path.exists():
+        return None
+    banded = [g for g in json.loads(path.read_text())["groups"] if len(g["bands"]) > 1]
+    whens = []
+    for g in banded:
+        inner = " ".join(
+            "WHEN "
+            + " AND ".join(
+                ["TRUE"]
+                + ([f"p.release_speed >= {b['velo_min']}"] if b["velo_min"] is not None else [])
+                + ([f"p.release_speed < {b['velo_max']}"] if b["velo_max"] is not None else [])
+            )
+            + f" THEN '{b['shape_id']}'"
+            for b in g["bands"]
+        )
+        whens.append(
+            f"WHEN p.p_throws = '{g['p_throws']}' AND p.pitch_type = '{g['pitch_type']}'"
+            f" AND p.release_speed IS NOT NULL THEN CASE {inner} END"
+        )
+    return f"CASE {' '.join(whens)} ELSE {HAND_TYPE} END"
+
+
+# (label, groups, SQL key). The group count is the rule's, not measured here.
+KEYS = [
+    ("fastball / breaking / offspeed, with hand", 6,
+     "split_part(a.shape_id,'-',1) || '-' || " + FAMILY),
+    ("pitch type only, hand ignored", 8, TYPE_ONLY),
+    ("hand + pitch type", 16, HAND_TYPE),
+]
+_speed = speed_key()
+if _speed:
+    KEYS.append(("hand + pitch type + speed", 20, _speed))
 
 
 def pearson(xs, ys):
@@ -82,6 +123,10 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--season", type=int, default=2026)
     ap.add_argument("--method", default=db.DEFAULT_METHOD)
+    ap.add_argument("--out", type=Path,
+                    help="also freeze the results as JSON (the how-it-works page reads it)")
+    ap.add_argument("--points", type=Path,
+                    help="also write every hand + type cell's two halves, for the scatter")
     args = ap.parse_args()
     params = {"season": args.season, "method": args.method}
 
@@ -92,10 +137,20 @@ def main() -> None:
     cur.execute("""SELECT max(s) FROM (SELECT count(*) FILTER (WHERE is_swing) s
                    FROM pitches WHERE season = %(season)s
                    GROUP BY batter_id, pitcher_id) x""", params)
-    print(f"most swings any hitter took against any one pitcher: {cur.fetchone()[0]}"
+    vs_pitcher = cur.fetchone()[0]
+    print(f"most swings any hitter took against any one pitcher: {vs_pitcher}"
           f"  (the test below needs {MIN_SWINGS_PER_HALF * 2})")
+    cur.execute(f"""SELECT max(s) FROM (SELECT count(*) FILTER (WHERE p.is_swing) s
+                    FROM pitches p
+                    JOIN shape_assignments a USING (game_pk, at_bat_number, pitch_number)
+                    WHERE p.season = %(season)s AND a.method = %(method)s
+                    GROUP BY p.batter_id, {HAND_TYPE}) x""", params)
+    vs_group = cur.fetchone()[0]
+    print(f"most swings any hitter took against any one hand + pitch type: {vs_group}")
 
-    for label, key in KEYS.items():
+    results = []
+    points = None
+    for label, n_groups, key in KEYS:
         cur.execute(SQL.format(key=key), params)
         rows = cur.fetchall()
 
@@ -129,10 +184,15 @@ def main() -> None:
             raw_x.append(vals[0][0]); raw_y.append(vals[1][0])
             res_x.append(vals[0][1]); res_y.append(vals[1][1])
 
+        if key == HAND_TYPE:
+            # [first half, second half] for the raw rate and the residual, one
+            # row per cell. Four decimals is finer than any rate can be read.
+            points = [[round(a, 4), round(b, 4), round(c, 4), round(d, 4)]
+                      for a, b, c, d in zip(raw_x, raw_y, res_x, res_y)]
         r_raw = pearson(raw_x, raw_y)
         r_res = pearson(res_x, res_y)
         sd = statistics.pstdev(res_x)
-        print(f"\n{label}   {len(res_x):,} cells")
+        print(f"\n{label} ({n_groups})   {len(res_x):,} cells")
         print(f"   raw whiff rate        half-to-half r = {r_raw:.3f}"
               f"   full-sample r = {2*r_raw/(1+r_raw):.3f}")
         print(f"   hitter+pitch removed  half-to-half r = {r_res:.3f}"
@@ -147,8 +207,37 @@ def main() -> None:
         print(f"   residual spread: sd {sd*100:.1f} pts observed, "
               f"{true_sd*100:.1f} pts real  <- how much genuine "
               f"hitter-by-pitch difference this grouping captures")
+        results.append({
+            "label": label, "groups": n_groups, "cells": len(res_x),
+            # half = the two halves against each other; full = what that
+            # implies for a whole season's number (Spearman-Brown).
+            "raw_r_half": round(r_raw, 3),
+            "raw_r": round(2 * r_raw / (1 + r_raw), 3),
+            "residual_r_half": round(r_res, 3),
+            "residual_r": round(full_res, 3),
+            "spread_observed": round(sd * 100, 1),
+            "spread_real": round(true_sd * 100, 1),
+        })
 
     conn.close()
+
+    if args.out:
+        args.out.write_text(json.dumps({
+            "season": args.season, "method": args.method,
+            "generated": date.today().isoformat(),
+            "min_swings_per_half": MIN_SWINGS_PER_HALF,
+            "max_swings_vs_pitcher": vs_pitcher,
+            "max_swings_vs_group": vs_group,
+            "groupings": results,
+        }, indent=2) + "\n")
+        print(f"\nwrote {args.out}")
+    if args.points and points is not None:
+        args.points.write_text(json.dumps({
+            "columns": ["raw_first", "raw_second", "residual_first", "residual_second"],
+            "min_swings_per_half": MIN_SWINGS_PER_HALF,
+            "cells": points,
+        }, separators=(",", ":")) + "\n")
+        print(f"wrote {args.points}  ({len(points):,} cells)")
 
 
 if __name__ == "__main__":

@@ -66,7 +66,7 @@ explainer:			## freeze the how-it-works numbers into web/data/explainer.json
 	$(PY) ingest/scripts/build_explainer.py --season $(SEASON)
 
 reliability:			## split-half test: do these numbers say anything true?
-	$(PY) ingest/scripts/reliability.py --season $(SEASON)
+	$(PY) ingest/scripts/reliability.py --season $(SEASON) --out web/data/evidence.json --points web/data/halves.json
 
 coverage:			## thin-cell audit: how much of the page is filled in (Task 15)
 	$(PY) ingest/scripts/check_coverage.py --season $(SEASON)

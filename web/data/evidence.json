@@ -1,0 +1,54 @@
+{
+  "season": 2026,
+  "method": "v2_hand_type",
+  "generated": "2026-09-23",
+  "min_swings_per_half": 25,
+  "max_swings_vs_pitcher": 34,
+  "max_swings_vs_group": 399,
+  "groupings": [
+    {
+      "label": "fastball / breaking / offspeed, with hand",
+      "groups": 6,
+      "cells": 1713,
+      "raw_r_half": 0.728,
+      "raw_r": 0.842,
+      "residual_r_half": 0.342,
+      "residual_r": 0.51,
+      "spread_observed": 6.3,
+      "spread_real": 4.5
+    },
+    {
+      "label": "pitch type only, hand ignored",
+      "groups": 8,
+      "cells": 1937,
+      "raw_r_half": 0.717,
+      "raw_r": 0.835,
+      "residual_r_half": 0.293,
+      "residual_r": 0.453,
+      "spread_observed": 6.7,
+      "spread_real": 4.5
+    },
+    {
+      "label": "hand + pitch type",
+      "groups": 16,
+      "cells": 1800,
+      "raw_r_half": 0.705,
+      "raw_r": 0.827,
+      "residual_r_half": 0.315,
+      "residual_r": 0.479,
+      "spread_observed": 7.2,
+      "spread_real": 5.0
+    },
+    {
+      "label": "hand + pitch type + speed",
+      "groups": 20,
+      "cells": 1757,
+      "raw_r_half": 0.707,
+      "raw_r": 0.828,
+      "residual_r_half": 0.312,
+      "residual_r": 0.475,
+      "spread_observed": 7.2,
+      "spread_real": 4.9
+    }
+  ]
+}
