@@ -4,6 +4,8 @@
 
 A phone-first web app for a hitting coach preparing for a game, built on every pitch of the 2026 MLB season (696,100 of them, from Statcast).
 
+**Try it live: [matchup-prep.vercel.app](https://matchup-prep.vercel.app)** · [How it works](https://matchup-prep.vercel.app/how-it-works)
+
 <table>
   <tr>
     <td width="33%"><img src="docs/screenshots/home-in-season.png" alt="Home page: the Jays' next games with the opposing probable starters"></td>
